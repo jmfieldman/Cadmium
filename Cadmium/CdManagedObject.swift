@@ -1,5 +1,5 @@
 //
-//  Cadmium.h
+//  CdManagedObject.swift
 //  Cadmium
 //
 //  Copyright (c) 2016-Present Jason Fieldman - https://github.com/jmfieldman/Cadmium
@@ -22,14 +22,37 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+import Foundation
+import CoreData
 
-//! Project version number for Cadmium.
-FOUNDATION_EXPORT double CadmiumVersionNumber;
-
-//! Project version string for Cadmium.
-FOUNDATION_EXPORT const unsigned char CadmiumVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <Cadmium/PublicHeader.h>
-
-
+/**
+ *  Any core data model class you create must inherit from CdManagedObject
+ *  instead of NSManagedObject.  This is enforced in the query functions since
+ *  a return type must of CdManagedObject.
+ *
+ *  The implementation of this class installs access and write hooks that
+ *  verify you are modifying your managed objects in the proper context.
+ */
+public class CdManagedObject : NSManagedObject {
+    
+    /**
+     This is an override for willAccessValueForKey: that ensures the access
+     is performed in the proper threading context.
+     
+     - parameter key: The key whose value is being accessed.
+     */
+    public override func willAccessValueForKey(key: String?) {
+        super.willAccessValueForKey(key)
+    }
+    
+    /**
+     This is an override for willChangeValueForKey: that ensures the change
+     is performed in the proper threading context.
+     
+     - parameter key: The key whose value is being changed.
+     */
+    public override func willChangeValueForKey(key: String) {
+        super.willChangeValueForKey(key)
+    }
+    
+}

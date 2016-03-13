@@ -1,5 +1,5 @@
 //
-//  Cadmium.h
+//  CdFetchRequest.swift
 //  Cadmium
 //
 //  Copyright (c) 2016-Present Jason Fieldman - https://github.com/jmfieldman/Cadmium
@@ -22,14 +22,32 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+import Foundation
+import CoreData
 
-//! Project version number for Cadmium.
-FOUNDATION_EXPORT double CadmiumVersionNumber;
-
-//! Project version string for Cadmium.
-FOUNDATION_EXPORT const unsigned char CadmiumVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <Cadmium/PublicHeader.h>
-
-
+/**
+ *  The CdFetchRequest class enables chained query statements and ensures fetches
+ *  occur in the proper context.
+ */
+public class CdFetchRequest<T: CdManagedObject> {
+    
+    private let fetchRequest: NSFetchRequest
+    
+    
+    /**
+     Initialize the CdFetchRequest object.  This class can only be instantiated from
+     within the Cadmium framework by using the Cd.objects method.
+     
+     - returns: The new fetch request
+     */
+    internal init() {
+        fetchRequest = NSFetchRequest(entityName: "\(T.self)")
+    }
+    
+    
+    public func fetch() -> [T] {
+        
+    }
+    
+    
+}

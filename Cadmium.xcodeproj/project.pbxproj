@@ -10,6 +10,11 @@
 		35552AE81C960848004397CD /* Cadmium.h in Headers */ = {isa = PBXBuildFile; fileRef = 35552AE71C960848004397CD /* Cadmium.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		35552AEF1C960848004397CD /* Cadmium.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35552AE41C960848004397CD /* Cadmium.framework */; };
 		35552AF41C960848004397CD /* CadmiumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552AF31C960848004397CD /* CadmiumTests.swift */; };
+		35552B031C96096D004397CD /* Cd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B021C96096D004397CD /* Cd.swift */; };
+		35552B051C960BD5004397CD /* CdManagedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B041C960BD5004397CD /* CdManagedObject.swift */; };
+		35552B071C960E94004397CD /* CdManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B061C960E94004397CD /* CdManagedObjectContext.swift */; };
+		35552B091C961013004397CD /* CdFetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B081C961013004397CD /* CdFetchRequest.swift */; };
+		35552B0B1C9614BF004397CD /* CdConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B0A1C9614BF004397CD /* CdConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +34,11 @@
 		35552AEE1C960848004397CD /* CadmiumTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CadmiumTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		35552AF31C960848004397CD /* CadmiumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CadmiumTests.swift; sourceTree = "<group>"; };
 		35552AF51C960848004397CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		35552B021C96096D004397CD /* Cd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cd.swift; sourceTree = "<group>"; };
+		35552B041C960BD5004397CD /* CdManagedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdManagedObject.swift; sourceTree = "<group>"; };
+		35552B061C960E94004397CD /* CdManagedObjectContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdManagedObjectContext.swift; sourceTree = "<group>"; };
+		35552B081C961013004397CD /* CdFetchRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdFetchRequest.swift; sourceTree = "<group>"; };
+		35552B0A1C9614BF004397CD /* CdConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +82,11 @@
 		35552AE61C960848004397CD /* Cadmium */ = {
 			isa = PBXGroup;
 			children = (
+				35552B021C96096D004397CD /* Cd.swift */,
+				35552B041C960BD5004397CD /* CdManagedObject.swift */,
+				35552B061C960E94004397CD /* CdManagedObjectContext.swift */,
+				35552B081C961013004397CD /* CdFetchRequest.swift */,
+				35552B0A1C9614BF004397CD /* CdConstants.swift */,
 				35552AE71C960848004397CD /* Cadmium.h */,
 				35552AE91C960848004397CD /* Info.plist */,
 			);
@@ -195,6 +210,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35552B0B1C9614BF004397CD /* CdConstants.swift in Sources */,
+				35552B071C960E94004397CD /* CdManagedObjectContext.swift in Sources */,
+				35552B091C961013004397CD /* CdFetchRequest.swift in Sources */,
+				35552B031C96096D004397CD /* Cd.swift in Sources */,
+				35552B051C960BD5004397CD /* CdManagedObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +329,7 @@
 		35552AF91C960848004397CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -320,12 +341,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.Cadmium;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		35552AFA1C960848004397CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;

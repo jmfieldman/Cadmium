@@ -1,5 +1,5 @@
 //
-//  Cadmium.h
+//  CdConstants.swift
 //  Cadmium
 //
 //  Copyright (c) 2016-Present Jason Fieldman - https://github.com/jmfieldman/Cadmium
@@ -22,14 +22,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
-
-//! Project version number for Cadmium.
-FOUNDATION_EXPORT double CadmiumVersionNumber;
-
-//! Project version string for Cadmium.
-FOUNDATION_EXPORT const unsigned char CadmiumVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <Cadmium/PublicHeader.h>
+import Foundation
 
 
+internal let kCdThreadPropertyCurrentContext: String = "kCdThreadPropertyCurrentContext"
