@@ -28,6 +28,34 @@ import CoreData
 
 public class Cd {
 
+    
+    /**
+     *  -------------------- Object Query Support ----------------------
+     */
+    
+    /**
+     This instantiates a CdFetchRequest object, which is used to created chained
+     object queries.
+     
+     Be aware that the fetch will execute against the context of the calling thread.
+     If run from the main thread, the fetch is on the main thread context.  If called
+     from inside a transaction, the fetch is run against the context of the 
+     transaction.
+     
+     - parameter objectClass: The managed object type to query.  Must inherit from
+                               CdManagedObject
+     
+     - returns: The CdFetchRequest object ready to be configured and then fetched.
+    */
+    public class func objects<T: CdManagedObject>(objectClass: T.Type) -> CdFetchRequest<T> {
+        return CdFetchRequest<T>()
+    }
+     
+     
+    /**
+     *  -------------------- Transaction Support ----------------------
+     */
+    
 	/**
      Initiate a database transaction asynchronously on a background thread.  A
      new CdManagedObjectContext will be created for the lifetime of the transaction.
@@ -36,8 +64,8 @@ public class Cd {
 							operate in a background thread, and may ultimately 
 							save back to the database using the Cd.commit() call.
 	
-							The operation is asynchronous and will not occur on
-							the main thread.
+							The operation block is run asynchronously and will not 
+                            occur on the main thread.
      
                             It is important to note that no transactions can occur
                             on the main thread.  This will use a background write
