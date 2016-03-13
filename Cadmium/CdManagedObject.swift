@@ -42,6 +42,24 @@ public class CdManagedObject : NSManagedObject {
      - parameter key: The key whose value is being accessed.
      */
     public override func willAccessValueForKey(key: String?) {
+        guard let myManagedObjectContext = self.managedObjectContext else {
+            super.willAccessValueForKey(key)
+            return
+        }
+        
+        let currentThread = NSThread.currentThread()
+        guard let currentContext = currentThread.attachedContext() where currentContext == myManagedObjectContext else {
+            if myManagedObjectContext == CdManagedObjectContext.mainThreadContext() {
+                fatalError("You are accessing a managed object from the main thread from a background thread.")
+            } else if currentThread.attachedContext() == nil {
+                fatalError("You are accessing a managed object from a thread that does not have a managed object context.")
+            } else if currentThread.attachedContext() == CdManagedObjectContext.mainThreadContext() {
+                fatalError("You are accessing a managed object from a background transaction on the main thread.")
+            } else {
+                fatalError("You are accessing a managed object from a background transaction outside of its transaction.")
+            }
+        }
+        
         super.willAccessValueForKey(key)
     }
     
@@ -52,6 +70,25 @@ public class CdManagedObject : NSManagedObject {
      - parameter key: The key whose value is being changed.
      */
     public override func willChangeValueForKey(key: String) {
+        
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            fatalError("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
+        }
+        
+        guard let myManagedObjectContext = self.managedObjectContext else {
+            super.willAccessValueForKey(key)
+            return
+        }
+        
+        guard let currentContext = currentThread.attachedContext() where currentContext == myManagedObjectContext else {
+            if currentThread.attachedContext() == nil {
+                fatalError("You are modifying a managed object from a thread that does not have a managed object context.")
+            } else {
+                fatalError("You are modifying a managed object from outside of its original transaction.")
+            }
+        }
+        
         super.willChangeValueForKey(key)
     }
     
