@@ -65,14 +65,20 @@ public class Cd {
 							save back to the database using the Cd.commit() call.
 	
 							The operation block is run asynchronously and will not 
-                            occur on the main thread.
+                            occur on the main thread.  It will run on the private
+                            queue of the write context.
      
                             It is important to note that no transactions can occur
                             on the main thread.  This will use a background write
                             context even if initially called from the main thread.
 	*/
 	public class func transact(operation: Void -> Void) {
-		
+		let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
+        newWriteContext.performBlock {
+            NSThread.currentThread().attachContext(newWriteContext)
+            operation()
+            NSThread.currentThread().detachContext()
+        }
 	}
 
     /**
@@ -84,16 +90,26 @@ public class Cd {
      needing to wrap those operations in a transaction.
      
      - parameter operation:	This function should be used for transactions that
-                            should occur synchronously with the current background 
+                            should occur synchronously against the current background
                             thread.  Transactions may ultimately save back to the 
                             database using the Cd.commit() call.
      
                             The operation is synchronous and will block until complete.
-                            It may execute in a separate thread than the calling
+                            It will execute on the context's private queue and may or
+                            may not execute in a separate thread than the calling
                             thread.
     */
 	public class func transactAndWait(operation: Void -> Void) {
-		
+        if NSThread.currentThread().isMainThread {
+            fatalError("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
+        }
+        
+        let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
+        newWriteContext.performBlockAndWait {
+            NSThread.currentThread().attachContext(newWriteContext)
+            operation()
+            NSThread.currentThread().detachContext()
+        }
 	}
 	
 	/**
