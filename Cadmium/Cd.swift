@@ -51,12 +51,34 @@ public class Cd {
         return CdFetchRequest<T>()
     }
 
-    public class func objectWithID<T: CdManagedObject>(objectClass: T.Type, id: AnyObject, key: String = "id") throws -> T? {
-        return try Cd.objects(objectClass).filter("\(key) == %@", id).fetchOne()
+    /**
+     A macro to query for a specific object based on its id (or primary key).
+     
+     - parameter objectClass: The object type to query for
+     - parameter idValue:     The value of the ID
+     - parameter key:         The name of the ID column (default = "id")
+     
+     - throws: Throws a general fetch exception if it occurs.
+     
+     - returns: The object that was found, or nil
+     */
+    public class func objectWithID<T: CdManagedObject>(objectClass: T.Type, idValue: AnyObject, key: String = "id") throws -> T? {
+        return try Cd.objects(objectClass).filter("\(key) == %@", idValue).fetchOne()
     }
     
-    public class func objectsWithIDs<T: CdManagedObject>(objectClass: T.Type, ids: [AnyObject], key: String = "id") throws -> [T] {
-        return try Cd.objects(objectClass).filter("\(key) IN %@", ids).fetch()
+    /**
+     A macro to query for objects based on their ids (or primary keys).
+     
+     - parameter objectClass: The object type to query for
+     - parameter idValues:    The value of the IDS to search for
+     - parameter key:         The name of the ID column (default = "id")
+     
+     - throws: Throws a general fetch exception if it occurs.
+     
+     - returns: The objects that were found
+     */
+    public class func objectsWithIDs<T: CdManagedObject>(objectClass: T.Type, idValues: [AnyObject], key: String = "id") throws -> [T] {
+        return try Cd.objects(objectClass).filter("\(key) IN %@", idValues).fetch()
     }
      
      
