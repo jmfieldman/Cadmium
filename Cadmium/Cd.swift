@@ -33,7 +33,7 @@ public class Cd {
      */
     
     /* TODO: Init needs work */
-    public class func initWithSQLStore(momdURL: NSURL, sqliteURL: NSURL) {
+    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL) {
         guard let mom = NSManagedObjectModel(contentsOfURL: momdURL) else {
             return
         }
