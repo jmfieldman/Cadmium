@@ -98,7 +98,18 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         return nil
     }
 
-    
+    /**
+     Saves the master write context if necessary.
+     */
+    @inline(__always) internal class func saveMasterWriteContext() {
+        if let msc = _masterSaveContext {
+            msc.performBlock {
+                if msc.hasChanges {
+                    try! msc.save()
+                }
+            }
+        }
+    }
 }
 
 

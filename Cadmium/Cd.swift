@@ -161,8 +161,21 @@ public class Cd {
 	Commit any changes made inside of an active transaction.  Must be called from
 	inside Cd.transact or Cd.transactAndWait.
 	*/
-	public class func commit() {
-		
+	public class func commit() throws {
+		let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            fatalError("You can only commit changes inside of a transaction.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            fatalError("You can only commit changes inside of a transaction.")
+        }
+        
+        /* We must be inside of the context's performBlock */
+        try currentContext.save()
+        
+        /* Save on our master write context */
+        CdManagedObjectContext.saveMasterWriteContext()
 	}
     
     
