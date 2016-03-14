@@ -149,7 +149,7 @@ internal extension NSThread {
         if self.isMainThread {
             fatalError("You cannot explicitly attach a context from the main thread.")
         }
-        self.threadDictionary[kCdThreadPropertyCurrentContext] = context       
+        self.threadDictionary[kCdThreadPropertyCurrentContext] = context
     }
     
     /**
