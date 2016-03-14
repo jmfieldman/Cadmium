@@ -131,11 +131,16 @@ internal extension NSThread {
     /**
      Attach a background write context to the current thread
      */
-    internal func attachContext(context: CdManagedObjectContext) {
+    internal func attachContext(context: CdManagedObjectContext?) {
         if self.isMainThread {
             fatalError("You cannot explicitly attach a context from the main thread.")
         }
-        self.threadDictionary[kCdThreadPropertyCurrentContext] = context
+        if let c = context {
+            self.threadDictionary[kCdThreadPropertyCurrentContext] = context
+        } else {
+            self.threadDictionary.removeObjectForKey(kCdThreadPropertyCurrentContext)
+        }
+        
     }
     
     /**

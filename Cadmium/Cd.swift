@@ -120,9 +120,11 @@ public class Cd {
 	public class func transact(operation: Void -> Void) {
 		let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
         newWriteContext.performBlock {
-            NSThread.currentThread().attachContext(newWriteContext)
+            let currentThread = NSThread.currentThread()
+            let existingContext = currentThread.attachedContext()
+            currentThread.attachContext(newWriteContext)
             operation()
-            NSThread.currentThread().detachContext()
+            currentThread.attachContext(existingContext)
         }
 	}
 
@@ -151,9 +153,11 @@ public class Cd {
         
         let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
         newWriteContext.performBlockAndWait {
-            NSThread.currentThread().attachContext(newWriteContext)
+            let currentThread = NSThread.currentThread()
+            let existingContext = currentThread.attachedContext()
+            currentThread.attachContext(newWriteContext)
             operation()
-            NSThread.currentThread().detachContext()
+            currentThread.attachContext(existingContext)
         }
 	}
    
