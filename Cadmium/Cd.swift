@@ -47,8 +47,16 @@ public class Cd {
      
      - returns: The CdFetchRequest object ready to be configured and then fetched.
     */
-    public class func objects<T: CdManagedObject>(objectClass: T.Type) -> CdFetchRequest<T> {
+    @inline(__always) public class func objects<T: CdManagedObject>(objectClass: T.Type) -> CdFetchRequest<T> {
         return CdFetchRequest<T>()
+    }
+
+    public class func objectWithID<T: CdManagedObject>(objectClass: T.Type, id: AnyObject, key: String = "id") throws -> T? {
+        return try Cd.objects(objectClass).filter("\(key) == %@", id).fetchOne()
+    }
+    
+    public class func objectsWithIDs<T: CdManagedObject>(objectClass: T.Type, ids: [AnyObject], key: String = "id") throws -> [T] {
+        return try Cd.objects(objectClass).filter("\(key) IN %@", ids).fetch()
     }
      
      
