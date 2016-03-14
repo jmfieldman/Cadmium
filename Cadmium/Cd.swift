@@ -28,6 +28,22 @@ import CoreData
 
 public class Cd {
 
+    /**
+     *  -------------------- Initialization ----------------------
+     */
+    
+    /* TODO: Init needs work */
+    public class func initWithSQLStore(momdURL: NSURL, sqliteURL: NSURL) {
+        guard let mom = NSManagedObjectModel(contentsOfURL: momdURL) else {
+            return
+        }
+        
+        let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
+        try! psc.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqliteURL, options: nil)
+        
+        CdManagedObjectContext.initializeMasterContexts(coordinator: psc)
+    }
+    
     
     /**
      *  -------------------- Object Query Support ----------------------

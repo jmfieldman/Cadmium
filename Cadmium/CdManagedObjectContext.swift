@@ -46,6 +46,20 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      */
     private static var _masterSaveContext: CdManagedObjectContext? = nil
     
+    /**
+     Initialize the master save context and the main thread context.
+     
+     - parameter coordinator: The persistent store coordinator for the save context.
+     */
+    internal class func initializeMasterContexts(coordinator coordinator: NSPersistentStoreCoordinator?) {
+        _masterSaveContext = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+        _masterSaveContext?.undoManager = nil
+        _masterSaveContext?.persistentStoreCoordinator = coordinator
+        
+        _mainThreadContext = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+        _mainThreadContext?.undoManager = nil
+        _mainThreadContext?.parentContext = _masterSaveContext
+    }
     
     /**
      *    ------------------- Internal Helper Functions ----------------------
