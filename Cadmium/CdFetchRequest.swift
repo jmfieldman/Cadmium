@@ -31,7 +31,10 @@ import CoreData
  */
 public class CdFetchRequest<T: CdManagedObject> {
     
-    private let fetchRequest: NSFetchRequest
+    /**
+     *  This is the internal NSFetchRequest we are wrapping.
+     */
+    public let nsFetchRequest: NSFetchRequest
     
     
     /**
@@ -41,7 +44,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The new fetch request
      */
     internal init() {
-        fetchRequest = NSFetchRequest(entityName: "\(T.self)")
+        nsFetchRequest = NSFetchRequest(entityName: "\(T.self)")
     }
     
     /**
@@ -57,10 +60,10 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func filter(predicate: NSPredicate) -> CdFetchRequest<T> {
-        if let currentPredicate = fetchRequest.predicate {
-            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [currentPredicate, predicate])
+        if let currentPredicate = nsFetchRequest.predicate {
+            nsFetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [currentPredicate, predicate])
         } else {
-            fetchRequest.predicate = predicate
+            nsFetchRequest.predicate = predicate
         }
         return self
     }
@@ -111,10 +114,10 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func or(predicate: NSPredicate) -> CdFetchRequest<T> {
-        if let currentPredicate = fetchRequest.predicate {
-            fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [currentPredicate, predicate])
+        if let currentPredicate = nsFetchRequest.predicate {
+            nsFetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [currentPredicate, predicate])
         } else {
-            fetchRequest.predicate = predicate
+            nsFetchRequest.predicate = predicate
         }
         return self
     }
@@ -158,10 +161,10 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func sorted(descriptor: NSSortDescriptor) -> CdFetchRequest<T> {
-        if fetchRequest.sortDescriptors == nil {
-            fetchRequest.sortDescriptors = [descriptor]
+        if nsFetchRequest.sortDescriptors == nil {
+            nsFetchRequest.sortDescriptors = [descriptor]
         } else {
-            fetchRequest.sortDescriptors!.append(descriptor)
+            nsFetchRequest.sortDescriptors!.append(descriptor)
         }
         return self
     }
@@ -180,7 +183,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func onlyAttr(attributes: [String]) -> CdFetchRequest<T> {
-        fetchRequest.propertiesToFetch = attributes
+        nsFetchRequest.propertiesToFetch = attributes
         return self
     }
     
@@ -193,7 +196,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func limit(limit: Int) -> CdFetchRequest<T> {
-        fetchRequest.fetchLimit = limit
+        nsFetchRequest.fetchLimit = limit
         return self
     }
     
@@ -206,7 +209,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func offset(offset: Int) -> CdFetchRequest<T> {
-        fetchRequest.fetchOffset = offset
+        nsFetchRequest.fetchOffset = offset
         return self
     }
     
@@ -219,7 +222,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func batchSize(batchSize: Int) -> CdFetchRequest<T> {
-        fetchRequest.fetchBatchSize = batchSize
+        nsFetchRequest.fetchBatchSize = batchSize
         return self
     }
     
@@ -233,7 +236,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func distinct(distinct: Bool = true) -> CdFetchRequest<T> {
-        fetchRequest.returnsDistinctResults = distinct
+        nsFetchRequest.returnsDistinctResults = distinct
         return self
     }
     
@@ -246,7 +249,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The updated fetch request.
      */
     @inline(__always) public func prefetch(relationships: [String]) -> CdFetchRequest<T> {
-        fetchRequest.relationshipKeyPathsForPrefetching = relationships
+        nsFetchRequest.relationshipKeyPathsForPrefetching = relationships
         return self
     }
     
@@ -272,7 +275,7 @@ public class CdFetchRequest<T: CdManagedObject> {
             fatalError("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
-        if let results = try currentContext.executeFetchRequest(fetchRequest) as? [T] {
+        if let results = try currentContext.executeFetchRequest(nsFetchRequest) as? [T] {
             return results
         }
         
@@ -296,7 +299,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The fetch results
      */
     @inline(__always) public func fetchOne() throws -> T? {
-        fetchRequest.fetchLimit = 1
+        nsFetchRequest.fetchLimit = 1
         return try fetch().first
     }
     
@@ -313,7 +316,7 @@ public class CdFetchRequest<T: CdManagedObject> {
             fatalError("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
-        return currentContext.countForFetchRequest(fetchRequest, error: nil)
+        return currentContext.countForFetchRequest(nsFetchRequest, error: nil)
     }
     
     

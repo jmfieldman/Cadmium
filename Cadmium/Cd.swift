@@ -80,7 +80,22 @@ public class Cd {
     public class func objectsWithIDs<T: CdManagedObject>(objectClass: T.Type, idValues: [AnyObject], key: String = "id") throws -> [T] {
         return try Cd.objects(objectClass).filter("\(key) IN %@", idValues).fetch()
     }
+    
+    /**
+     This is a wrapper around the normal NSFetchedResultsController that ensures
+     you are using the main thread context.
      
+     - parameter fetchRequest:       The NSFetchRequest to use.  You can use the .nsFetchRequest
+                                     property of a CdFetchRequest.
+     - parameter sectionNameKeyPath: The section name key path
+     - parameter cacheName:          The cache name
+     
+     - returns: The initialized NSFetchedResultsController
+     */
+    public class func newFetchedResultsController(fetchRequest: NSFetchRequest, sectionNameKeyPath: String?, cacheName: String?) -> NSFetchedResultsController {
+        return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CdManagedObjectContext.mainThreadContext(), sectionNameKeyPath: sectionNameKeyPath, cacheName: cacheName)
+    }
+    
      
     /**
      *  -------------------- Transaction Support ----------------------
@@ -150,7 +165,9 @@ public class Cd {
 		
 	}
     
-       
+    
+    
+    
     
     
 }
