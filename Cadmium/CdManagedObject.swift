@@ -42,7 +42,7 @@ public class CdManagedObject : NSManagedObject {
      - returns: The CdManagedObject that has been inserted into the
                 current context.
      */
-    public func create() -> CdManagedObject {
+    public class func create() -> CdManagedObject {
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
             fatalError("You cannot create a new object in the main thread.")
@@ -66,7 +66,7 @@ public class CdManagedObject : NSManagedObject {
      
      - returns: The CdManagedObject that has not been inserted into a context yet.
      */
-    public func createTransient() -> CdManagedObject {
+    public class func createTransient() -> CdManagedObject {
         guard let entDesc = NSEntityDescription.entityForName(String(self.dynamicType), inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
             fatalError("Could not create entity description for \(String(self.dynamicType))")
         }
