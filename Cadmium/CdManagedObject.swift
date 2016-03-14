@@ -132,4 +132,5 @@ public class CdManagedObject : NSManagedObject {
         super.willChangeValueForKey(key)
     }
     
+    /* TODO: Explore protections in setValue:forKey: (relationships stay within context) */
 }
