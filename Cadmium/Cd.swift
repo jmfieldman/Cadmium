@@ -156,10 +156,50 @@ public class Cd {
             NSThread.currentThread().detachContext()
         }
 	}
+   
+    /**
+     Get the CdManagedObjectContext from inside of a valid transaction block.
+     This can be used for various object manipulation functions (insertion,
+     deletion, etc).
+     
+     - returns: The CdManagedObjectContext for the current transaction.
+     */
+    public class func transactionContext() -> CdManagedObjectContext {
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            fatalError("The main thread cannot have a transaction context.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            fatalError("You must call this from inside a valid transaction.")
+        }
+        
+        return currentContext
+    }
 	
+    /**
+     Allows you to refer to a foreign CdManagedObject (from another
+     context) in your current transaction.
+     
+     - parameter object: A CdManagedObject that is suitable to use
+                         in the current transaction.
+     */
+    public class func useInTransaction(object: CdManagedObject) -> CdManagedObject {
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            fatalError("The main thread cannot have a transaction context.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            fatalError("You must call this from inside a valid transaction.")
+        }
+        
+        return currentContext.objectWithID(object.objectID) as! CdManagedObject
+    }
+    
 	/**
-	Commit any changes made inside of an active transaction.  Must be called from
-	inside Cd.transact or Cd.transactAndWait.
+	 Commit any changes made inside of an active transaction.  Must be called from
+	 inside Cd.transact or Cd.transactAndWait.
 	*/
 	public class func commit() throws {
 		let currentThread = NSThread.currentThread()
