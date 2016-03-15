@@ -63,10 +63,25 @@ extension ViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCellWithIdentifier("cell") ?? UITableViewCell(style: .Subtitle, reuseIdentifier: "cell")
-        cell.textLabel?.text = (fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem)?.name
+        if let item = fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem {
+            cell.textLabel?.text = item.name
+            cell.detailTextLabel?.text = "number of taps: \(item.numberTaps)"
+        }
         return cell
     }
     
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        if let item = fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem {
+            Cd.transact {
+                let txItem = Cd.useInTransaction(item)
+                txItem.numberTaps += 1
+                print("new taps: \(txItem.numberTaps)")
+                try! Cd.commit()
+            }
+        }
+        
+    }
 }
 
 extension ViewController : NSFetchedResultsControllerDelegate {
