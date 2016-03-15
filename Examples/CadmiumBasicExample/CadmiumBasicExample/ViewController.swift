@@ -75,8 +75,7 @@ extension ViewController {
         if let item = fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem {
             Cd.transact {
                 let txItem = Cd.useInTransaction(item)
-                txItem.numberTaps += 1
-                print("new taps: \(txItem.numberTaps)")
+                txItem!.numberTaps += 1
                 try! Cd.commit()
             }
         }
