@@ -235,22 +235,25 @@ public class Cd {
 	
     /**
      Allows you to refer to a foreign CdManagedObject (from another
-     context) in your current transaction.
+     context) in your current context.
      
      - parameter object: A CdManagedObject that is suitable to use
-                         in the current transaction.
+                         in the current context.
      */
-    public class func useInTransaction<T: CdManagedObject>(object: T) -> T? {
-        let currentThread = NSThread.currentThread()
-        if currentThread.isMainThread {
-            Cd.raise("The main thread cannot have a transaction context.")
+    public class func useInCurrentContext<T: CdManagedObject>(object: T) -> T? {
+        guard let currentContext = NSThread.currentThread().attachedContext() else {
+            Cd.raise("You may only call useInCurrentContext from the main thread, or inside a valid transaction.")
         }
         
-        guard let currentContext = currentThread.attachedContext() else {
-            Cd.raise("You must call this from inside a valid transaction.")
+        guard let originalContext = object.managedObjectContext else {
+            Cd.raise("You cannot transfer a transient object to a context.  Use Cd.insert instead.")
         }
         
-        if let myItem = currentContext.objectWithID(object.objectID) as? T {
+        if originalContext.hasChanges {
+            Cd.raise("You cannot transfer an object from a context that has outstanding changes.  Make sure you call Cd.commit() from your transaction first.")
+        }
+        
+        if let myItem = (try? currentContext.existingObjectWithID(object.objectID)) as? T {
             currentContext.refreshObject(myItem, mergeChanges: false)
             return myItem
         }
