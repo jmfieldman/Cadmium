@@ -172,7 +172,11 @@ public class Cd {
             Cd.raise("You cannot insert an object into a context that already belongs to another context.")
         }
         
+        let keys: [String] = object.entity.attributesByName.keys.map {$0}
+        let properties = object.dictionaryWithValuesForKeys(keys)
         currentContext.insertObject(object)
+        currentContext.refreshObject(object, mergeChanges: true)
+        object.setValuesForKeysWithDictionary(properties)
     }
     
     /**
