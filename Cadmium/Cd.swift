@@ -240,7 +240,7 @@ public class Cd {
      - parameter object: A CdManagedObject that is suitable to use
                          in the current transaction.
      */
-    public class func useInTransaction<T: CdManagedObject>(object: T) -> T {
+    public class func useInTransaction<T: CdManagedObject>(object: T) -> T? {
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
             fatalError("The main thread cannot have a transaction context.")
@@ -250,7 +250,12 @@ public class Cd {
             fatalError("You must call this from inside a valid transaction.")
         }
         
-        return currentContext.objectWithID(object.objectID) as! T
+        if let myItem = currentContext.objectWithID(object.objectID) as? T {
+            currentContext.refreshObject(myItem, mergeChanges: false)
+            return myItem
+        }
+        
+        return nil
     }
     
 	/**
