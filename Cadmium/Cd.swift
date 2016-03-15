@@ -112,6 +112,42 @@ public class Cd {
         return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CdManagedObjectContext.mainThreadContext(), sectionNameKeyPath: sectionNameKeyPath, cacheName: cacheName)
     }
     
+    
+    /**
+     *  -------------------- Object Creation ----------------------
+     */
+    
+    /**
+     Create a new CdManagedObject.  This must be called from the main thread (and must be
+     transient), or called from inside a transaction.
+     
+     - parameter entityType: The entity type you would like to create.
+     - parameter transient:  If false, the object will be automatically inserted
+                             into the current transaction context.
+     
+     - returns: The created object.
+     */
+    public class func create<T: CdManagedObject>(entityType: T.Type, transient: Bool = false) -> T {
+        guard let entDesc = NSEntityDescription.entityForName("\(entityType)", inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
+            fatalError("Could not create entity description for \(entityType)")
+        }
+        
+        if transient {
+            return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext:  nil) as! T
+        }
+        
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            fatalError("You cannot create a non-transient object in the main thread.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            fatalError("You may only create a new managed object from inside a valid transaction.")
+        }
+        
+        return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
+    }
+    
      
     /**
      *  -------------------- Transaction Support ----------------------

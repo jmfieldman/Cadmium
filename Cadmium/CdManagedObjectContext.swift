@@ -44,7 +44,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      *  the parent context for all others (include all background transactions and the
      *  main thread context).
      */
-    private static var _masterSaveContext: CdManagedObjectContext? = nil
+    internal static var _masterSaveContext: CdManagedObjectContext? = nil
     
     /**
      Initialize the master save context and the main thread context.
@@ -59,6 +59,13 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         _mainThreadContext = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
         _mainThreadContext?.undoManager = nil
         _mainThreadContext?.parentContext = _masterSaveContext
+        
+        /* Attach update handler to main thread context */
+        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _masterSaveContext, queue: NSOperationQueue()) { (notification: NSNotification) -> Void in
+            dispatch_async(dispatch_get_main_queue()) {
+                _mainThreadContext?.mergeChangesFromContextDidSaveNotification(notification)
+            }
+        }
     }
     
     /**

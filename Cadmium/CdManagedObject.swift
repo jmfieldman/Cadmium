@@ -36,46 +36,6 @@ import CoreData
 public class CdManagedObject : NSManagedObject {
     
     /**
-     Create a CdManagedObject that is already inserted into the context
-     of the current transaction.
-     
-     - returns: The CdManagedObject that has been inserted into the
-                current context.
-     */
-    public class func create() -> CdManagedObject {
-        let currentThread = NSThread.currentThread()
-        if currentThread.isMainThread {
-            fatalError("You cannot create a new object in the main thread.")
-        }
-        
-        guard let currentContext = currentThread.attachedContext() else {
-            fatalError("You may only create a new managed object from inside a valid transaction.")
-        }
-        
-        guard let entDesc = NSEntityDescription.entityForName(String(self.dynamicType), inManagedObjectContext: currentContext) else {
-            fatalError("Could not create entity description for \(String(self.dynamicType))")
-        }
-        
-        return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext)
-    }
-
-    
-    /**
-     Create a transient instance of a CdManagedObject.  This instance is not
-     automatically inserted into a context.
-     
-     - returns: The CdManagedObject that has not been inserted into a context yet.
-     */
-    public class func createTransient() -> CdManagedObject {
-        guard let entDesc = NSEntityDescription.entityForName(String(self.dynamicType), inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
-            fatalError("Could not create entity description for \(String(self.dynamicType))")
-        }
-        
-        return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: nil)
-    }
-    
-    
-    /**
      This is an override for willAccessValueForKey: that ensures the access
      is performed in the proper threading context.
      
@@ -117,6 +77,11 @@ public class CdManagedObject : NSManagedObject {
         }
         
         guard let myManagedObjectContext = self.managedObjectContext else {
+            super.willAccessValueForKey(key)
+            return
+        }
+        
+        if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
             super.willAccessValueForKey(key)
             return
         }

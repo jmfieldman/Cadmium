@@ -15,6 +15,7 @@
 		35552B071C960E94004397CD /* CdManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B061C960E94004397CD /* CdManagedObjectContext.swift */; };
 		35552B091C961013004397CD /* CdFetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B081C961013004397CD /* CdFetchRequest.swift */; };
 		35552B0B1C9614BF004397CD /* CdConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B0A1C9614BF004397CD /* CdConstants.swift */; };
+		35E522A71C977017005EBECE /* CdFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E522A61C977017005EBECE /* CdFetchedResultsController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		35552B061C960E94004397CD /* CdManagedObjectContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdManagedObjectContext.swift; sourceTree = "<group>"; };
 		35552B081C961013004397CD /* CdFetchRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdFetchRequest.swift; sourceTree = "<group>"; };
 		35552B0A1C9614BF004397CD /* CdConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdConstants.swift; sourceTree = "<group>"; };
+		35E522A61C977017005EBECE /* CdFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdFetchedResultsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 				35552B041C960BD5004397CD /* CdManagedObject.swift */,
 				35552B061C960E94004397CD /* CdManagedObjectContext.swift */,
 				35552B081C961013004397CD /* CdFetchRequest.swift */,
+				35E522A61C977017005EBECE /* CdFetchedResultsController.swift */,
 				35552B0A1C9614BF004397CD /* CdConstants.swift */,
 				35552AE71C960848004397CD /* Cadmium.h */,
 				35552AE91C960848004397CD /* Info.plist */,
@@ -212,6 +215,7 @@
 			files = (
 				35552B0B1C9614BF004397CD /* CdConstants.swift in Sources */,
 				35552B071C960E94004397CD /* CdManagedObjectContext.swift in Sources */,
+				35E522A71C977017005EBECE /* CdFetchedResultsController.swift in Sources */,
 				35552B091C961013004397CD /* CdFetchRequest.swift in Sources */,
 				35552B031C96096D004397CD /* Cd.swift in Sources */,
 				35552B051C960BD5004397CD /* CdManagedObject.swift in Sources */,
