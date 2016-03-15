@@ -26,7 +26,7 @@ class ViewController: UITableViewController {
             sectionNameKeyPath: nil,
             cacheName: nil)
         
-        fetchedResultsController?.delegate = self
+        fetchedResultsController?.automateDelegation(forTable: self.tableView)
         try! fetchedResultsController?.performFetch()
     }
 
@@ -55,6 +55,8 @@ class ViewController: UITableViewController {
     
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
+
 extension ViewController {
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -82,41 +84,4 @@ extension ViewController {
         }
         
     }
-}
-
-extension ViewController : NSFetchedResultsControllerDelegate {
-    
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        self.tableView.beginUpdates()
-    }
-    
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        switch type {
-        case .Insert:
-            self.tableView.insertRowsAtIndexPaths([newIndexPath!],  withRowAnimation: UITableViewRowAnimation.Fade)
-        case .Delete:
-            self.tableView.deleteRowsAtIndexPaths([indexPath!],     withRowAnimation: UITableViewRowAnimation.Fade)
-        case .Update:
-            self.tableView.reloadRowsAtIndexPaths([indexPath!],     withRowAnimation: UITableViewRowAnimation.Automatic)
-        case .Move:
-            self.tableView.deleteRowsAtIndexPaths([indexPath!],     withRowAnimation: UITableViewRowAnimation.Fade)
-            self.tableView.insertRowsAtIndexPaths([newIndexPath!],  withRowAnimation: UITableViewRowAnimation.Fade)
-        }
-    }
-    
-    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
-        switch type {
-        case .Insert:
-            self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-        case .Delete:
-            self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-        default:
-            return
-        }
-    }
-    
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        self.tableView.endUpdates()
-    }
-    
 }

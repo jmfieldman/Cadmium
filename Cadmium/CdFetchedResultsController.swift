@@ -34,5 +34,64 @@ public class CdFetchedResultsController : NSFetchedResultsController {
             sectionNameKeyPath:     sectionNameKeyPath,
             cacheName:              cacheName)
     }
+ 
     
+    /*
+     *  ----------------- Automated Table Delegation -----------------
+     */
+    
+    /**       
+     This holds the table view that is being controlled by our automation.  
+     This is a weak reference so be sure the table is retained elsewhere.
+     */
+    internal weak var _controlledTable: UITableView? = nil
+    
+    /**
+     Use this method to attach the receiver as its own delegate.  The 
+     intercepted delegate methods perform standard table manipulations
+     on a UITableView whose section/row data is mapped to the results
+     of the fetched results controller.
+     
+     To cancel this automated delegate, you can simply set the receiver's
+     delegate back to nil, or some other value other than itself.
+     
+     - parameter table: The table to delegate for.  This is held in a weak
+                        reference, so the table must be retained elsewhere.
+     */
+    public func automateDelegation(forTable table: UITableView) {
+        _controlledTable = table
+        self.delegate    = self
+    }
+    
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+
+extension CdFetchedResultsController : NSFetchedResultsControllerDelegate {
+    
+    public func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        _controlledTable?.beginUpdates()
+    }
+    
+    public func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        switch type {
+        case .Insert:   _controlledTable?.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+        case .Delete:   _controlledTable?.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+        default:        return
+        }
+    }
+    
+    public func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        switch type {
+        case .Insert:   _controlledTable?.insertRowsAtIndexPaths([newIndexPath!],  withRowAnimation: .Fade)
+        case .Delete:   _controlledTable?.deleteRowsAtIndexPaths([indexPath!],     withRowAnimation: .Fade)
+        case .Update:   _controlledTable?.reloadRowsAtIndexPaths([indexPath!],     withRowAnimation: .Automatic)
+        case .Move:     _controlledTable?.deleteRowsAtIndexPaths([indexPath!],     withRowAnimation: .Fade)
+                        _controlledTable?.insertRowsAtIndexPaths([newIndexPath!],  withRowAnimation: .Fade)
+        }
+    }
+    
+    public func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        _controlledTable?.endUpdates()
+    }
 }
