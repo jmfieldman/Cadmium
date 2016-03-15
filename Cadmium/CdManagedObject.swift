@@ -47,6 +47,11 @@ public class CdManagedObject : NSManagedObject {
             return
         }
         
+        if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
+            super.willAccessValueForKey(key)
+            return
+        }
+        
         let currentThread = NSThread.currentThread()
         guard let currentContext = currentThread.attachedContext() where currentContext == myManagedObjectContext else {
             if myManagedObjectContext == CdManagedObjectContext.mainThreadContext() {
@@ -77,12 +82,12 @@ public class CdManagedObject : NSManagedObject {
         }
         
         guard let myManagedObjectContext = self.managedObjectContext else {
-            super.willAccessValueForKey(key)
+            super.willChangeValueForKey(key)
             return
         }
         
         if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
-            super.willAccessValueForKey(key)
+            super.willChangeValueForKey(key)
             return
         }
         
