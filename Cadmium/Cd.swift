@@ -28,7 +28,7 @@ import CoreData
 
 public class Cd {
 
-    /**
+    /*
      *  -------------------- Initialization ----------------------
      */
     
@@ -45,7 +45,7 @@ public class Cd {
     }
     
     
-    /**
+    /*
      *  -------------------- Object Query Support ----------------------
      */
     
@@ -113,7 +113,7 @@ public class Cd {
     }
     
     
-    /**
+    /*
      *  -------------------- Object Lifecycle ----------------------
      */
     
@@ -207,7 +207,7 @@ public class Cd {
     }
     
      
-    /**
+    /*
      *  -------------------- Transaction Support ----------------------
      */
     
@@ -341,7 +341,7 @@ public class Cd {
 	}
     
     
-    /**
+    /*
      *  -------------------- Error Handling ----------------------
      */
     

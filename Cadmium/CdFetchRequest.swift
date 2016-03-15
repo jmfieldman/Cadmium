@@ -47,7 +47,7 @@ public class CdFetchRequest<T: CdManagedObject> {
         nsFetchRequest = NSFetchRequest(entityName: "\(T.self)")
     }
     
-    /**
+    /*
      *  -------------------------- Filtering ------------------------------
      */
     
@@ -136,7 +136,7 @@ public class CdFetchRequest<T: CdManagedObject> {
     }
     
     
-    /**
+    /*
      *  -------------------------- Sorting ------------------------------
      */
     
@@ -170,7 +170,7 @@ public class CdFetchRequest<T: CdManagedObject> {
     }
     
     
-    /**
+    /*
      *  ------------------------ Misc Operations --------------------------
      */
     
@@ -253,7 +253,7 @@ public class CdFetchRequest<T: CdManagedObject> {
         return self
     }
     
-    /**
+    /*
      *  -------------------------- Fetching ------------------------------
      */
     
