@@ -75,15 +75,14 @@ public class CdManagedObject : NSManagedObject {
      - parameter key: The key whose value is being changed.
      */
     public override func willChangeValueForKey(key: String) {
+        guard let myManagedObjectContext = self.managedObjectContext else {
+            super.willChangeValueForKey(key)
+            return
+        }
         
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
             Cd.raise("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
-        }
-        
-        guard let myManagedObjectContext = self.managedObjectContext else {
-            super.willChangeValueForKey(key)
-            return
         }
         
         if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
