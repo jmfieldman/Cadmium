@@ -272,7 +272,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      */
     public func fetch() throws -> [T] {
         guard let currentContext = NSThread.currentThread().attachedContext() else {
-            fatalError("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
+            Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
         if let results = try currentContext.executeFetchRequest(nsFetchRequest) as? [T] {
@@ -313,7 +313,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      */
     @inline(__always) public func count() throws -> Int {
         guard let currentContext = NSThread.currentThread().attachedContext() else {
-            fatalError("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
+            Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
         return currentContext.countForFetchRequest(nsFetchRequest, error: nil)

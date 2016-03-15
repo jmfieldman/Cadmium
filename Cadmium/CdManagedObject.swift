@@ -55,13 +55,13 @@ public class CdManagedObject : NSManagedObject {
         let currentThread = NSThread.currentThread()
         guard let currentContext = currentThread.attachedContext() where currentContext == myManagedObjectContext else {
             if myManagedObjectContext == CdManagedObjectContext.mainThreadContext() {
-                fatalError("You are accessing a managed object from the main thread from a background thread.")
+                Cd.raise("You are accessing a managed object from the main thread from a background thread.")
             } else if currentThread.attachedContext() == nil {
-                fatalError("You are accessing a managed object from a thread that does not have a managed object context.")
+                Cd.raise("You are accessing a managed object from a thread that does not have a managed object context.")
             } else if currentThread.attachedContext() == CdManagedObjectContext.mainThreadContext() {
-                fatalError("You are accessing a managed object from a background transaction on the main thread.")
+                Cd.raise("You are accessing a managed object from a background transaction on the main thread.")
             } else {
-                fatalError("You are accessing a managed object from a background transaction outside of its transaction.")
+                Cd.raise("You are accessing a managed object from a background transaction outside of its transaction.")
             }
         }
         
@@ -78,7 +78,7 @@ public class CdManagedObject : NSManagedObject {
         
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
-            fatalError("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
+            Cd.raise("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
         }
         
         guard let myManagedObjectContext = self.managedObjectContext else {
@@ -93,9 +93,9 @@ public class CdManagedObject : NSManagedObject {
         
         guard let currentContext = currentThread.attachedContext() where currentContext == myManagedObjectContext else {
             if currentThread.attachedContext() == nil {
-                fatalError("You are modifying a managed object from a thread that does not have a managed object context.")
+                Cd.raise("You are modifying a managed object from a thread that does not have a managed object context.")
             } else {
-                fatalError("You are modifying a managed object from outside of its original transaction.")
+                Cd.raise("You are modifying a managed object from outside of its original transaction.")
             }
         }
         

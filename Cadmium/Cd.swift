@@ -129,7 +129,7 @@ public class Cd {
      */
     public class func create<T: CdManagedObject>(entityType: T.Type, transient: Bool = false) -> T {
         guard let entDesc = NSEntityDescription.entityForName("\(entityType)", inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
-            fatalError("Could not create entity description for \(entityType)")
+            Cd.raise("Could not create entity description for \(entityType)")
         }
         
         if transient {
@@ -138,11 +138,11 @@ public class Cd {
         
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
-            fatalError("You cannot create a non-transient object in the main thread.")
+            Cd.raise("You cannot create a non-transient object in the main thread.")
         }
         
         guard let currentContext = currentThread.attachedContext() else {
-            fatalError("You may only create a new managed object from inside a valid transaction.")
+            Cd.raise("You may only create a new managed object from inside a valid transaction.")
         }
         
         return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
@@ -200,7 +200,7 @@ public class Cd {
     */
 	public class func transactAndWait(operation: Void -> Void) {
         if NSThread.currentThread().isMainThread {
-            fatalError("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
+            Cd.raise("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
         }
         
         let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
@@ -223,11 +223,11 @@ public class Cd {
     public class func transactionContext() -> CdManagedObjectContext {
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
-            fatalError("The main thread cannot have a transaction context.")
+            Cd.raise("The main thread cannot have a transaction context.")
         }
         
         guard let currentContext = currentThread.attachedContext() else {
-            fatalError("You must call this from inside a valid transaction.")
+            Cd.raise("You must call this from inside a valid transaction.")
         }
         
         return currentContext
@@ -243,11 +243,11 @@ public class Cd {
     public class func useInTransaction<T: CdManagedObject>(object: T) -> T? {
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
-            fatalError("The main thread cannot have a transaction context.")
+            Cd.raise("The main thread cannot have a transaction context.")
         }
         
         guard let currentContext = currentThread.attachedContext() else {
-            fatalError("You must call this from inside a valid transaction.")
+            Cd.raise("You must call this from inside a valid transaction.")
         }
         
         if let myItem = currentContext.objectWithID(object.objectID) as? T {
@@ -265,11 +265,11 @@ public class Cd {
 	public class func commit() throws {
 		let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
-            fatalError("You can only commit changes inside of a transaction.")
+            Cd.raise("You can only commit changes inside of a transaction.")
         }
         
         guard let currentContext = currentThread.attachedContext() else {
-            fatalError("You can only commit changes inside of a transaction.")
+            Cd.raise("You can only commit changes inside of a transaction.")
         }
         
         /* We must be inside of the context's performBlock */
@@ -280,8 +280,14 @@ public class Cd {
 	}
     
     
+    /**
+     *  -------------------- Error Handling ----------------------
+     */
     
-    
+    @noreturn internal class func raise(reason: String) {
+        NSException(name: "Cadmium Exception", reason: reason, userInfo: nil).raise()
+        fatalError("These usage exception cannot be caught")
+    }
     
     
 }

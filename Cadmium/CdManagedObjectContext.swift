@@ -84,7 +84,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         }
         
         /* This is only feasible if we have not initialized the Cadmium engine. */
-        fatalError("Cadmium must be initialized before a main thread context is available.")
+        Cd.raise("Cadmium must be initialized before a main thread context is available.")
     }
     
     /**
@@ -142,7 +142,7 @@ internal extension NSThread {
      
      - returns: The currently attached context, or nil if none.
      */
-    internal func attachedContext() -> CdManagedObjectContext? {
+    @inline(__always) internal func attachedContext() -> CdManagedObjectContext? {
         if self.isMainThread {
             return CdManagedObjectContext._mainThreadContext
         }
@@ -152,9 +152,9 @@ internal extension NSThread {
     /**
      Attach a background write context to the current thread
      */
-    internal func attachContext(context: CdManagedObjectContext?) {
+    @inline(__always) internal func attachContext(context: CdManagedObjectContext?) {
         if self.isMainThread {
-            fatalError("You cannot explicitly attach a context from the main thread.")
+            Cd.raise("You cannot explicitly attach a context from the main thread.")
         }
         self.threadDictionary[kCdThreadPropertyCurrentContext] = context
     }
@@ -162,9 +162,9 @@ internal extension NSThread {
     /**
      Detach the background write context from the current thread.
      */
-    internal func detachContext() {
+    @inline(__always) internal func detachContext() {
         if self.isMainThread {
-            fatalError("You cannot explicitly detach a context from the main thread.")
+            Cd.raise("You cannot explicitly detach a context from the main thread.")
         }
         self.threadDictionary.removeObjectForKey(kCdThreadPropertyCurrentContext)
     }
