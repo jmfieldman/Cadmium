@@ -114,7 +114,7 @@ public class Cd {
     
     
     /**
-     *  -------------------- Object Creation ----------------------
+     *  -------------------- Object Lifecycle ----------------------
      */
     
     /**
@@ -146,6 +146,60 @@ public class Cd {
         }
         
         return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
+    }
+    
+    /**
+     Inserts the object into the current transaction context.  The object must have been created
+     with the transient flag set to true, and not be inserted into any other context yet.
+     
+     - parameter object: The object to insert into the current context.
+     */
+    public class func insert(object: CdManagedObject) {
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            Cd.raise("You cannot insert an object from the main thread.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            Cd.raise("You may only create a new managed object from inside a valid transaction.")
+        }
+        
+        if currentContext === object.managedObjectContext {
+            return
+        }
+        
+        if object.managedObjectContext != nil {
+            Cd.raise("You cannot insert an object into a context that already belongs to another context.")
+        }
+        
+        currentContext.insertObject(object)
+    }
+    
+    /**
+     Delete the object from the current transaction context.  The object must exist and
+     reside in the current transactional context.
+     
+     - parameter object: The object to delete from the current context.
+     */
+    public class func delete(object: CdManagedObject) {
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            Cd.raise("You cannot delete an object from the main thread.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            Cd.raise("You may only delete a managed object from inside a transaction.")
+        }
+        
+        if currentContext !== object.managedObjectContext {
+            Cd.raise("You may only delete a managed object from inside the transaction it belongs to.")
+        }
+        
+        if object.managedObjectContext == nil {
+            Cd.raise("You cannot delete an object that is not in a context.")
+        }
+        
+        currentContext.deleteObject(object)
     }
     
      
