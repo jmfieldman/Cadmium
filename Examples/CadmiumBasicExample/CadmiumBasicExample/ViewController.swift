@@ -74,7 +74,7 @@ extension ViewController {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         if let item = fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem {
             Cd.transact {
-                let txItem = Cd.useInTransaction(item)
+                let txItem = Cd.useInCurrentContext(item)
                 txItem!.numberTaps += 1
                 try! Cd.commit()
             }
