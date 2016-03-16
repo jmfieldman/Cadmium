@@ -19,7 +19,8 @@ class ViewController: UITableViewController {
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Example"
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .Plain, target: self, action: "handleAdd:")
+        self.navigationItem.leftBarButtonItem  = UIBarButtonItem(title: "Add",  style: .Plain, target: self, action: "handleAdd:")
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "handleEdit:")
         
         fetchedResultsController = CdFetchedResultsController(
             fetchRequest: Cd.objects(ExampleItem.self).sorted("name").nsFetchRequest,
@@ -28,6 +29,7 @@ class ViewController: UITableViewController {
         
         fetchedResultsController?.automateDelegation(forTable: self.tableView)
         try! fetchedResultsController?.performFetch()
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -35,7 +37,7 @@ class ViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func handleAdd(button: UIButton) {
+    func handleAdd(button: UIBarButtonItem) {
         let allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         let allowedCharsCount = UInt32(allowedChars.characters.count)
         var randomString = ""
@@ -49,7 +51,17 @@ class ViewController: UITableViewController {
         Cd.transact {
             let newItem = Cd.create(ExampleItem.self)
             newItem.name = randomString
-            try! Cd.commit()
+        }
+    }
+    
+    func handleEdit(button: UIBarButtonItem) {
+        self.tableView.setEditing(!self.tableView.editing, animated: true)
+        if (self.tableView.editing) {
+            button.title = "Done"
+            button.style = .Done
+        } else {
+            button.title = "Edit"
+            button.style = .Plain
         }
     }
     
@@ -74,14 +86,41 @@ extension ViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        if let item = fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem {
-            Cd.transact {
-                if let txItem = Cd.useInCurrentContext(item) {
-                    txItem.numberTaps += 1
-                    try! Cd.commit()
-                }
-            }
+        guard let item = fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem else {
+            return
         }
         
+        Cd.transact {
+            guard let txItem = Cd.useInCurrentContext(item) else {
+                return
+            }
+            
+            txItem.numberTaps += 1
+        }
+        
+    }
+    
+    // MARK: Editing
+    
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+        return .Delete
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        guard let item = fetchedResultsController?.objectAtIndexPath(indexPath) as? ExampleItem else {
+            return
+        }
+        
+        Cd.transact {
+            guard let txItem = Cd.useInCurrentContext(item) else {
+                return
+            }
+            
+            Cd.delete(txItem)
+        }
     }
 }
