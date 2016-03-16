@@ -27,6 +27,25 @@ import CoreData
 
 public class CdFetchedResultsController : NSFetchedResultsController {
     
+    /**
+     The CdFetchedResultsController wraps the NSFetchedResultsController init
+     in such a way that you are forced to request on the main thread's read
+     context. 
+     
+     You will never be able to modify objects acquired from this controller.
+     Instead, you can pass them to transactions using the Cd.useInCurrentContext
+     method.
+     
+     - parameter fetchRequest:       You are not forced to use a CdFetchRequest,
+                                     But you are encouraged to construct your query
+                                     using its mechanism and accessing its
+                                     nsFetchRequest property.
+     - parameter sectionNameKeyPath: The section name key path (see NSFetchRequest)
+     - parameter cacheName:          The cache name (see NSFetchRequest)
+     
+     - returns: The instantiated controller.  Assign a delegate manually or
+                use the automateDelegation method.  Use performFetch to initiate.
+     */
     public init(fetchRequest: NSFetchRequest, sectionNameKeyPath: String?, cacheName: String?) {
         super.init(
             fetchRequest:           fetchRequest,
