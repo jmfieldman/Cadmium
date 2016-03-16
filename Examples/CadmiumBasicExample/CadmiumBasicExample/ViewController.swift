@@ -58,7 +58,7 @@ class ViewController: UITableViewController {
            You can call Cd.commit() anytime to explicitly save any changes in the transaction
            up to the call. */
         Cd.transact {
-            let newItem = Cd.create(ExampleItem.self)
+            let newItem = try! Cd.create(ExampleItem.self)
             newItem.name = randomString
         }
     }
