@@ -230,11 +230,7 @@ public class Cd {
 	public class func transact(operation: Void -> Void) {
 		let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
         newWriteContext.performBlock {
-            let currentThread = NSThread.currentThread()
-            let existingContext = currentThread.attachedContext()
-            currentThread.attachContext(newWriteContext)
-            operation()
-            currentThread.attachContext(existingContext)
+            self.transactOperation(newWriteContext, operation: operation)
         }
 	}
 
@@ -263,13 +259,49 @@ public class Cd {
         
         let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
         newWriteContext.performBlockAndWait {
-            let currentThread = NSThread.currentThread()
-            let existingContext = currentThread.attachedContext()
-            currentThread.attachContext(newWriteContext)
-            operation()
-            currentThread.attachContext(existingContext)
+            self.transactOperation(newWriteContext, operation: operation)
         }
 	}
+    
+    /**
+     This is the private helper method that conducts that actual transaction
+     inside of the context's queue.
+     
+     - parameter fromContext: The managed object context we are transacting inside.
+     - parameter operation:   The operation to perform.
+     */
+    private class func transactOperation(fromContext: CdManagedObjectContext, @noescape operation: Void -> Void) {
+        let currentThread    = NSThread.currentThread()
+        let existingContext  = currentThread.attachedContext()
+        let existingNoCommit = currentThread.noImplicitCommit()
+        
+        currentThread.attachContext(fromContext)
+        operation()
+        
+        if currentThread.noImplicitCommit() == false {
+            try! Cd.commit()
+        }
+        
+        currentThread.attachContext(existingContext)
+        currentThread.setNoImplicitCommit(existingNoCommit)
+    }
+    
+    /**
+     Call this function from inside of a transaction to cancel the implicit
+     commit that will occur after the transaction closure completes.
+     */
+    public class func cancelImplicitCommit() {
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            Cd.raise("The main thread does have a transaction context that can be committed.")
+        }
+        
+        guard let _ = currentThread.attachedContext() else {
+            Cd.raise("You must call this from inside a valid transaction.")
+        }
+        
+        currentThread.setNoImplicitCommit(true)
+    }
    
     /**
      Get the CdManagedObjectContext from inside of a valid transaction block.

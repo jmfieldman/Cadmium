@@ -37,7 +37,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      *  This handle tracks the main thread context singleton for our implementation.
      *  It should be initialized when the Cadmium system is initialized.
      */
-    private static var _mainThreadContext: CdManagedObjectContext? = nil
+    internal static var _mainThreadContext: CdManagedObjectContext? = nil
     
     /**
      *  This handle tracks the master background save context.  This context will be
@@ -150,7 +150,9 @@ internal extension NSThread {
     }
     
     /**
-     Attach a background write context to the current thread
+     Attach a context to the current thread.  Pass nil to remove the context from the current thread.
+     
+     - parameter context: The context to attach, or nil to remove.
      */
     @inline(__always) internal func attachContext(context: CdManagedObjectContext?) {
         if self.isMainThread {
@@ -160,14 +162,24 @@ internal extension NSThread {
     }
     
     /**
-     Detach the background write context from the current thread.
+     Returns true if the current transaction context should *NOT* perform
+     an implicit commit.
+     
+     - returns: true if the current transaction context should *NOT*
+                perform an implicit commit.
      */
-    @inline(__always) internal func detachContext() {
-        if self.isMainThread {
-            Cd.raise("You cannot explicitly detach a context from the main thread.")
-        }
-        self.threadDictionary.removeObjectForKey(kCdThreadPropertyCurrentContext)
+    @inline(__always) internal func noImplicitCommit() -> Bool {
+        return (self.threadDictionary[kCdThreadPropertyNoImplicitSave] as? Bool) ?? false
     }
     
+    /**
+     Declare if the current transaction context should perform an implicit commit
+     when finished.
+     
+     - parameter status: Whether or not the implicit commit should be aborted.
+     */
+    @inline(__always) internal func setNoImplicitCommit(status: Bool?) {
+        self.threadDictionary[kCdThreadPropertyNoImplicitSave] = status
+    }
 }
 
