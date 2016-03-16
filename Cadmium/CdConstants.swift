@@ -26,3 +26,4 @@ import Foundation
 
 
 internal let kCdThreadPropertyCurrentContext: String = "kCdThreadPropertyCurrentContext"
+internal let kCdThreadPropertyNoImplicitSave: String = "kCdThreadPropertyNoImplicitSave"
