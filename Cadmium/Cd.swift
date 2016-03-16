@@ -145,7 +145,9 @@ public class Cd {
             Cd.raise("You may only create a new managed object from inside a valid transaction.")
         }
         
-        return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
+        let object = CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
+        try! currentContext.obtainPermanentIDsForObjects([object])
+        return object
     }
     
     /**
