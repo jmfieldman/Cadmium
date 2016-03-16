@@ -118,8 +118,8 @@ public class Cd {
      */
     
     /**
-     Create a new CdManagedObject.  This must be called from the main thread (and must be
-     transient), or called from inside a transaction.
+     Create a new CdManagedObject.  If this method is called from the main thread the object must be
+     transient.  Otherwise it must be called from inside a transaction.
      
      - parameter entityType: The entity type you would like to create.
      - parameter transient:  If false, the object will be automatically inserted
@@ -127,7 +127,7 @@ public class Cd {
      
      - returns: The created object.
      */
-    public class func create<T: CdManagedObject>(entityType: T.Type, transient: Bool = false) -> T {
+    public class func create<T: CdManagedObject>(entityType: T.Type, transient: Bool = false) throws -> T {
         guard let entDesc = NSEntityDescription.entityForName("\(entityType)", inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
             Cd.raise("Could not create entity description for \(entityType)")
         }
@@ -146,12 +146,58 @@ public class Cd {
         }
         
         let object = CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
-        try! currentContext.obtainPermanentIDsForObjects([object])
+        try currentContext.obtainPermanentIDsForObjects([object])
         return object
     }
     
     /**
-     Inserts the object into the current transaction context.  The object must have been created
+     Create many new CdManagedObjects.  If this method is called from the main thread the objects must be
+     transient.  Otherwise it must be called from inside a transaction.
+     
+     - parameter entityType: The entity type you would like to create.
+     - parameter count:      How many objects to create
+     - parameter transient:  If false, the object will be automatically inserted
+     into the current transaction context.
+     
+     - returns: The created object.
+     */
+    public class func create<T: CdManagedObject>(entityType: T.Type, count: Int, transient: Bool = false) throws -> [T] {
+        guard count > 0 else {
+            return []
+        }
+        
+        guard let entDesc = NSEntityDescription.entityForName("\(entityType)", inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
+            Cd.raise("Could not create entity description for \(entityType)")
+        }
+        
+        if transient {
+            var result: [T] = []
+            for _ in 0 ..< count {
+                result.append(CdManagedObject(entity: entDesc, insertIntoManagedObjectContext:  nil) as! T)
+            }
+            return result
+        }
+        
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            Cd.raise("You cannot create non-transient objects in the main thread.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            Cd.raise("You may only create new managed objects from inside a valid transaction.")
+        }
+        
+        var result: [T] = []
+        for _ in 0 ..< count {
+            let object = CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
+            try currentContext.obtainPermanentIDsForObjects([object])
+            result.append(object)
+        }
+        return result
+    }
+    
+    /**
+     Inserts the transient object into the current transaction context.  The object must have been created
      with the transient flag set to true, and not be inserted into any other context yet.
      
      - parameter object: The object to insert into the current context.
@@ -163,7 +209,7 @@ public class Cd {
         }
         
         guard let currentContext = currentThread.attachedContext() else {
-            Cd.raise("You may only create a new managed object from inside a valid transaction.")
+            Cd.raise("You may only insert a new managed object from inside a valid transaction.")
         }
         
         if currentContext === object.managedObjectContext {
@@ -171,7 +217,7 @@ public class Cd {
         }
         
         if object.managedObjectContext != nil {
-            Cd.raise("You cannot insert an object into a context that already belongs to another context.")
+            Cd.raise("You cannot insert an object into a context that already belongs to another context.  Use Cd.useInCurrentContext instead.")
         }
         
         let keys: [String] = object.entity.attributesByName.keys.map {$0}
@@ -179,6 +225,39 @@ public class Cd {
         currentContext.insertObject(object)
         currentContext.refreshObject(object, mergeChanges: true)
         object.setValuesForKeysWithDictionary(properties)
+    }
+    
+    /**
+     Inserts the transient objects into the current transaction context.  The objects must have been created
+     with the transient flag set to true, and not be inserted into any other context yet.
+     
+     - parameter objects: The objects to insert into the current context.
+     */
+    public class func insert(objects: [CdManagedObject]) {
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            Cd.raise("You cannot insert an object from the main thread.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            Cd.raise("You may only insert a new managed object from inside a valid transaction.")
+        }
+
+        for object in objects {
+            if currentContext === object.managedObjectContext {
+                continue
+            }
+            
+            if object.managedObjectContext != nil {
+                Cd.raise("You cannot insert an object into a context that already belongs to another context.  Use Cd.useInCurrentContext instead.")
+            }
+            
+            let keys: [String] = object.entity.attributesByName.keys.map {$0}
+            let properties = object.dictionaryWithValuesForKeys(keys)
+            currentContext.insertObject(object)
+            currentContext.refreshObject(object, mergeChanges: true)
+            object.setValuesForKeysWithDictionary(properties)
+        }
     }
     
     /**
@@ -206,6 +285,35 @@ public class Cd {
         }
         
         currentContext.deleteObject(object)
+    }
+    
+    /**
+     Delete the objects from the current transaction context.  The objects must exist and
+     reside in the current transactional context.
+     
+     - parameter objects: The objects to delete from the current context.
+     */
+    public class func delete(objects: [CdManagedObject]) {
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            Cd.raise("You cannot delete an object from the main thread.")
+        }
+        
+        guard let currentContext = currentThread.attachedContext() else {
+            Cd.raise("You may only delete a managed object from inside a transaction.")
+        }
+        
+        for object in objects {
+            if currentContext !== object.managedObjectContext {
+                Cd.raise("You may only delete a managed object from inside the transaction it belongs to.")
+            }
+            
+            if object.managedObjectContext == nil {
+                Cd.raise("You cannot delete an object that is not in a context.")
+            }
+            
+            currentContext.deleteObject(object)
+        }
     }
     
      
