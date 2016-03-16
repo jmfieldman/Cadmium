@@ -360,18 +360,20 @@ public class Cd {
     public class func commit() throws {
         let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
-            Cd.raise("You can only commit changes inside of a transaction.")
+            Cd.raise("You can only commit changes inside of a transaction (the main thread is read-only).")
         }
         
         guard let currentContext = currentThread.attachedContext() else {
             Cd.raise("You can only commit changes inside of a transaction.")
         }
         
-        /* We must be inside of the context's performBlock */
-        try currentContext.save()
+        /* We're inside of the context's performBlock -- only save it we have to */
+        if currentContext.hasChanges {
+            try currentContext.save()
         
-        /* Save on our master write context */
-        CdManagedObjectContext.saveMasterWriteContext()
+            /* Save on our master write context */
+            CdManagedObjectContext.saveMasterWriteContext()
+        }
     }
     
     
