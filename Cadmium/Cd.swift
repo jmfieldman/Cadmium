@@ -307,7 +307,7 @@ public class Cd {
             Cd.raise("You cannot transfer a transient object to a context.  Use Cd.insert instead.")
         }
         
-        if originalContext.hasChanges {
+        if originalContext.hasChanges && originalContext != CdManagedObjectContext._mainThreadContext {
             Cd.raise("You cannot transfer an object from a context that has outstanding changes.  Make sure you call Cd.commit() from your transaction first.")
         }
         
