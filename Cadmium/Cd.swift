@@ -213,28 +213,28 @@ public class Cd {
      *  -------------------- Transaction Support ----------------------
      */
     
-	/**
+    /**
      Initiate a database transaction asynchronously on a background thread.  A
      new CdManagedObjectContext will be created for the lifetime of the transaction.
-	
+    
      - parameter operation:	This function should be used for transactions that
-							operate in a background thread, and may ultimately 
-							save back to the database using the Cd.commit() call.
-	
-							The operation block is run asynchronously and will not 
+                            operate in a background thread, and may ultimately 
+                            save back to the database using the Cd.commit() call.
+    
+                            The operation block is run asynchronously and will not 
                             occur on the main thread.  It will run on the private
                             queue of the write context.
      
                             It is important to note that no transactions can occur
                             on the main thread.  This will use a background write
                             context even if initially called from the main thread.
-	*/
-	public class func transact(operation: Void -> Void) {
-		let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
+    */
+    public class func transact(operation: Void -> Void) {
+        let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
         newWriteContext.performBlock {
             self.transactOperation(newWriteContext, operation: operation)
         }
-	}
+    }
 
     /**
      Initiate a database transaction synchronously on the current thread.  A
@@ -254,7 +254,7 @@ public class Cd {
                             may not execute in a separate thread than the calling
                             thread.
     */
-	public class func transactAndWait(operation: Void -> Void) {
+    public class func transactAndWait(operation: Void -> Void) {
         if NSThread.currentThread().isMainThread {
             Cd.raise("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
         }
@@ -263,7 +263,7 @@ public class Cd {
         newWriteContext.performBlockAndWait {
             self.transactOperation(newWriteContext, operation: operation)
         }
-	}
+    }
     
     /**
      This is the private helper method that conducts that actual transaction
@@ -324,7 +324,7 @@ public class Cd {
         
         return currentContext
     }
-	
+    
     /**
      Allows you to refer to a foreign CdManagedObject (from another
      context) in your current context.
@@ -353,12 +353,12 @@ public class Cd {
         return nil
     }
     
-	/**
-	 Commit any changes made inside of an active transaction.  Must be called from
-	 inside Cd.transact or Cd.transactAndWait.
-	*/
-	public class func commit() throws {
-		let currentThread = NSThread.currentThread()
+    /**
+     Commit any changes made inside of an active transaction.  Must be called from
+     inside Cd.transact or Cd.transactAndWait.
+    */
+    public class func commit() throws {
+        let currentThread = NSThread.currentThread()
         if currentThread.isMainThread {
             Cd.raise("You can only commit changes inside of a transaction.")
         }
@@ -372,7 +372,7 @@ public class Cd {
         
         /* Save on our master write context */
         CdManagedObjectContext.saveMasterWriteContext()
-	}
+    }
     
     
     /*
