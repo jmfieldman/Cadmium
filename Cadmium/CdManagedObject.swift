@@ -53,12 +53,12 @@ public class CdManagedObject : NSManagedObject {
         }
         
         let currentThread = NSThread.currentThread()
-        guard let currentContext = currentThread.attachedContext() where currentContext == myManagedObjectContext else {
-            if myManagedObjectContext == CdManagedObjectContext.mainThreadContext() {
+        guard let currentContext = currentThread.attachedContext() where currentContext === myManagedObjectContext else {
+            if myManagedObjectContext === CdManagedObjectContext.mainThreadContext() {
                 Cd.raise("You are accessing a managed object from the main thread from a background thread.")
-            } else if currentThread.attachedContext() == nil {
+            } else if currentThread.attachedContext() === nil {
                 Cd.raise("You are accessing a managed object from a thread that does not have a managed object context.")
-            } else if currentThread.attachedContext() == CdManagedObjectContext.mainThreadContext() {
+            } else if currentThread.attachedContext() === CdManagedObjectContext.mainThreadContext() {
                 Cd.raise("You are accessing a managed object from a background transaction on the main thread.")
             } else {
                 Cd.raise("You are accessing a managed object from a background transaction outside of its transaction.")
@@ -90,7 +90,7 @@ public class CdManagedObject : NSManagedObject {
             return
         }
         
-        guard let currentContext = currentThread.attachedContext() where currentContext == myManagedObjectContext else {
+        guard let currentContext = currentThread.attachedContext() where currentContext === myManagedObjectContext else {
             if currentThread.attachedContext() == nil {
                 Cd.raise("You are modifying a managed object from a thread that does not have a managed object context.")
             } else {
@@ -101,5 +101,44 @@ public class CdManagedObject : NSManagedObject {
         super.willChangeValueForKey(key)
     }
     
-    /* TODO: Explore protections in setValue:forKey: (relationships stay within context) */
+    /**
+     This is an override for willChangeValueForKey:inMutationKind:usingObjects: that ensures the change
+     is performed in the proper threading context.
+     
+     - parameter inKkey: The key whose value is being changed.
+     - parameter withSetMutation: The kind of mutation being applied.
+     - parameter usingObjects: The objects being related.
+     */
+    public override func willChangeValueForKey(inKey: String, withSetMutation inMutationKind: NSKeyValueSetMutationKind, usingObjects inObjects: Set<NSObject>) {
+        guard let myManagedObjectContext = self.managedObjectContext else {
+            super.willChangeValueForKey(inKey, withSetMutation: inMutationKind, usingObjects: inObjects)
+            return
+        }
+        
+        let currentThread = NSThread.currentThread()
+        if currentThread.isMainThread {
+            Cd.raise("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
+        }
+        
+        if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
+            super.willChangeValueForKey(inKey, withSetMutation: inMutationKind, usingObjects: inObjects)
+            return
+        }
+        
+        guard let currentContext = currentThread.attachedContext() where currentContext === myManagedObjectContext else {
+            if currentThread.attachedContext() == nil {
+                Cd.raise("You are modifying a managed object from a thread that does not have a managed object context.")
+            } else {
+                Cd.raise("You are modifying a managed object from outside of its original transaction.")
+            }
+        }
+        
+        for object in inObjects {
+            guard let managedObject = object as? CdManagedObject where managedObject.managedObjectContext === myManagedObjectContext else {
+                Cd.raise("You are attempting to create a relationship between objects from different contexts.")
+            }
+        }
+        
+        super.willChangeValueForKey(inKey, withSetMutation: inMutationKind, usingObjects: inObjects)
+    }
 }
