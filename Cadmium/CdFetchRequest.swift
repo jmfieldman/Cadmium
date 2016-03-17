@@ -320,4 +320,20 @@ public class CdFetchRequest<T: CdManagedObject> {
     }
     
     
+    /**
+     Deletes any objects that match the receivers query.  Performs the delete in the current context
+     if called from inside a transaction.  Otherwise, it wraps the delete in an asynchronous transaction.
+     
+     - throws: The error thrown during the fetch request.
+     */
+    public func delete() throws {
+        if let currentContext = NSThread.currentThread().attachedContext() where currentContext !== CdManagedObjectContext._mainThreadContext {
+            Cd.delete(try self.fetch())
+            return
+        }
+        
+        Cd.transact {
+            try! self.delete()
+        }
+    }
 }
