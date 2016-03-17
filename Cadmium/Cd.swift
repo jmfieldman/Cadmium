@@ -32,18 +32,71 @@ public class Cd {
      *  -------------------- Initialization ----------------------
      */
     
-    /* TODO: Init needs work */
-    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL) {
+    /**
+     Initialize the Cadmium engine with the URLs for the managed object model
+     and the SQLite store.
+    
+    
+     - parameter momdURL:   The full URL to the managed object model.
+     - parameter sqliteURL: The full URL to the sqlite store.
+    */
+    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL) throws {
         guard let mom = NSManagedObjectModel(contentsOfURL: momdURL) else {
-            return
+            throw CdInitFailure.InvalidManagedObjectModel
         }
         
         let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
-        try! psc.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqliteURL, options: nil)
+        try psc.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqliteURL, options: nil)
         
         CdManagedObjectContext.initializeMasterContexts(coordinator: psc)
     }
     
+    /**
+     Initialize the Cadmium engine with a SQLite store.  This initializer helps
+     wrap up some of the menial tasks of drilling down exact URLs for resources.
+     
+     - parameter bundleID:       Pass the bundle identifier that contains your
+                                 managed object model file.  This is typically
+                                 something like com.yourcompany.yourapp, or
+                                 com.yourcompany.yourframework.
+     
+                                 If you pass nil to this parameter it will look
+                                 in the main bundle (which will fail if the
+                                 object model is inside of another framework.
+     - parameter momdName:       The name of the managed object model
+     - parameter sqliteFilename: The name of the SQLite file you are storing data
+                                 in.  The initializer will append this filename
+                                 to the user's document directory.
+     
+     - throws: Various errors in case something goes wrong!
+     */
+    public class func initWithSQLStore(inbundleID bundleID: String?, momdName: String, sqliteFilename: String) throws {
+        var bundle: NSBundle!
+        
+        if bundleID == nil {
+            bundle = NSBundle.mainBundle()
+        } else {
+            guard let idBundle = NSBundle(identifier: bundleID!) else {
+                throw CdInitFailure.InvalidBundle
+            }
+            bundle = idBundle
+        }
+        
+        var actualMomdName: NSString = momdName
+        if actualMomdName.pathExtension == "momd" {
+            actualMomdName = actualMomdName.stringByDeletingPathExtension
+        }
+        
+        guard let momdURL = bundle.URLForResource(actualMomdName as String, withExtension: "momd") else {
+            throw CdInitFailure.InvalidManagedObjectModel
+        }
+        
+        let documentDirectories = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+        let documentDirectory   = documentDirectories[documentDirectories.count - 1]
+        let sqliteURL           = documentDirectory.URLByAppendingPathComponent(sqliteFilename)
+        
+        try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL)
+    }
     
     /*
      *  -------------------- Object Query Support ----------------------
