@@ -118,7 +118,190 @@ class CadmiumTests: XCTestCase {
         }
     }
     
+    func testBasicCreate() {
+        
+        do {
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    let obj = try! Cd.create(TestItem.self)
+                    obj.name = "F"
+                    obj.id   = 1000
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            let objs = try Cd.objects(TestItem.self).fetch()
+            XCTAssertEqual(objs.count, 6, "Query string equals")
+            
+            let obj = try Cd.objects(TestItem.self).filter("name = \"F\"").fetchOne()
+            XCTAssertEqual(obj!.id, 1000, "Query string equals")
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+    }
     
+    func testBasicUseInCurrentContext() {
+        
+        do {
+            
+            var obj: TestItem!
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    obj = try! Cd.create(TestItem.self)
+                    obj.name = "F"
+                    obj.id   = 1000
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            var objs = try Cd.objects(TestItem.self).filter("name = \"F\"").fetch()
+            XCTAssertEqual(objs.count, 1, "Query string equals")
+            
+            obj = objs[0]
+            
+            objs = try Cd.objects(TestItem.self).filter("name = \"G\"").fetch()
+            XCTAssertEqual(objs.count, 0, "Query string equals")
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    let obj2: TestItem = Cd.useInCurrentContext(obj)!
+                    obj2.name = "G"
+                    obj2.id   = 1000
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            objs = try Cd.objects(TestItem.self).fetch()
+            XCTAssertEqual(objs.count, 6, "Query string equals")
+            
+            objs = try Cd.objects(TestItem.self).filter("name = \"G\"").fetch()
+            XCTAssertEqual(objs.count, 1, "Query string equals")
+            
+            objs = try Cd.objects(TestItem.self).filter("name = \"F\"").fetch()
+            XCTAssertEqual(objs.count, 0, "Query string equals")
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+    }
+    
+    func testMultiCreate() {
+        
+        do {
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    for obj in try! Cd.create(TestItem.self, count: 10) {
+                        obj.name = "B"
+                    }
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            let objs = try Cd.objects(TestItem.self).fetch()
+            XCTAssertEqual(objs.count, 15, "Query string equals")
+            
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+    }
+    
+    
+    func testBasicDelete() {
+        
+        do {
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    Cd.delete(try! Cd.objects(TestItem.self).fetchOne()!)
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            let objs = try Cd.objects(TestItem.self).fetch()
+            XCTAssertEqual(objs.count, 4, "Query string equals")
+            
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+    }
+    
+    func testMultiDelete() {
+        
+        do {
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    Cd.delete(try! Cd.objects(TestItem.self).fetch())
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            let objs = try Cd.objects(TestItem.self).fetch()
+            XCTAssertEqual(objs.count, 0, "Query string equals")
+            
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+    }
+    
+    func testCreateTransientMainInsertLater() {
+        
+        do {
+            
+            let obj = try! Cd.create(TestItem.self, transient: true)
+            obj.name = "asdf"
+            obj.id   = 1000
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    Cd.insert(obj)
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            let objs = try Cd.objects(TestItem.self).fetch()
+            XCTAssertEqual(objs.count, 6, "Query string equals")
+            
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+    }
     
     /*
      *  ----------------- Forbidden Behaviors ----------------------
@@ -141,6 +324,81 @@ class CadmiumTests: XCTestCase {
         } catch let error {
             XCTFail("query error: \(error)")
         }
+    }
+    
+    func testForbidModificationInOtherTx() {
+        
+        dispatch_group_enter(dispatchGroup)
+        dispatch_async(bgQueue) {
+        
+            var obj: TestItem!
+            
+            Cd.transactAndWait {
+                obj = try! Cd.create(TestItem.self)
+                obj.name = "Bob"
+            }
+            
+            Cd.transactAndWait {
+                Cd.cancelImplicitCommit()
+                if catchException({                    
+                    obj.name = "B"                    
+                }) == nil {
+                    XCTFail("should have failed with exception for modifying in main thread")
+                }
+            }
+            
+            dispatch_group_leave(self.dispatchGroup)
+        }
+        
+        dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+    }
+    
+    func testForbidReusingTransient() {
+        
+        dispatch_group_enter(dispatchGroup)
+        dispatch_async(bgQueue) {
+            
+            var obj: TestItem!
+            
+            Cd.transactAndWait {
+                obj = try! Cd.create(TestItem.self, transient: true)
+                obj.name = "Bob"
+            }
+            
+            Cd.transactAndWait {
+                if catchException({
+                    obj = Cd.useInCurrentContext(obj)
+                }) == nil {
+                    XCTFail("should have failed with exception for using transient")
+                }
+            }
+            
+            dispatch_group_leave(self.dispatchGroup)
+        }
+        
+        dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+    }
+    
+    func testForbidCreateMain() {
+        
+        if catchException({
+            let _ = try! Cd.create(TestItem.self)
+        }) == nil {
+            XCTFail("should have failed with exception for creating non-transient on main")
+        }
+        
+    }
+        
+    func testForbidDeleteMain() {
+        
+        let obj = try! Cd.objects(TestItem.self).fetchOne()!
+        
+        if catchException({
+            Cd.delete(obj)
+        }) == nil {
+            XCTFail("should have failed with exception for creating non-transient on main")
+        }
+        
     }
     
     /*
