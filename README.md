@@ -1,8 +1,8 @@
 ![Cadmium](/Assets/Banner.png)
 
-Cadmium is a Core Data framework for Swift that enforces best practices and identifies common Core Data pitfalls exactly where you make them.
+Cadmium is a Core Data framework for Swift that enforces best practices and raises exceptions for common Core Data pitfalls exactly where you make them.
 
-### Design Goals
+# Design Goals
 
 * Create a minimalist/concise framework API that provides for most Core Data use cases and guides the user towards best practices.
 * Aggressively protect the user from performing common Core Data pitfalls, and raise exceptions immediately on the offending statement rather than waiting for a context save event.
@@ -25,6 +25,16 @@ You might notice a few things:
 * You never have to reference the managed object context, we manage it for you.
 * The changes are committed automatically upon completion (you can disable this.)
 
+### What Cadmium is Not
+
+Cadmium is not designed to be a 100% complete wrapper around Core Data.  Some of the much more
+advanced Core Data features are hidden behind the Cadmium API.  If you are creating an enterprise-level
+application that requires meticulous manipulation of Core Data stores and contexts to optimize heavy lifting, then
+Cadmium is not for you.
+
+Cadmium is for you if want a smart wrapper that vastly simplifies most Core Data tasks and warns you
+immediately when you inadvertently manipulate data in a way you shouldn't.
+
 # Installing
 
 You can install Cadmium by adding it to your [CocoaPods](http://cocoapods.org/) ```Podfile```:
@@ -35,13 +45,32 @@ pod 'Cadmium'
 
 Or you can use a variety of ways to include the ```Cadmium.framework``` file from this project into your own.
 
+# How to Use
+
+### Context Architecture
+
+Cadmium uses the same basic context architecture as CoreStore, with a root save context running on a private queue that
+has one read-only child context on the main queue and any number of writeable child contexts running on background queues.
+
+![Cadmium Core Data Architecture](/Assets/core_data_arch.png)
+
+This means that your main thread will never bog down on write transactions, and will only be used to merge changes (in memory)
+and updating any UI elements dependent on your data.
+
+It also means that you cannot initiate modifications to managed objects on the main thread!  All of your write operations
+must exist inside transactions that occur in background threads.  You will need to design your app to support the idea
+of asynchronous write operations, which is what you *should* be doing when it comes to database modification.
+
 ### Initialization
 
 Set up Cadmium with a single initialization call:
 
 ```swift
 do {
-    try Cd.initWithSQLStore(inbundleID: nil, momdName: "MyObjectModel.momd", sqliteFilename: "MyDB.sqlite")
+    try Cd.initWithSQLStore(momdInbundleID: nil,
+                            momdName:       "MyObjectModel.momd",
+                            sqliteFilename: "MyDB.sqlite",
+                            options:        nil /* Optional */)
 } catch let error {
     print("\(error)")
 }
@@ -50,6 +79,8 @@ do {
 This loads the object model, sets up the persistent store coordinator, and initializes important contexts.
 
 If your object model is in a framework (not your main bundle), you'll have to pass the framework's bundle identifier to the first argument.
+
+The ```options```  argument flows through to the options passed in addPersistentStoreWithType: on the NSPersistentStoreCoordinator.
 
 ### Querying
 
@@ -63,7 +94,7 @@ do {
                           .filter("name = %@", someName)
                           .sort("name", ascending: true)
                           .fetch() {
-        // Do something
+        /* Do something */
         print("Employee name: \(employee.name)")
     }
 } catch let error {
@@ -71,7 +102,7 @@ do {
 }
 ```
 
-You begin by passing the managed object type into the parameter for ```Cd.objects(..)```.  This constructs a CdFetchRequest for managed objects of that type.
+You begin by passing the managed object type into the parameter for ```Cd.objects(..)```.  This constructs a ```CdFetchRequest``` for managed objects of that type.
 
 Chain in as many filter/sort/modification calls as you want, and finalize with ```fetch()``` or ```fetchOne()```.  ```fetch()``` returns an array of objects, and ```fetchOne()``` returns a single optional object (```nil``` if none were found matching the filter).
 
@@ -134,18 +165,65 @@ Cd.transact {
 }
 ```
 
+### Modifying Objects from Other Contexts
+
+You will often need to modify a managed object from one context inside of another context.  The most
+common use case is when you want to modify objects you've queried from the main thread (which are read-only).
+
+You can use ```Cd.useInCurrentContext``` to get a copy of the object that is suitable for
+modification in the current context:
+
+```swift
+/* Acquire a read-only employee object somewhere on the main thread */
+guard let employee = try! Cd.objects(Employee.self).fetchOne() else {
+    return
+}
+
+/* Modify it in a transaction */
+Cd.transact {
+    guard let txEmployee = Cd.useInCurrentContext(employee) else {
+        return
+    }
+
+    txEmployee.salary += 10000    
+}
+```
+
+Note that an object must have been inserted and committed in a transaction before it can be accessed from another context.
+If a transient object has not been inserted yet, it will not be available with this method.
+
+
+### Notifying the Main Thread
+
+Because transactions occur on the transaction context's private queue, calls to ```Cd.commit()``` are synchronous and only
+return after the save has propagated to the persistent store.
+
+You can use this fact to notify the main thread that a commit has completed in your transaction:
+
+```swift
+Cd.transact {
+
+    modifyThings()
+    Cd.commit()
+
+    /* only called after the commit saves up to the persistent store */
+    dispatch_async(dispatch_get_main_queue()) {
+        notifyOthers()
+    }    
+}
+```
+
 ### Fetched Results Controller
 
-### Managed Object Context Architecture
+For typical uses of ```NSFetchedResultsController```, you should use the built-in subclass ```CdFetchedResultsController```.  This
+subclass wraps the normal functionality of ```NSFetchedResultsController``` onto the protected main queue context.
 
-Core Data relies on a hierarchy of managed object contexts working in harmony across their respective dispatch queues.  For newcomers to Core Data this can be daunting -- fortunately we handle everything for you!
+You can use the ```CdFetchedResultsController``` as you would a ```NSFetchedResultsController``` with the following in mind:
 
-Cadmium uses a context hierarchy similar to CoreStore:
-
---insert image--
-
-With this model, write transactions can only use background write contexts.  The main thread is read-only!  This allows the Core Data engine to process the save path entirely in the background, and update the main context incrementally for reads.
-
+* The objects in the fetch results exist in the main thread read-only context and cannot be modified.  Use ```Cd.useInCurrentContext```
+to modify them in a transaction.
+* You can pass a ```UITableView``` into the ```automateDelegation``` method to perform the standard insert/delete commands on sections and
+rows when your fetched results controller has changes.  This can help save a few lines in your own view controllers.
 
 ### Aggressively Identifying Coding Pitfalls
 
@@ -153,6 +231,6 @@ Most developers who use Core Data have gone through the same gauntlet of discove
 
 Even seasoned veterans are still susceptible to the occasional ```1570: The operation couldn’t be completed``` or ```13300: NSManagedObjectReferentialIntegrityError```
 
-Many of the common issues arise because the standard Core Data framework is lenient about allowing code that does the Wrong Thing; only throwing an error on the eventual attempt to save (which may not be proximal to the offending code.)
+Many of the common issues arise because the standard Core Data framework is lenient about allowing code that does the Wrong Thing and only throwing an error on the eventual attempt to save (which may not be proximal to the offending code.)
 
 Cadmium performs aggressive checking on managed object operations to make sure you are coding correctly, and will raise exceptions on the offending lines rather than waiting for a save to occur.
