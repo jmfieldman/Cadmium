@@ -59,12 +59,12 @@ Querying starts with ```Cd.objects(..)``` and looks like this:
 
 ```swift
 do {
-    let employees = try Cd.objects(Employee.self)
+    for employee in try Cd.objects(Employee.self)
                           .filter("name = %@", someName)
                           .sort("name", ascending: true)
-                          .fetch()
-    for e in employees {
+                          .fetch() {
         // Do something
+        print("Employee name: \(employee.name)")
     }
 } catch let error {
     print("\(error)")
