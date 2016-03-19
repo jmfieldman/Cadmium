@@ -1,5 +1,5 @@
 //
-//  TestItem.swift
+//  CadmiumTests+Exceptions.m
 //  Cadmium
 //
 //  Copyright (c) 2016-Present Jason Fieldman - https://github.com/jmfieldman/Cadmium
@@ -22,11 +22,18 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-import Foundation
-import CoreData
-import Cadmium
+#import <Foundation/Foundation.h>
 
-class TestItem : CdManagedObject {
-    @NSManaged var id: Int
-    @NSManaged var name: String
+
+NSException *catchException(void(^tryBlock)()) {
+    NSException *_exception = nil;
+    @try {
+        tryBlock();
+    }
+    @catch (NSException *exception) {
+        _exception = exception;
+    }
+    @finally {
+        return _exception;
+    }
 }

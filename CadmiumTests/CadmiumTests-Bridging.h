@@ -1,5 +1,5 @@
 //
-//  TestItem.swift
+//  CadmiumTests-Bridging.h
 //  Cadmium
 //
 //  Copyright (c) 2016-Present Jason Fieldman - https://github.com/jmfieldman/Cadmium
@@ -22,11 +22,9 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-import Foundation
-import CoreData
-import Cadmium
+#ifndef CadmiumTests_Bridging_h
+#define CadmiumTests_Bridging_h
 
-class TestItem : CdManagedObject {
-    @NSManaged var id: Int
-    @NSManaged var name: String
-}
+#include "CadmiumTests+Exceptions.h"
+
+#endif /* CadmiumTests_Bridging_h */

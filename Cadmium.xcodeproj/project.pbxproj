@@ -17,6 +17,7 @@
 		35552B0B1C9614BF004397CD /* CdConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B0A1C9614BF004397CD /* CdConstants.swift */; };
 		356D45661C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 356D45641C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld */; };
 		356D45681C9CA59600D2DA2C /* TestItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356D45671C9CA59600D2DA2C /* TestItem.swift */; };
+		3587E4AA1C9D924B009D68C9 /* CadmiumTests+Exceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3587E4A91C9D924B009D68C9 /* CadmiumTests+Exceptions.m */; };
 		35E522A71C977017005EBECE /* CdFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E522A61C977017005EBECE /* CdFetchedResultsController.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,9 @@
 		35552B0A1C9614BF004397CD /* CdConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdConstants.swift; sourceTree = "<group>"; };
 		356D45651C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CadmiumTestModel.xcdatamodel; sourceTree = "<group>"; };
 		356D45671C9CA59600D2DA2C /* TestItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestItem.swift; sourceTree = "<group>"; };
+		3587E4A81C9D9228009D68C9 /* CadmiumTests-Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CadmiumTests-Bridging.h"; sourceTree = "<group>"; };
+		3587E4A91C9D924B009D68C9 /* CadmiumTests+Exceptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CadmiumTests+Exceptions.m"; sourceTree = "<group>"; };
+		3587E4AB1C9D9263009D68C9 /* CadmiumTests+Exceptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CadmiumTests+Exceptions.h"; sourceTree = "<group>"; };
 		35E522A61C977017005EBECE /* CdFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdFetchedResultsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -107,6 +111,9 @@
 				356D45671C9CA59600D2DA2C /* TestItem.swift */,
 				35552AF51C960848004397CD /* Info.plist */,
 				356D45641C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld */,
+				3587E4A81C9D9228009D68C9 /* CadmiumTests-Bridging.h */,
+				3587E4AB1C9D9263009D68C9 /* CadmiumTests+Exceptions.h */,
+				3587E4A91C9D924B009D68C9 /* CadmiumTests+Exceptions.m */,
 			);
 			path = CadmiumTests;
 			sourceTree = "<group>";
@@ -232,6 +239,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3587E4AA1C9D924B009D68C9 /* CadmiumTests+Exceptions.m in Sources */,
 				356D45661C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld in Sources */,
 				35552AF41C960848004397CD /* CadmiumTests.swift in Sources */,
 				356D45681C9CA59600D2DA2C /* TestItem.swift in Sources */,
@@ -382,6 +390,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CadmiumTests/CadmiumTests-Bridging.h";
 			};
 			name = Debug;
 		};
@@ -392,6 +401,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CadmiumTests/CadmiumTests-Bridging.h";
 			};
 			name = Release;
 		};
