@@ -165,6 +165,34 @@ Cd.transact {
 }
 ```
 
+### Creating and Deleting Objects
+
+Objects can be created and deleted inside transactions.
+
+```swift
+Cd.transact {
+    let newEmployee    = try! Cd.create(Employee.self)
+    newEmployee.name   = "Bob"
+    newEmployee.salary = 10000
+}
+
+Cd.transact {
+    Cd.delete(try! Cd.objects(Employee.self).filter("name = %@", "Bob").fetch())
+}
+```                  
+
+You can also delete objects directly from a CdFetchRequest:
+
+```swift
+Cd.objects(Employee.self).filter("salary > 100000").delete()
+```
+
+If called:
+
+* Outside a transaction: will delete the objects asynchronously in a background transaction.
+* Inside a transaction: will perform the delete synchronously inside the transaction.
+
+
 ### Modifying Objects from Other Contexts
 
 You will often need to modify a managed object from one context inside of another context.  The most
