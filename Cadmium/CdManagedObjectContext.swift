@@ -85,6 +85,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
             }
         }
         
+        #if os(iOS)
         /* Attach update handler for general iCloud update notifications */
         NSNotificationCenter.defaultCenter().addObserverForName(NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: coordinator, queue: notificationQueue) { (notification: NSNotification) -> Void in
             _masterSaveContext?.performBlock {
@@ -92,6 +93,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
                 self.saveMasterWriteContext()
             }
         }
+        #endif
     }
     
     /**
