@@ -28,9 +28,7 @@ class ViewController: UITableViewController {
             sectionNameKeyPath: nil,
             cacheName: nil)
         
-        /* Using the delegate automation allows Cadmium to automatically update the UITableView
-           data source when changes occur to the underlying model. */
-        fetchedResultsController?.automateDelegation(forTable: self.tableView)
+        fetchedResultsController?.delegate = self
         
         /* Call performFetch to initiate the controller */
         try! fetchedResultsController?.performFetch()
@@ -144,5 +142,36 @@ extension ViewController {
             
             Cd.delete(txItem)
         }
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+
+extension ViewController : NSFetchedResultsControllerDelegate {
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        self.tableView.beginUpdates()
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        switch type {
+        case .Insert:   self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+        case .Delete:   self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+        default:        return
+        }
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        switch type {
+        case .Insert:   self.tableView.insertRowsAtIndexPaths([newIndexPath!],  withRowAnimation: .Fade)
+        case .Delete:   self.tableView.deleteRowsAtIndexPaths([indexPath!],     withRowAnimation: .Fade)
+        case .Update:   self.tableView.reloadRowsAtIndexPaths([indexPath!],     withRowAnimation: .Automatic)
+        case .Move:     self.tableView.deleteRowsAtIndexPaths([indexPath!],     withRowAnimation: .Fade)
+                        self.tableView.insertRowsAtIndexPaths([newIndexPath!],  withRowAnimation: .Fade)
+        }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        self.tableView.endUpdates()
     }
 }
