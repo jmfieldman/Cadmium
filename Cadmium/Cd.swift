@@ -500,7 +500,7 @@ public class Cd {
         }
         
         guard let originalContext = object.managedObjectContext else {
-            Cd.raise("You cannot transfer a transient object to a context.  Use Cd.insert instead.")
+            Cd.raise("You cannot transfer an object without a existing context.  This object may be transient, or it's original context has been destroyed.")
         }
         
         if originalContext.hasChanges && originalContext != CdManagedObjectContext._mainThreadContext {
