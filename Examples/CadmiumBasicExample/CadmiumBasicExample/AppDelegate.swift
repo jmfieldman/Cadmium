@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
-        try! Cd.initWithSQLStore(inbundleID: nil, momdName: "CadmiumBasicExample.momd", sqliteFilename: "example.sqlite")
+        try! Cd.initWithSQLStore(momdInbundleID: nil, momdName: "CadmiumBasicExample.momd", sqliteFilename: "example.sqlite")
         
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
         self.window?.rootViewController = UINavigationController(rootViewController: ViewController())

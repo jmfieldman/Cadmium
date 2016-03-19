@@ -115,6 +115,7 @@
 				35552B131C970375004397CD /* Sources */,
 				35552B141C970375004397CD /* Frameworks */,
 				35552B151C970375004397CD /* Resources */,
+				3587E4B21C9DA198009D68C9 /* Embed Cadmium Framework */,
 			);
 			buildRules = (
 			);
@@ -192,6 +193,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3587E4B21C9DA198009D68C9 /* Embed Cadmium Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Cadmium Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/CadmiumBasicExample/embed_frameworks.sh\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		35552B131C970375004397CD /* Sources */ = {
