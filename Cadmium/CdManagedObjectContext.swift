@@ -54,6 +54,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
     internal class func initializeMasterContexts(coordinator coordinator: NSPersistentStoreCoordinator?) {
         _masterSaveContext = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
         _masterSaveContext?.undoManager = nil
+        _masterSaveContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         _masterSaveContext?.persistentStoreCoordinator = coordinator
         
         _mainThreadContext = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
