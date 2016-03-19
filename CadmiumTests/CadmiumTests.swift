@@ -182,7 +182,11 @@ class CadmiumTests: XCTestCase {
     
     func initCd() {
         do {
-            try Cd.initWithSQLStore(inbundleID: "org.fieldman.CadmiumTests", momdName: "CadmiumTestModel", sqliteFilename: "test.sqlite")
+            
+            try Cd.initWithSQLStore(momdInbundleID: "org.fieldman.CadmiumTests",
+                                    momdName:       "CadmiumTestModel",
+                                    sqliteFilename: "test.sqlite")
+            
         } catch let error {
             XCTFail("setup error: \(error)")
         }

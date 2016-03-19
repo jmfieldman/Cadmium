@@ -40,13 +40,13 @@ public class Cd {
      - parameter momdURL:   The full URL to the managed object model.
      - parameter sqliteURL: The full URL to the sqlite store.
     */
-    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL) throws {
+    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL, options: [NSObject : AnyObject]? = nil) throws {
         guard let mom = NSManagedObjectModel(contentsOfURL: momdURL) else {
             throw CdInitFailure.InvalidManagedObjectModel
         }
         
         let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
-        try psc.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqliteURL, options: nil)
+        try psc.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqliteURL, options: options)
         
         CdManagedObjectContext.initializeMasterContexts(coordinator: psc)
     }
@@ -70,7 +70,7 @@ public class Cd {
      
      - throws: Various errors in case something goes wrong!
      */
-    public class func initWithSQLStore(inbundleID bundleID: String?, momdName: String, sqliteFilename: String) throws {
+    public class func initWithSQLStore(momdInbundleID bundleID: String?, momdName: String, sqliteFilename: String, options: [NSObject : AnyObject]? = nil) throws {
         var bundle: NSBundle!
         
         if bundleID == nil {
@@ -96,7 +96,7 @@ public class Cd {
         let sqliteURL           = documentDirectory.URLByAppendingPathComponent(sqliteFilename)
         
         try NSFileManager.defaultManager().createDirectoryAtURL(documentDirectory, withIntermediateDirectories: true, attributes: nil)
-        try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL)
+        try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL, options: options)
     }
     
     /*
