@@ -15,6 +15,8 @@
 		35552B071C960E94004397CD /* CdManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B061C960E94004397CD /* CdManagedObjectContext.swift */; };
 		35552B091C961013004397CD /* CdFetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B081C961013004397CD /* CdFetchRequest.swift */; };
 		35552B0B1C9614BF004397CD /* CdConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B0A1C9614BF004397CD /* CdConstants.swift */; };
+		356D45661C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 356D45641C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld */; };
+		356D45681C9CA59600D2DA2C /* TestItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356D45671C9CA59600D2DA2C /* TestItem.swift */; };
 		35E522A71C977017005EBECE /* CdFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E522A61C977017005EBECE /* CdFetchedResultsController.swift */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +42,8 @@
 		35552B061C960E94004397CD /* CdManagedObjectContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdManagedObjectContext.swift; sourceTree = "<group>"; };
 		35552B081C961013004397CD /* CdFetchRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdFetchRequest.swift; sourceTree = "<group>"; };
 		35552B0A1C9614BF004397CD /* CdConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdConstants.swift; sourceTree = "<group>"; };
+		356D45651C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CadmiumTestModel.xcdatamodel; sourceTree = "<group>"; };
+		356D45671C9CA59600D2DA2C /* TestItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestItem.swift; sourceTree = "<group>"; };
 		35E522A61C977017005EBECE /* CdFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CdFetchedResultsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,7 +104,9 @@
 			isa = PBXGroup;
 			children = (
 				35552AF31C960848004397CD /* CadmiumTests.swift */,
+				356D45671C9CA59600D2DA2C /* TestItem.swift */,
 				35552AF51C960848004397CD /* Info.plist */,
+				356D45641C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld */,
 			);
 			path = CadmiumTests;
 			sourceTree = "<group>";
@@ -226,7 +232,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				356D45661C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld in Sources */,
 				35552AF41C960848004397CD /* CadmiumTests.swift in Sources */,
+				356D45681C9CA59600D2DA2C /* TestItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -418,6 +426,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		356D45641C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				356D45651C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodel */,
+			);
+			currentVersion = 356D45651C9CA56800D2DA2C /* CadmiumTestModel.xcdatamodel */;
+			path = CadmiumTestModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 35552ADB1C960848004397CD /* Project object */;
 }

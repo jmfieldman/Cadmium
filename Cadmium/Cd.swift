@@ -95,6 +95,7 @@ public class Cd {
         let documentDirectory   = documentDirectories[documentDirectories.count - 1]
         let sqliteURL           = documentDirectory.URLByAppendingPathComponent(sqliteFilename)
         
+        try NSFileManager.defaultManager().createDirectoryAtURL(documentDirectory, withIntermediateDirectories: true, attributes: nil)
         try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL)
     }
     

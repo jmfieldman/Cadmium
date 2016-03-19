@@ -60,10 +60,35 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         _mainThreadContext?.undoManager = nil
         _mainThreadContext?.parentContext = _masterSaveContext
         
+        let notificationQueue = NSOperationQueue()
+        
         /* Attach update handler to main thread context */
-        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _masterSaveContext, queue: NSOperationQueue()) { (notification: NSNotification) -> Void in
+        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _masterSaveContext, queue: notificationQueue) { (notification: NSNotification) -> Void in
             dispatch_async(dispatch_get_main_queue()) {
                 _mainThreadContext?.mergeChangesFromContextDidSaveNotification(notification)
+            }
+        }
+        
+        /* Attach handler for one-time iCloud setup */
+        NSNotificationCenter.defaultCenter().addObserverForName(NSPersistentStoreCoordinatorStoresWillChangeNotification, object: coordinator, queue: notificationQueue) { (notification: NSNotification) -> Void in
+            guard let msc = _masterSaveContext else {
+                return
+            }
+            
+            msc.performBlock {
+                if (msc.hasChanges) {
+                    try! msc.save()
+                } else {
+                    msc.reset()
+                }
+            }
+        }
+        
+        /* Attach update handler for general iCloud update notifications */
+        NSNotificationCenter.defaultCenter().addObserverForName(NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: coordinator, queue: notificationQueue) { (notification: NSNotification) -> Void in
+            _masterSaveContext?.performBlock {
+                _masterSaveContext?.mergeChangesFromContextDidSaveNotification(notification)
+                self.saveMasterWriteContext()
             }
         }
     }
@@ -123,11 +148,13 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      Saves the master write context if necessary.
      */
     @inline(__always) internal class func saveMasterWriteContext() {
-        if let msc = _masterSaveContext {
-            msc.performBlock {
-                if msc.hasChanges {
-                    try! msc.save()
-                }
+        guard let msc = _masterSaveContext else {
+            return
+        }
+        
+        msc.performBlockAndWait {
+            if msc.hasChanges {
+                try! msc.save()
             }
         }
     }
