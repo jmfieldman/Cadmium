@@ -36,6 +36,20 @@ public class CdFetchRequest<T: CdManagedObject> {
      */
     public let nsFetchRequest: NSFetchRequest
     
+    /**
+     *  Contains the expressions declared during method chaining (indexed by name)
+     */
+    private var includedExpressions: [String: NSExpressionDescription] = [:]
+    
+    /**
+     *  Contains the allowed properties declared during method chaining
+     */
+    private var includedProperties: Set<String> = Set<String>()
+    
+    /**
+     *  Contains the properties to group by declared during method chaining
+     */
+    private var includedGroupings: [String] = []
     
     /**
      Initialize the CdFetchRequest object.  This class can only be instantiated from
@@ -169,22 +183,77 @@ public class CdFetchRequest<T: CdManagedObject> {
         return self
     }
     
+    /*
+     *  ------------------------ Expressions --------------------------
+     */
+    
+    /**
+     Include a custom expression in your response.  If this is chained in, you must use fetchDictionaryArray()
+     since you cannot fetch managed objects with custom properties.
+     
+     In order to include the expression results in the dictionary, the 'named' value must be present
+     in the array you pass to onlyProperties()
+     
+     - parameter named:      The name for the expression.  This will be referenced in onlyProperties()
+     - parameter resultType: The result type for the expression.
+     - parameter withFormat: The format for the expression.
+     - parameter formatArgs: The arguments for the expression, if required.
+     
+     - returns: The updated fetch request.
+     */
+    public func includeExpression(named: String, resultType: NSAttributeType, withFormat: String, _ formatArgs: AnyObject...) -> CdFetchRequest<T> {
+        let expression                      = NSExpression(format: withFormat, formatArgs)
+        
+        let expressionDesc                  = NSExpressionDescription()
+        expressionDesc.expression           = expression
+        expressionDesc.name                 = named
+        expressionDesc.expressionResultType = resultType
+        
+        self.includedExpressions[named] = expressionDesc
+        
+        return self
+    }
     
     /*
      *  ------------------------ Misc Operations --------------------------
      */
     
     /**
-     Specify only the specific object attributes you want to query.
+     Specify only the specific properties you want to query.
      This modifies propertiesToFetch
      
-     - parameter attributes: The list of attributes to include in the query.
+     - parameter properties: The list of properties to include in the query.
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func onlyAttr(attributes: [String]) -> CdFetchRequest<T> {
-        nsFetchRequest.propertiesToFetch = attributes
+    @inline(__always) public func onlyProperties(properties: [String]) -> CdFetchRequest<T> {
+        self.includedProperties.unionInPlace(properties)
         return self
+    }
+    
+    /**
+     Specify only the properties you want to group by.
+     This modifies propertiesToGroupBy
+     
+     - parameter properties: The list of properties to group by.
+     
+     - returns: The updated fetch request.
+     */
+    @inline(__always) public func groupBy(properties: [String]) -> CdFetchRequest<T> {
+        self.includedGroupings.appendContentsOf(properties)
+        return self
+    }
+    
+    /**
+     Specify only the properties you want to group by.
+     This modifies propertiesToGroupBy
+     
+     - parameter properties: The list of properties to group by.
+     
+     - returns: The updated fetch request.
+     */
+    @inline(__always) public func groupBy(property: String) -> CdFetchRequest<T> {
+        return groupBy([property])
     }
     
     /**
@@ -275,12 +344,73 @@ public class CdFetchRequest<T: CdManagedObject> {
             Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
+        if includedProperties.count > 0 {
+            nsFetchRequest.propertiesToFetch = [String](includedProperties)
+        }
+        
+        if includedExpressions.count > 0 {
+            Cd.raise("You cannot call fetch() if you have included custom expressions.  Use fetchDictionaryArray()")
+        }
+        
+        if includedGroupings.count > 0 {
+            Cd.raise("You cannot call fetch() if you have included custom groupings.  Use fetchDictionaryArray()")
+        }
+        
         if let results = try currentContext.executeFetchRequest(nsFetchRequest) as? [T] {
             return results
         }
         
         return []
     }
+    
+    /**
+     Executes the fetch on the current context.  If run from the main thread, it
+     executes on the main thread context.  If run from a transaction it will
+     execute on the transaction thread.
+     
+     You cannot execute this on a non-transaction background thread since there
+     will not be an attached context.
+     
+     - throws:  If the underlying NSFetchRequest throws an error, this returns
+                it up the stack.
+     
+     - returns: The fetch results as a dictionary.
+     */
+    public func fetchDictionaryArray() throws -> [[String: AnyObject]] {
+        guard let currentContext = NSThread.currentThread().attachedContext() else {
+            Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
+        }
+        
+        nsFetchRequest.resultType = .DictionaryResultType
+        
+        if includedProperties.count > 0 {
+            var actualProperties: [AnyObject] = []
+            for propertyName in includedProperties {
+                if let expression = includedExpressions[propertyName] {
+                    actualProperties.append(expression)
+                } else {
+                    actualProperties.append(propertyName)
+                }
+            }
+            nsFetchRequest.propertiesToFetch = actualProperties
+        }
+        
+        if includedGroupings.count > 0 {
+            for groupName in includedGroupings {
+                if !includedProperties.contains(groupName) {
+                    Cd.raise("You cannot group by a property name unless you've included it in onlyProperties()")
+                }
+            }
+            nsFetchRequest.propertiesToGroupBy = includedGroupings
+        }
+        
+        if let results = try currentContext.executeFetchRequest(nsFetchRequest) as? [[String: AnyObject]] {
+            return results
+        }
+        
+        return []
+    }
+    
     
     /**
      Executes the fetch on the current context.  If run from the main thread, it

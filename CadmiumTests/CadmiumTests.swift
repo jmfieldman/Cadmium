@@ -227,6 +227,85 @@ class CadmiumTests: XCTestCase {
     }
     
     
+    func testBasicDictionary() {
+        
+        do {
+            
+            let dic = try Cd.objects(TestItem.self).fetchDictionaryArray()
+            XCTAssertEqual(dic.count, 5, "Query size")
+            
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+        
+    }
+    
+    
+    func testDictionaryExpressionGrouping() {
+        
+        do {
+            
+            dispatch_group_enter(dispatchGroup)
+            dispatch_async(bgQueue) {
+                
+                Cd.transactAndWait {
+                    var i = 1
+                    for obj in try! Cd.create(TestItem.self, count: 10) {
+                        obj.name = "TEST"
+                        obj.id   = i
+                        i += 1
+                    }
+                    
+                    i = 1
+                    for obj in try! Cd.create(TestItem.self, count: 10) {
+                        obj.name = "TEST2"
+                        obj.id   = i
+                        i += 1
+                    }
+                }
+                
+                dispatch_group_leave(self.dispatchGroup)
+            }
+            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            
+            let exception1 = catchException {
+                _ = try? Cd.objects(TestItem.self).groupBy("name").fetchDictionaryArray()
+            }
+            
+            if exception1 == nil {
+                XCTFail("should have failed because of grouping without property naming")
+            }
+            
+            let dicArray = try Cd.objects(TestItem.self)
+                            .includeExpression("sum", resultType: .Integer64AttributeType, withFormat: "@sum.id")
+                            .onlyProperties(["name", "sum"])
+                            .groupBy("name")
+                            .fetchDictionaryArray()
+            
+            XCTAssertEqual(dicArray.count, 7, "Result size")
+            
+            var wasTested = 0
+            for dic in dicArray {
+                if dic["name"] as! String == "TEST" {
+                    XCTAssertEqual(dic["sum"] as? Int ?? 0, 55, "sum difference")
+                    wasTested = 1
+                }
+                
+                if dic["name"] as! String == "TEST2" {
+                    XCTAssertEqual(dic["sum"] as? Int ?? 0, 55, "sum difference")
+                }
+            }
+            
+            XCTAssertEqual(wasTested, 1, "wasn't tested!")
+            
+        } catch let error {
+            XCTFail("query error: \(error)")
+        }
+        
+    }
+    
+    
     func testBasicDelete() {
         
         do {
