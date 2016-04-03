@@ -279,9 +279,12 @@ class CadmiumTests: XCTestCase {
             
             let dicArray = try Cd.objects(TestItem.self)
                             .includeExpression("sum", resultType: .Integer64AttributeType, withFormat: "@sum.id")
-                            .onlyProperties(["name", "sum"])
+                            .includeExpression("count", resultType: .Integer64AttributeType, withFormat: "name.@count")
+                            .onlyProperties(["name", "sum", "count"])
                             .groupBy("name")
                             .fetchDictionaryArray()
+            
+            print("\(dicArray)")
             
             XCTAssertEqual(dicArray.count, 7, "Result size")
             
@@ -289,6 +292,7 @@ class CadmiumTests: XCTestCase {
             for dic in dicArray {
                 if dic["name"] as! String == "TEST" {
                     XCTAssertEqual(dic["sum"] as? Int ?? 0, 55, "sum difference")
+                    XCTAssertEqual(dic["count"] as? Int ?? 0, 10, "count difference")
                     wasTested = 1
                 }
                 
