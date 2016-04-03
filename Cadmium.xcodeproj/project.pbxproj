@@ -32,6 +32,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3546DE7A1CB1750700F14FFB /* Cadmium.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cadmium.podspec; sourceTree = SOURCE_ROOT; };
+		3546DE7C1CB1752400F14FFB /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
 		35552AE41C960848004397CD /* Cadmium.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cadmium.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		35552AE71C960848004397CD /* Cadmium.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cadmium.h; sourceTree = "<group>"; };
 		35552AE91C960848004397CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -92,6 +94,8 @@
 		35552AE61C960848004397CD /* Cadmium */ = {
 			isa = PBXGroup;
 			children = (
+				3546DE7C1CB1752400F14FFB /* CHANGELOG.md */,
+				3546DE7A1CB1750700F14FFB /* Cadmium.podspec */,
 				35552B021C96096D004397CD /* Cd.swift */,
 				35552B041C960BD5004397CD /* CdManagedObject.swift */,
 				35552B061C960E94004397CD /* CdManagedObjectContext.swift */,
