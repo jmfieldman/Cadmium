@@ -19,8 +19,8 @@ class ViewController: UITableViewController {
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Cadmium Example"
         
-        self.navigationItem.leftBarButtonItem  = UIBarButtonItem(title: "Add",  style: .Plain, target: self, action: "handleAdd:")
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "handleEdit:")
+        self.navigationItem.leftBarButtonItem  = UIBarButtonItem(title: "Add",  style: .Plain, target: self, action: #selector(handleAdd(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: #selector(handleEdit(_:)))
     
         /* Create a fetched results controller that will list all of our example items  (sorted by name) */
         fetchedResultsController = CdFetchedResultsController(
