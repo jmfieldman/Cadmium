@@ -28,7 +28,7 @@ import CoreData
 
 class CadmiumTests: XCTestCase {
     
-    let bgQueue       = dispatch_queue_create("CadmiumTests.backgroundQueue", DISPATCH_QUEUE_CONCURRENT)
+    let bgQueue       = dispatch_queue_create("CadmiumTests.backgroundQueue", nil)
     
     override func setUp() {
         super.setUp()

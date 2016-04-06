@@ -51,7 +51,7 @@ public class CdManagedObject : NSManagedObject {
     
     /** This userInfo dictionary is available to store persistent data along with
         your managed object */
-    public var userInfo: [String: AnyObject] = [:]
+    public var userInfo: [String: Any] = [:]
     
     // MARK: - Update handler
     

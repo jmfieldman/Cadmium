@@ -78,18 +78,20 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         }
         
         /* Attach update handler to main thread context */
-        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _mainThreadContext, queue: NSOperationQueue.mainQueue()) { (notification: NSNotification) -> Void in
+        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _mainThreadContext, queue: nil) { (notification: NSNotification) -> Void in
             guard shouldCallUpdateHandlers else { return }
             
-            if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<CdManagedObject> {
-                for object in refreshedObjects {
-                    object.updateHandler?(.Refreshed)
+            dispatch_async(dispatch_get_main_queue()) {
+                if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<CdManagedObject> {
+                    for object in refreshedObjects {
+                        object.updateHandler?(.Refreshed)
+                    }
                 }
-            }
-            
-            if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<CdManagedObject> {
-                for object in deletedObjects {
-                    object.updateHandler?(.Deleted)
+                
+                if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<CdManagedObject> {
+                    for object in deletedObjects {
+                        object.updateHandler?(.Deleted)
+                    }
                 }
             }
         }

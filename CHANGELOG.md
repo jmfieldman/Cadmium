@@ -1,5 +1,10 @@
 # Cadmium Changelog
 
+## 0.10.2 -- 4/5/16
+
+* Fixed main thread blocking error
+* Changed userInfo to use Any as value
+
 ## 0.10.1 -- 4/5/16
 
 * Added update handler hook to main-queue objects
