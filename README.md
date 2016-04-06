@@ -2,6 +2,11 @@
 
 Cadmium is a Core Data framework for Swift that enforces best practices and raises exceptions for common Core Data pitfalls exactly where you make them.
 
+Cadmium was written as a reaction to the complexity of dealing with multiple managed object contexts for standard database-like use cases. It is still important to understand what a managed object context is and how they are used, but for typical CRUD-style usage of Core Data it is a complete nuisance.
+
+With Cadmium, the user never sees a ```NSManagedObjectContext``` or derived class. You interact only with argument-less transactions, and object fetch/manipulation tasks. The contexts are managed in the background, which makes Core Data feel more like Realm.
+
+
 # Design Goals
 
 * Create a minimalist/concise framework API that provides for most Core Data use cases and guides the user towards best practices.
