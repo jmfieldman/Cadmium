@@ -26,6 +26,18 @@ import Foundation
 import CoreData
 
 /**
+ Passed into the updateHandler of a CdManagedObject when a modification
+ event occurs.
+ 
+ - Refreshed: The receiver object was refreshed (from a change in
+              another context).
+ - Deleted:   The receiver object was deleted.
+ */
+public enum CdManagedObjectUpdateEvent {
+    case Refreshed, Deleted
+}
+
+/**
  *  Any core data model class you create must inherit from CdManagedObject
  *  instead of NSManagedObject.  This is enforced in the query functions since
  *  a return type must of CdManagedObject.
@@ -34,6 +46,32 @@ import CoreData
  *  verify you are modifying your managed objects in the proper context.
  */
 public class CdManagedObject : NSManagedObject {
+    
+    // MARK: - Public Access dictionary
+    
+    /** This userInfo dictionary is available to store persistent data along with
+        your managed object */
+    public var userInfo: [String: AnyObject] = [:]
+    
+    // MARK: - Update handler
+    
+    /** You can attach an update handler to receive events that occur to this 
+        main thread object.
+ 
+        Because you can only install one handler, advanced use cases that need
+        multiple handlers can use the userInfo dictionary to extend dispatching
+        behavior (e.g. use the userInfo dictionary to store reactive-style signal
+        handlers.) */
+    public var updateHandler: (CdManagedObjectUpdateEvent -> Void)? = nil {
+        didSet {
+            if self.managedObjectContext != CdManagedObjectContext._mainThreadContext {
+                Cd.raise("You may attach an updateHandler to an object from the main thread context.")
+            }
+            CdManagedObjectContext.shouldCallUpdateHandlers = true
+        }
+    }
+    
+    // MARK: - Protections
     
     /**
      This is an override for willAccessValueForKey: that ensures the access

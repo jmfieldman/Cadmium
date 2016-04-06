@@ -47,6 +47,13 @@ public class CdManagedObjectContext : NSManagedObjectContext {
     internal static var _masterSaveContext: CdManagedObjectContext? = nil
     
     /**
+     *  This should be set to true when an update handler is installed.  It tells
+     *  the notification handler to iterate through updated objects and call their
+     *  handlers.
+     */
+    internal static var shouldCallUpdateHandlers: Bool = false
+    
+    /**
      Initialize the master save context and the main thread context.
      
      - parameter coordinator: The persistent store coordinator for the save context.
@@ -64,9 +71,26 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         let notificationQueue = NSOperationQueue()
         
         /* Attach update handler to main thread context */
-        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _masterSaveContext, queue: notificationQueue) { (notification: NSNotification) -> Void in
+        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextDidSaveNotification, object: _masterSaveContext, queue: notificationQueue) { (notification: NSNotification) -> Void in
             dispatch_async(dispatch_get_main_queue()) {
                 _mainThreadContext?.mergeChangesFromContextDidSaveNotification(notification)
+            }
+        }
+        
+        /* Attach update handler to main thread context */
+        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _mainThreadContext, queue: NSOperationQueue.mainQueue()) { (notification: NSNotification) -> Void in
+            guard shouldCallUpdateHandlers else { return }
+            
+            if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<CdManagedObject> {
+                for object in refreshedObjects {
+                    object.updateHandler?(.Refreshed)
+                }
+            }
+            
+            if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<CdManagedObject> {
+                for object in deletedObjects {
+                    object.updateHandler?(.Deleted)
+                }
             }
         }
         
