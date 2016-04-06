@@ -28,8 +28,7 @@ import CoreData
 
 class CadmiumTests: XCTestCase {
     
-    let dispatchGroup = dispatch_group_create()
-    let bgQueue       = dispatch_queue_create("CadmiumTests.backgroundQueue", nil)
+    let bgQueue       = dispatch_queue_create("CadmiumTests.backgroundQueue", DISPATCH_QUEUE_CONCURRENT)
     
     override func setUp() {
         super.setUp()
@@ -90,8 +89,10 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            let dispatchGroup = dispatch_group_create()
+            
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     do {
@@ -102,7 +103,7 @@ class CadmiumTests: XCTestCase {
                     }
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -121,9 +122,10 @@ class CadmiumTests: XCTestCase {
     func testBasicCreate() {
         
         do {
+            let dispatchGroup = dispatch_group_create()
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     let obj = try! Cd.create(TestItem.self)
@@ -131,7 +133,7 @@ class CadmiumTests: XCTestCase {
                     obj.id   = 1000
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -152,8 +154,10 @@ class CadmiumTests: XCTestCase {
             
             var obj: TestItem!
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            let dispatchGroup = dispatch_group_create()
+            
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     obj = try! Cd.create(TestItem.self)
@@ -161,7 +165,7 @@ class CadmiumTests: XCTestCase {
                     obj.id   = 1000
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -173,8 +177,8 @@ class CadmiumTests: XCTestCase {
             objs = try Cd.objects(TestItem.self).filter("name = \"G\"").fetch()
             XCTAssertEqual(objs.count, 0, "Query string equals")
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     let obj2: TestItem = Cd.useInCurrentContext(obj)!
@@ -182,7 +186,7 @@ class CadmiumTests: XCTestCase {
                     obj2.id   = 1000
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -204,8 +208,10 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            let dispatchGroup = dispatch_group_create()
+            
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     for obj in try! Cd.create(TestItem.self, count: 10) {
@@ -213,7 +219,7 @@ class CadmiumTests: XCTestCase {
                     }
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -246,8 +252,9 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            let dispatchGroup = dispatch_group_create()
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     var i = 1
@@ -264,8 +271,6 @@ class CadmiumTests: XCTestCase {
                         i += 1
                     }
                 }
-                
-                dispatch_group_leave(self.dispatchGroup)
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -314,14 +319,16 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            let dispatchGroup = dispatch_group_create()
+            
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     Cd.delete(try! Cd.objects(TestItem.self).fetchOne()!)
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -338,14 +345,16 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            let dispatchGroup = dispatch_group_create()
+            
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     Cd.delete(try! Cd.objects(TestItem.self).fetch())
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -362,18 +371,20 @@ class CadmiumTests: XCTestCase {
         
         do {
             
+            let dispatchGroup = dispatch_group_create()
+            
             let obj = try! Cd.create(TestItem.self, transient: true)
             obj.name = "asdf"
             obj.id   = 1000
             
-            dispatch_group_enter(dispatchGroup)
-            dispatch_async(bgQueue) {
+            
+            dispatch_group_async(dispatchGroup, bgQueue) {
                 
                 Cd.transactAndWait {
                     Cd.insert(obj)
                 }
                 
-                dispatch_group_leave(self.dispatchGroup)
+                
             }
             dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
             
@@ -393,6 +404,7 @@ class CadmiumTests: XCTestCase {
     func testForbidModificationOnMainThread() {
         
         do {
+            
             let obj = try Cd.objects(TestItem.self).filter("name = \"C\"").fetchOne()!
             XCTAssertEqual(obj.id, 3, "Query string equals")
             
@@ -411,8 +423,10 @@ class CadmiumTests: XCTestCase {
     
     func testForbidModificationInOtherTx() {
         
-        dispatch_group_enter(dispatchGroup)
-        dispatch_async(bgQueue) {
+        let dispatchGroup = dispatch_group_create()
+        
+        
+        dispatch_group_async(dispatchGroup, bgQueue) {
         
             var obj: TestItem!
             
@@ -430,7 +444,7 @@ class CadmiumTests: XCTestCase {
                 }
             }
             
-            dispatch_group_leave(self.dispatchGroup)
+            
         }
         
         dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
@@ -438,8 +452,10 @@ class CadmiumTests: XCTestCase {
     
     func testForbidReusingTransient() {
         
-        dispatch_group_enter(dispatchGroup)
-        dispatch_async(bgQueue) {
+        let dispatchGroup = dispatch_group_create()
+        
+        
+        dispatch_group_async(dispatchGroup, bgQueue) {
             
             var obj: TestItem!
             
@@ -456,7 +472,7 @@ class CadmiumTests: XCTestCase {
                 }
             }
             
-            dispatch_group_leave(self.dispatchGroup)
+            
         }
         
         dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
@@ -491,9 +507,10 @@ class CadmiumTests: XCTestCase {
     
     func initData() {
         
+        let dispatchGroup = dispatch_group_create()
         
-        dispatch_group_enter(dispatchGroup)
-        dispatch_async(bgQueue) {
+        
+        dispatch_group_async(dispatchGroup, bgQueue) {
             
             Cd.transactAndWait {
                 do {
@@ -515,7 +532,7 @@ class CadmiumTests: XCTestCase {
                 }
             }
             
-            dispatch_group_leave(self.dispatchGroup)
+            
         }
         
         dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
