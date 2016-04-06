@@ -1,6 +1,6 @@
 //
-//  ExampleItem.swift
-//  CadmiumBasicExample
+//  Cadmium+ReactiveCocoa.swift
+//  FacerCoreUtility
 //
 //  Copyright (c) 2016-Present Jason Fieldman - https://github.com/jmfieldman/Cadmium
 //
@@ -23,9 +23,32 @@
 //  THE SOFTWARE.
 
 import Foundation
-import CoreData
 import Cadmium
+import ReactiveCocoa
 
-class ExampleItem: CdManagedObject {
 
+private let kCdManagedObjectRACSignal = "kCdManagedObjectRACSignal"
+private let kCdManagedObjectRACSink   = "kCdManagedObjectRACSink"
+
+public typealias CdManagedObjectUpdateSignal = Signal<CdManagedObjectUpdateEvent, NoError>
+
+public extension CdManagedObject {
+    
+    public func rac_updateSignal() -> CdManagedObjectUpdateSignal {
+        if let signal = self.userInfo[kCdManagedObjectRACSignal] as? CdManagedObjectUpdateSignal {
+            return signal
+        }
+        
+        /* Make the signal */
+        let (signal, sink) = CdManagedObjectUpdateSignal.pipe()
+        self.userInfo[kCdManagedObjectRACSignal] = signal
+        
+        /* Insert handler */
+        self.updateHandler = { event in
+            sink.sendNext(event)
+        }
+        
+        return signal
+    }
+    
 }
