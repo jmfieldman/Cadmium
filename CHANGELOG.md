@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 0.10.3 -- 4/8/16
+
+* Fixed bug that raised an incorrect excpetion during the main thread's merge handler.
+
 ## 0.10.2 -- 4/5/16
 
 * Fixed main thread blocking error
