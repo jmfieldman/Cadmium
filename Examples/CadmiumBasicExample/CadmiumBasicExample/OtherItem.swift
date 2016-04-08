@@ -8,9 +8,9 @@
 
 import Foundation
 import CoreData
+import Cadmium
 
-
-class OtherItem: NSManagedObject {
+class OtherItem: CdManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
 

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		35252A2E1CB7F9BF00444681 /* OtherItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35252A2C1CB7F9BF00444681 /* OtherItem+CoreDataProperties.swift */; };
+		35252A2F1CB7F9BF00444681 /* OtherItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35252A2D1CB7F9BF00444681 /* OtherItem.swift */; };
 		35552B1B1C970375004397CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B1A1C970375004397CD /* AppDelegate.swift */; };
 		35552B1D1C970375004397CD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552B1C1C970375004397CD /* ViewController.swift */; };
 		35552B231C970375004397CD /* CadmiumBasicExample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 35552B211C970375004397CD /* CadmiumBasicExample.xcdatamodeld */; };
@@ -36,6 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		35252A2C1CB7F9BF00444681 /* OtherItem+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OtherItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		35252A2D1CB7F9BF00444681 /* OtherItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtherItem.swift; sourceTree = "<group>"; };
 		35552B171C970375004397CD /* CadmiumBasicExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CadmiumBasicExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35552B1A1C970375004397CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		35552B1C1C970375004397CD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -84,6 +88,8 @@
 		35552B191C970375004397CD /* CadmiumBasicExample */ = {
 			isa = PBXGroup;
 			children = (
+				35252A2C1CB7F9BF00444681 /* OtherItem+CoreDataProperties.swift */,
+				35252A2D1CB7F9BF00444681 /* OtherItem.swift */,
 				35552B561C970757004397CD /* ExampleItem+CoreDataProperties.swift */,
 				35552B571C970757004397CD /* ExampleItem.swift */,
 				35552B1A1C970375004397CD /* AppDelegate.swift */,
@@ -218,9 +224,11 @@
 			files = (
 				35552B591C970758004397CD /* ExampleItem.swift in Sources */,
 				35552B1D1C970375004397CD /* ViewController.swift in Sources */,
+				35252A2F1CB7F9BF00444681 /* OtherItem.swift in Sources */,
 				35552B581C970757004397CD /* ExampleItem+CoreDataProperties.swift in Sources */,
 				35552B231C970375004397CD /* CadmiumBasicExample.xcdatamodeld in Sources */,
 				35552B1B1C970375004397CD /* AppDelegate.swift in Sources */,
+				35252A2E1CB7F9BF00444681 /* OtherItem+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

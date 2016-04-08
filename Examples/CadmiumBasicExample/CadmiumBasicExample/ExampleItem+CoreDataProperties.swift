@@ -27,7 +27,8 @@ import CoreData
 
 extension ExampleItem {
 
-    @NSManaged var name: String?
-    @NSManaged var numberTaps: Int32
-
+    @NSManaged var name:        String?
+    @NSManaged var numberTaps:  Int32
+    @NSManaged var myOther:     OtherItem?
+    
 }

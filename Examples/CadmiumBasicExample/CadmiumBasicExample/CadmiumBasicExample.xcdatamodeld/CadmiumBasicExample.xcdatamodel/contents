@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15D21" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10171" systemVersion="15E65" minimumToolsVersion="Automatic">
     <entity name="ExampleItem" representedClassName=".ExampleItem" syncable="YES">
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="numberTaps" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="myOther" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="OtherItem" inverseName="myExample" inverseEntity="OtherItem" syncable="YES"/>
+    </entity>
+    <entity name="OtherItem" representedClassName=".OtherItem" syncable="YES">
+        <attribute name="prop" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <relationship name="myExample" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ExampleItem" inverseName="myOther" inverseEntity="ExampleItem" syncable="YES"/>
     </entity>
     <elements>
-        <element name="ExampleItem" positionX="-63" positionY="-18" width="128" height="75"/>
+        <element name="ExampleItem" positionX="-63" positionY="-18" width="128" height="90"/>
+        <element name="OtherItem" positionX="-63" positionY="0" width="128" height="75"/>
     </elements>
 </model>

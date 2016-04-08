@@ -14,7 +14,7 @@ import CoreData
 
 extension OtherItem {
 
-    @NSManaged var prop: NSNumber?
-    @NSManaged var myExample: ExampleItem?
+    @NSManaged var prop:        Int
+    @NSManaged var myExample:   ExampleItem?
 
 }

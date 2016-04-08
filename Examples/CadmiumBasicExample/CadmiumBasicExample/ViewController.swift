@@ -74,6 +74,12 @@ class ViewController: UITableViewController {
         Cd.transact {
             let newItem = try! Cd.create(ExampleItem.self)
             newItem.name = randomString
+            
+            let newOther = try! Cd.create(OtherItem.self)
+            newOther.prop = 1
+            
+            newOther.myExample = newItem
+            newItem.myOther    = newOther
         }
     }
     
