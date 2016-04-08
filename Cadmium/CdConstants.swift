@@ -27,7 +27,7 @@ import Foundation
 
 internal let kCdThreadPropertyCurrentContext: String = "kCdThreadPropertyCurrentContext"
 internal let kCdThreadPropertyNoImplicitSave: String = "kCdThreadPropertyNoImplicitSave"
-
+internal let kCdThreadPropertyMainSaveNotif:  String = "kCdThreadPropertyMainSaveNotif"
 
 public enum CdInitFailure : ErrorType {
     case InvalidBundle

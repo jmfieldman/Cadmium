@@ -73,7 +73,9 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         /* Attach update handler to main thread context */
         NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextDidSaveNotification, object: _masterSaveContext, queue: notificationQueue) { (notification: NSNotification) -> Void in
             dispatch_async(dispatch_get_main_queue()) {
+                NSThread.currentThread().setInsideMainThreadChangeNotification(true)
                 _mainThreadContext?.mergeChangesFromContextDidSaveNotification(notification)
+                NSThread.currentThread().setInsideMainThreadChangeNotification(false)
             }
         }
         
@@ -237,5 +239,28 @@ internal extension NSThread {
     @inline(__always) internal func setNoImplicitCommit(status: Bool?) {
         self.threadDictionary[kCdThreadPropertyNoImplicitSave] = status
     }
+    
+    /**
+     Returns true if the main thread is inside a sanctioned
+     NSManagedObjectContextDidSaveNotification notification).
+     
+     - returns: true if the main thread should allow modifications (set during
+     the NSManagedObjectContextDidSaveNotification notification).
+     */
+    internal func insideMainThreadChangeNotification() -> Bool {
+        return (self.threadDictionary[kCdThreadPropertyMainSaveNotif] as? Bool) ?? false
+    }
+    
+    /**
+     Declare if the main thread context is inside of a sanctioned
+     NSManagedObjectContextDidSaveNotification merge event.
+     
+     - parameter status: true if so, false if not.
+     */
+    internal func setInsideMainThreadChangeNotification(inside: Bool) {
+        self.threadDictionary[kCdThreadPropertyMainSaveNotif] = inside
+    }
+    
+    
 }
 

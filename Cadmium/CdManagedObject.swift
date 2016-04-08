@@ -119,7 +119,7 @@ public class CdManagedObject : NSManagedObject {
         }
         
         let currentThread = NSThread.currentThread()
-        if currentThread.isMainThread {
+        if currentThread.isMainThread && !currentThread.insideMainThreadChangeNotification() {
             Cd.raise("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
         }
         
@@ -154,7 +154,7 @@ public class CdManagedObject : NSManagedObject {
         }
         
         let currentThread = NSThread.currentThread()
-        if currentThread.isMainThread {
+        if currentThread.isMainThread && !currentThread.insideMainThreadChangeNotification() {
             Cd.raise("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
         }
         
