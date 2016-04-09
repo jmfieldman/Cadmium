@@ -1,5 +1,11 @@
 # Cadmium Changelog
 
+## 0.11.1 -- 4/8/16
+
+* Changed Cd.useInCurrentContext to be less heavy-handed out raising exceptions.  Now allows context-less objects with persistent IDs to be used.
+* Added example of above issue to the basic example app (prints out property in the main thread of object created in a transaction)
+* Added Updated case for the updateHandler.
+
 ## 0.10.3 -- 4/8/16
 
 * Fixed bug that raised an incorrect excpetion during the main thread's merge handler.

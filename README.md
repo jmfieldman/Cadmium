@@ -246,6 +246,26 @@ Cd.transact {
 }
 ```
 
+You must also call ```Cd.commit()``` if you want to dispatch objects created in a transaction back to the main thread, since
+calling ```Cd.commit()``` will save created objects to the persistent store and give them permanent IDs.
+
+```swift
+Cd.transact {
+    let newItem = try! Cd.create(ExampleItem.self)
+    newItem.name = "Test"
+
+    /* Synchronously saves newItem to the persistent store */
+    try! Cd.commit()
+
+    dispatch_async(dispatch_get_main_queue()) {
+        /* newItem is available for use in the main thread, since it now has a persistent ID */
+        if let mainItem = Cd.useInCurrentContext(newItem), name = mainItem.name {
+            print("created item in transaction: \(name)")
+        }
+    }
+}
+```
+
 ### Fetched Results Controller
 
 For typical uses of ```NSFetchedResultsController```, you should use the built-in subclass ```CdFetchedResultsController```.  This
@@ -257,6 +277,31 @@ You can use the ```CdFetchedResultsController``` as you would a ```NSFetchedResu
 to modify them in a transaction.
 * You can pass a ```UITableView``` into the ```automateDelegation``` method to perform the standard insert/delete commands on sections and
 rows when your fetched results controller has changes.  This can help save a few lines in your own view controllers.
+
+### Using the Update Handler
+
+Every instance of ```CdManagedObject``` has a property called ```updateHandler``` that can store a block to be called when it
+is updated.  You may only attach a block to ```updateHandler``` on objects belonging to the main thread context.  This can be
+useful in situations where you want to monitor objects without using an ```NSFetchedResultsController```.
+
+An example might look like:
+
+```swift
+/* ... from the example above, transferring a new item to the main thread: */
+dispatch_async(dispatch_get_main_queue()) {
+    if let mainItem = Cd.useInCurrentContext(newItem), name = mainItem.name {
+        print("created item in transaction: \(name)")
+        mainItem.updateHandler = { event in
+            print("event occurred on object \(name): \(event)")
+        }
+    }
+}
+```
+
+Be aware that you can only install one ```updateHandler``` per instance.  If you need a solution that requires dispatching to
+more listeners, you can use the handler to post a ```NSNotification```, or use another toolkit like ReactiveCocoa (see the
+file ```Cadmium+ReactiveCocoa.swift``` in the Examples directory.)
+
 
 ### Aggressively Identifying Coding Pitfalls
 
