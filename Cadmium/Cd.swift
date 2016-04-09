@@ -499,12 +499,12 @@ public class Cd {
             Cd.raise("You may only call useInCurrentContext from the main thread, or inside a valid transaction.")
         }
         
-        guard let originalContext = object.managedObjectContext else {
-            Cd.raise("You cannot transfer an object without a existing context.  This object may be transient, or it's original context has been destroyed.")
+        if let originalContext = object.managedObjectContext where originalContext.hasChanges && originalContext != CdManagedObjectContext._mainThreadContext {
+            Cd.raise("You cannot transfer an object from a context that has outstanding changes.  Make sure you call Cd.commit() from your transaction first.")
         }
         
-        if originalContext.hasChanges && originalContext != CdManagedObjectContext._mainThreadContext {
-            Cd.raise("You cannot transfer an object from a context that has outstanding changes.  Make sure you call Cd.commit() from your transaction first.")
+        if object.objectID.temporaryID {
+            Cd.raise("You cannot transfer an object without a permanent object ID.  This object may be transient or unsaved in its current context.")
         }
         
         if let myItem = (try? currentContext.existingObjectWithID(object.objectID)) as? T {

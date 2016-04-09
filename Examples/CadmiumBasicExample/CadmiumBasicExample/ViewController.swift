@@ -80,6 +80,13 @@ class ViewController: UITableViewController {
             
             newOther.myExample = newItem
             newItem.myOther    = newOther
+            
+            try! Cd.commit()
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                let mainItem = Cd.useInCurrentContext(newItem)
+                print("mainItem \(mainItem!.name)")
+            }
         }
     }
     
