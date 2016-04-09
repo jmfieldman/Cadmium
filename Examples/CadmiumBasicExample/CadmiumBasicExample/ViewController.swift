@@ -78,8 +78,8 @@ class ViewController: UITableViewController {
             try! Cd.commit()
             
             dispatch_async(dispatch_get_main_queue()) {
-                if let mainItem = Cd.useInCurrentContext(newItem) {
-                    print("created item in transaction: \(mainItem.name)")
+                if let mainItem = Cd.useInCurrentContext(newItem), name = mainItem.name {
+                    print("created item in transaction: \(name)")
                 }
             }
         }
