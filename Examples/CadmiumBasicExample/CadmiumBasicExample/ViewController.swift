@@ -80,6 +80,9 @@ class ViewController: UITableViewController {
             dispatch_async(dispatch_get_main_queue()) {
                 if let mainItem = Cd.useInCurrentContext(newItem), name = mainItem.name {
                     print("created item in transaction: \(name)")
+                    mainItem.updateHandler = { event in
+                        print("event occurred on object \(name): \(event)")
+                    }
                 }
             }
         }
