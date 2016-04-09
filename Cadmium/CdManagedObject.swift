@@ -31,10 +31,11 @@ import CoreData
  
  - Refreshed: The receiver object was refreshed (from a change in
               another context).
+ - Updated:   The receiver object was updated.
  - Deleted:   The receiver object was deleted.
  */
 public enum CdManagedObjectUpdateEvent {
-    case Refreshed, Deleted
+    case Refreshed, Updated, Deleted
 }
 
 /**

@@ -90,6 +90,12 @@ public class CdManagedObjectContext : NSManagedObjectContext {
                     }
                 }
                 
+                if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<CdManagedObject> {
+                    for object in updatedObjects {
+                        object.updateHandler?(.Updated)
+                    }
+                }
+                
                 if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<CdManagedObject> {
                     for object in deletedObjects {
                         object.updateHandler?(.Deleted)
