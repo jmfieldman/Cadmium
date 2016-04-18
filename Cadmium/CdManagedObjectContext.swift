@@ -74,6 +74,17 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextDidSaveNotification, object: _masterSaveContext, queue: notificationQueue) { (notification: NSNotification) -> Void in
             dispatch_async(dispatch_get_main_queue()) {
                 NSThread.currentThread().setInsideMainThreadChangeNotification(true)
+                
+                /* Fault-in update objects before mergeChangesFromContextDidSaveNotification
+                   This allows monitoring FRC to see newly inserted objects, rather than them
+                   being treated like invisible faults.
+                   http://www.mlsite.net/blog/?p=518 */
+                if let updates = notification.userInfo?["updated"] as? Set<NSManagedObject> {
+                    for update in updates {
+                        _mainThreadContext?.objectWithID(update.objectID).willAccessValueForKey(nil)
+                    }
+                }
+                
                 _mainThreadContext?.mergeChangesFromContextDidSaveNotification(notification)
                 NSThread.currentThread().setInsideMainThreadChangeNotification(false)
             }

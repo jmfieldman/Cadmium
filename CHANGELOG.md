@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 0.11.2 -- 4/17/16
+
+* Address issue where newly inserted objects on the main context were not triggering fetched result controller insertion states.
+
 ## 0.11.1 -- 4/8/16
 
 * Changed Cd.useInCurrentContext to be less heavy-handed out raising exceptions.  Now allows context-less objects with persistent IDs to be used.
