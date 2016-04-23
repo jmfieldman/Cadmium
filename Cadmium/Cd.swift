@@ -28,6 +28,14 @@ import CoreData
 
 public class Cd {
 
+    
+    /*
+     *  -------------------- Settings -----------------------
+     */
+    
+    /** If true, Cadmium will default to using serial transactions. */
+    internal static var defaultSerialTransactions: Bool = false
+    
     /*
      *  -------------------- Initialization ----------------------
      */
@@ -39,11 +47,15 @@ public class Cd {
     
      - parameter momdURL:   The full URL to the managed object model.
      - parameter sqliteURL: The full URL to the sqlite store.
+     - parameter serialTX:  If Cadmium should use serial transactions
+                            by default.  See README for more information.
     */
-    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL, options: [NSObject : AnyObject]? = nil) throws {
+    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL, options: [NSObject : AnyObject]? = nil, serialTX: Bool = false) throws {
         guard let mom = NSManagedObjectModel(contentsOfURL: momdURL) else {
             throw CdInitFailure.InvalidManagedObjectModel
         }
+        
+        defaultSerialTransactions = serialTX
         
         let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
         try psc.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqliteURL, options: options)
@@ -67,10 +79,12 @@ public class Cd {
      - parameter sqliteFilename: The name of the SQLite file you are storing data
                                  in.  The initializer will append this filename
                                  to the user's document directory.
+     - parameter serialTX:       If Cadmium should use serial transactions
+                                 by default.  See README for more information.
      
      - throws: Various errors in case something goes wrong!
      */
-    public class func initWithSQLStore(momdInbundleID bundleID: String?, momdName: String, sqliteFilename: String, options: [NSObject : AnyObject]? = nil) throws {
+    public class func initWithSQLStore(momdInbundleID bundleID: String?, momdName: String, sqliteFilename: String, options: [NSObject : AnyObject]? = nil, serialTX: Bool = false) throws {
         var bundle: NSBundle!
         
         if bundleID == nil {
@@ -96,7 +110,7 @@ public class Cd {
         let sqliteURL           = documentDirectory.URLByAppendingPathComponent(sqliteFilename)
         
         try NSFileManager.defaultManager().createDirectoryAtURL(documentDirectory, withIntermediateDirectories: true, attributes: nil)
-        try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL, options: options)
+        try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL, options: options, serialTX: serialTX)
     }
     
     /*
@@ -378,7 +392,13 @@ public class Cd {
     /**
      Initiate a database transaction asynchronously on a background thread.  A
      new CdManagedObjectContext will be created for the lifetime of the transaction.
+     
+     If the serial setting is true, transactions are executed serially, even if they
+     occur in different contexts.
     
+     - parameter serial:    If defined, it will override the serial transaction
+                            setting declared during initialization.  Leave nil
+                            to use the default.
      - parameter operation:	This function should be used for transactions that
                             operate in a background thread, and may ultimately 
                             save back to the database using the Cd.commit() call.
@@ -391,10 +411,22 @@ public class Cd {
                             on the main thread.  This will use a background write
                             context even if initially called from the main thread.
     */
-    public class func transact(operation: Void -> Void) {
-        let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
-        newWriteContext.performBlock {
-            self.transactOperation(newWriteContext, operation: operation)
+    public class func transact(serial: Bool? = nil, operation: Void -> Void) {
+        let useSerial = serial ?? Cd.defaultSerialTransactions
+        
+        let operationBlock = {
+            let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
+            newWriteContext.performBlock {
+                let prevInside = NSThread.currentThread().setInsideTransaction(true)
+                self.transactOperation(newWriteContext, operation: operation)
+                NSThread.currentThread().setInsideTransaction(prevInside)
+            }
+        }
+        
+        if useSerial {
+            dispatch_async(CdManagedObjectContext.serialTransactionQueue, operationBlock)
+        } else {
+            operationBlock()
         }
     }
 
@@ -406,6 +438,13 @@ public class Cd {
      deadlocks.  You can execute fetches and read data on the main thread without
      needing to wrap those operations in a transaction.
      
+     If the serial setting is true, transactions are executed serially, even if they 
+     occur in different contexts.  Recursive transactAndWait calls are not 
+     dispatched serially, even if this setting is true (to prevent deadlocks).
+     
+     - parameter serial:    If defined, it will override the serial transaction
+                            setting declared during initialization.  Leave nil
+                            to use the default.
      - parameter operation:	This function should be used for transactions that
                             should occur synchronously against the current background
                             thread.  Transactions may ultimately save back to the 
@@ -416,14 +455,26 @@ public class Cd {
                             may not execute in a separate thread than the calling
                             thread.
     */
-    public class func transactAndWait(operation: Void -> Void) {
+    public class func transactAndWait(serial: Bool? = nil, operation: Void -> Void) {
         if NSThread.currentThread().isMainThread {
             Cd.raise("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
         }
         
-        let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
-        newWriteContext.performBlockAndWait {
-            self.transactOperation(newWriteContext, operation: operation)
+        let useSerial = (serial ?? Cd.defaultSerialTransactions) && !NSThread.currentThread().insideTransaction()
+        
+        let operationBlock = {
+            let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
+            newWriteContext.performBlockAndWait {
+                let prevInside = NSThread.currentThread().setInsideTransaction(true)
+                self.transactOperation(newWriteContext, operation: operation)
+                NSThread.currentThread().setInsideTransaction(prevInside)
+            }
+        }
+        
+        if useSerial {
+            dispatch_sync(CdManagedObjectContext.serialTransactionQueue, operationBlock)
+        } else {
+            operationBlock()
         }
     }
     
@@ -547,6 +598,6 @@ public class Cd {
         NSException(name: "Cadmium Exception", reason: reason, userInfo: nil).raise()
         fatalError("These usage exception cannot be caught")
     }
-    
+   
     
 }

@@ -54,6 +54,14 @@ public class CdManagedObjectContext : NSManagedObjectContext {
     internal static var shouldCallUpdateHandlers: Bool = false
     
     /**
+     *  This is the concurrent dispatch queue which is used to pass async
+     *  transactions if they are intended to be used serially.  This allows
+     *  us to block on our recursive lock before executing the context
+     *  transaction.
+     */
+    internal static let serialTransactionQueue = dispatch_queue_create("Cd.ManagedObjectContext.serialTransactionQueue", nil)
+    
+    /**
      Initialize the master save context and the main thread context.
      
      - parameter coordinator: The persistent store coordinator for the save context.
@@ -278,6 +286,26 @@ internal extension NSThread {
         self.threadDictionary[kCdThreadPropertyMainSaveNotif] = inside
     }
     
+    /**
+     Returns true if the thread is inside a transaction.
+     
+     - returns: true if the thread is inside a transaction.
+     */
+    internal func insideTransaction() -> Bool {
+        return (self.threadDictionary[kCdThreadPropertyInsideTrans] as? Bool) ?? false
+    }
+    
+    /**
+     Declare if a thread is inside a transaction.
+     
+     - parameter status: true if so, false if not.
+     - returns:          The previous value
+     */
+    internal func setInsideTransaction(inside: Bool) -> Bool {
+        let result = (self.threadDictionary[kCdThreadPropertyInsideTrans] as? Bool) ?? false
+        self.threadDictionary[kCdThreadPropertyInsideTrans] = inside
+        return result
+    }
     
 }
 
