@@ -172,6 +172,8 @@ Cd.transact {
 
 ### Forced Serial Transactions
 
+**NOTE: Advanced Feature**
+
 Core Data, and Cadmium, are asynchronous APIs by nature.  You generally initiate fetches and modify data asynchronously from the main thread.  This
 tight coupling with asynchronous behavior may be detrimental if you find that the context modifications you perform often conflict with each other.
 
@@ -236,8 +238,25 @@ Cd.transact(serial: false) {
 
 Not specifying the ```serial``` parameter, or passing ```nil```, will use the default determined during initialization.
 
-Note that you will incur a performance hit with serial transactions in the cases that you attempt to execute lots of concurrent
-transactions on unrelated objects (since these will all execute serially instead of in parallel).
+Most use cases will be fine setting the default serial usage to true and leaving it at that. You will incur a performance hit with 
+serial transactions in the cases that you attempt to execute lots of concurrent
+or long-running transactions on unrelated objects (since these will all execute serially instead of in parallel).
+
+As an advanced workaround to this issue, if you have many concurrent long-running transactions on different subsets of your
+data store, you can pass your own dispatch queue to the ```on``` parameter:
+
+```swift
+Cd.transact(on: mySerialDispatchQueue) {
+    ...
+}
+```
+
+The transaction block itself will occur in the context's queue -- but this occurs synchronously in the dispatch queue you
+provide.  You can provide different dispatch queues for transactions that affect different objects.
+
+Note that the dispatch queue you provide will target the internal default serial queue, which keeps the save context
+synchronized no matter which queues you use.  It also means that any transactions you run on the default serial queue
+will block all other queues you may pass in (so avoid running very long transactions on the default serial queue).
 
 ### Creating and Deleting Objects
 

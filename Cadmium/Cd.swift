@@ -399,6 +399,11 @@ public class Cd {
      - parameter serial:    If defined, it will override the serial transaction
                             setting declared during initialization.  Leave nil
                             to use the default.
+     - parameter on:        If non-nil, specifies the dispatch queue to run the
+                            serial operation on.  This must be a serial dispatch
+                            queue (not concurrent).  If this argument is non-nil,
+                            the serial argument is assumed true unless specifically
+                            passed as false.
      - parameter operation:	This function should be used for transactions that
                             operate in a background thread, and may ultimately 
                             save back to the database using the Cd.commit() call.
@@ -411,15 +416,19 @@ public class Cd {
                             on the main thread.  This will use a background write
                             context even if initially called from the main thread.
     */
-    public class func transact(serial serial: Bool? = nil, operation: Void -> Void) {
-        let useSerial = serial ?? Cd.defaultSerialTransactions
+    public class func transact(serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: Void -> Void) {
+        let useSerial = (serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)
+        
+        if let serialQueue = serialQueue {
+            dispatch_set_target_queue(serialQueue, CdManagedObjectContext.serialTransactionQueue)
+        }
         
         /*  These blocks are different.  One calls performBlock as normal (useSerial = false).
             The other calls performBlockAndWait inside of an async serial queue (useSerial = true)
          */
         
         if useSerial {
-            dispatch_async(CdManagedObjectContext.serialTransactionQueue) {
+            dispatch_async(serialQueue ?? CdManagedObjectContext.serialTransactionQueue) {
                 let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
                 newWriteContext.performBlockAndWait() {
                     let prevInside = NSThread.currentThread().setInsideTransaction(true)
@@ -452,6 +461,11 @@ public class Cd {
      - parameter serial:    If defined, it will override the serial transaction
                             setting declared during initialization.  Leave nil
                             to use the default.
+     - parameter on:        If non-nil, specifies the dispatch queue to run the
+                            serial operation on.  This must be a serial dispatch
+                            queue (not concurrent).  If this argument is non-nil,
+                            the serial argument is assumed true unless specifically
+                            passed as false.
      - parameter operation:	This function should be used for transactions that
                             should occur synchronously against the current background
                             thread.  Transactions may ultimately save back to the 
@@ -462,12 +476,16 @@ public class Cd {
                             may not execute in a separate thread than the calling
                             thread.
     */
-    public class func transactAndWait(serial serial: Bool? = nil, operation: Void -> Void) {
+    public class func transactAndWait(serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: Void -> Void) {
         if NSThread.currentThread().isMainThread {
             Cd.raise("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
         }
         
-        let useSerial = (serial ?? Cd.defaultSerialTransactions) && !NSThread.currentThread().insideTransaction()
+        let useSerial = ((serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)) && !NSThread.currentThread().insideTransaction()
+        
+        if let serialQueue = serialQueue {
+            dispatch_set_target_queue(serialQueue, CdManagedObjectContext.serialTransactionQueue)
+        }
         
         let operationBlock = {
             let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
@@ -479,7 +497,7 @@ public class Cd {
         }
         
         if useSerial {
-            dispatch_sync(CdManagedObjectContext.serialTransactionQueue, operationBlock)
+            dispatch_sync(serialQueue ?? CdManagedObjectContext.serialTransactionQueue, operationBlock)
         } else {
             operationBlock()
         }

@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 0.12.2 -- 4/24/16
+
+* Added the ```on``` parameter to transactions to specify your own dispatch queue for batching serial transactions into relevant queues.
+
 ## 0.12.1 -- 4/24/16
 
 * Added support for forced serial transactions (See README section on forced serial transactions)

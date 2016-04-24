@@ -500,7 +500,7 @@ class CadmiumTests: XCTestCase {
         
     }
     
-    func helperRunParallelInc(maxMillionths: Int, forcedSerial: Bool?) -> [Int] {
+    func helperRunParallelInc(maxMillionths: Int, forcedSerial: Bool?, onQueue: dispatch_queue_t? = nil) -> [Int] {
         
         var result: [Int] = []
         var lock: OSSpinLock = OS_SPINLOCK_INIT
@@ -513,7 +513,7 @@ class CadmiumTests: XCTestCase {
             for _ in 0 ..< 40 {
                 dispatch_group_async(group, queue) {
                     
-                    Cd.transactAndWait(serial: forcedSerial) {
+                    Cd.transactAndWait(serial: forcedSerial, on: onQueue) {
                         if let obj = try! Cd.objects(TestItem.self).filter("name = %@", "A").fetchOne() {
                             
                             let delayTime = Double(arc4random_uniform(UInt32(maxMillionths))) / 1000000.0
@@ -540,7 +540,7 @@ class CadmiumTests: XCTestCase {
         return result
     }
     
-    func helperRunParallelIncNormalTransact(maxMillionths: Int, forcedSerial: Bool?) -> [Int] {
+    func helperRunParallelIncNormalTransact(maxMillionths: Int, forcedSerial: Bool?, onQueue: dispatch_queue_t? = nil) -> [Int] {
         
         var result: [Int] = []
         var lock: OSSpinLock = OS_SPINLOCK_INIT
@@ -553,7 +553,7 @@ class CadmiumTests: XCTestCase {
             for _ in 0 ..< 40 {
                 dispatch_group_enter(group)
                     
-                Cd.transact(serial: forcedSerial) {
+                Cd.transact(serial: forcedSerial, on: onQueue) {
                     if let obj = try! Cd.objects(TestItem.self).filter("name = %@", "A").fetchOne() {
                         
                         let delayTime = Double(arc4random_uniform(UInt32(maxMillionths))) / 1000000.0
@@ -662,7 +662,6 @@ class CadmiumTests: XCTestCase {
         Cd.defaultSerialTransactions = false
         
         let res = helperRunParallelIncNormalTransact(10, forcedSerial: true)
-        print(res)
         
         /* Pretty much impossible that this would create a perfectly linear list */
         var dupfound = false
@@ -693,6 +692,44 @@ class CadmiumTests: XCTestCase {
         
         XCTAssertEqual(res.count, 1000, "Did not run 1000 times")
         XCTAssertEqual(dupfound, true, "Tasks ran serially")
+        
+    }
+    
+    func testParallelSerialNoCrashUsingQueuesSer() {
+        
+        let myQueue = dispatch_queue_create("test", nil)
+        
+        let res = helperRunParallelIncNormalTransact(10, forcedSerial: nil, onQueue: myQueue)
+        
+        /* Pretty much impossible that this would create a perfectly linear list */
+        var dupfound = false
+        for i in 0 ..< (res.count - 1) {
+            for j in (i+1) ..< res.count {
+                if res[i] == res[j] { dupfound = true; break }
+            }
+        }
+        
+        XCTAssertEqual(res.count, 1000, "Did not run 1000 times")
+        XCTAssertEqual(dupfound, false, "Tasks did not run serially")
+        
+    }
+    
+    func testParallelSerialNoCrashUsingQueuesPar() {
+        
+        let myQueue = dispatch_queue_create("test", DISPATCH_QUEUE_CONCURRENT)
+        
+        let res = helperRunParallelIncNormalTransact(10, forcedSerial: nil, onQueue: myQueue)
+        
+        /* Pretty much impossible that this would create a perfectly linear list */
+        var dupfound = false
+        for i in 0 ..< (res.count - 1) {
+            for j in (i+1) ..< res.count {
+                if res[i] == res[j] { dupfound = true; break }
+            }
+        }
+        
+        XCTAssertEqual(res.count, 1000, "Did not run 1000 times")
+        XCTAssertEqual(dupfound, false, "Tasks did not run serially")
         
     }
     
