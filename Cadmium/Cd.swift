@@ -411,22 +411,29 @@ public class Cd {
                             on the main thread.  This will use a background write
                             context even if initially called from the main thread.
     */
-    public class func transact(serial: Bool? = nil, operation: Void -> Void) {
+    public class func transact(serial serial: Bool? = nil, operation: Void -> Void) {
         let useSerial = serial ?? Cd.defaultSerialTransactions
         
-        let operationBlock = {
+        /*  These blocks are different.  One calls performBlock as normal (useSerial = false).
+            The other calls performBlockAndWait inside of an async serial queue (useSerial = true)
+         */
+        
+        if useSerial {
+            dispatch_async(CdManagedObjectContext.serialTransactionQueue) {
+                let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
+                newWriteContext.performBlockAndWait() {
+                    let prevInside = NSThread.currentThread().setInsideTransaction(true)
+                    self.transactOperation(newWriteContext, operation: operation)
+                    NSThread.currentThread().setInsideTransaction(prevInside)
+                }
+            }
+        } else {
             let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
             newWriteContext.performBlock {
                 let prevInside = NSThread.currentThread().setInsideTransaction(true)
                 self.transactOperation(newWriteContext, operation: operation)
                 NSThread.currentThread().setInsideTransaction(prevInside)
             }
-        }
-        
-        if useSerial {
-            dispatch_async(CdManagedObjectContext.serialTransactionQueue, operationBlock)
-        } else {
-            operationBlock()
         }
     }
 
@@ -455,7 +462,7 @@ public class Cd {
                             may not execute in a separate thread than the calling
                             thread.
     */
-    public class func transactAndWait(serial: Bool? = nil, operation: Void -> Void) {
+    public class func transactAndWait(serial serial: Bool? = nil, operation: Void -> Void) {
         if NSThread.currentThread().isMainThread {
             Cd.raise("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
         }
