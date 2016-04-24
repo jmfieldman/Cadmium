@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 0.12.1 -- 4/24/16
+
+* Added support for forced serial transactions (See README section on forced serial transactions)
+
 ## 0.11.2 -- 4/17/16
 
 * Address issue where newly inserted objects on the main context were not triggering fetched result controller insertion states.

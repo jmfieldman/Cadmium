@@ -170,6 +170,75 @@ Cd.transact {
 }
 ```
 
+### Forced Serial Transactions
+
+Core Data, and Cadmium, are asynchronous APIs by nature.  You generally initiate fetches and modify data asynchronously from the main thread.  This
+tight coupling with asynchronous behavior may be detrimental if you find that the context modifications you perform often conflict with each other.
+
+For example, take the following transaction that might occur when the user taps a button to visit a place:
+
+```swift
+Cd.transact {
+    if let place = try! Cd.objects(Place.self).filter("id = %@", myID).fetchOne() {
+        place.visits += 1
+    }
+}
+```
+
+What if the user spams the visit button?  Because the transactions occur in separate context queues, it's not 100% guaranteed that ```place.visits```
+will increment serially.  There is a remote possibility that a race condition will cause two of these contexts to see ```place.visits``` as the same
+value before incrementing.
+
+To help resolve this problem and ensure that transactions are executed serially, you may pass an optional ```serial``` parameter to your
+transactions:
+
+```swift
+Cd.transact(serial: true) {
+    if let place = try! Cd.objects(Place.self).filter("id = %@", myID).fetchOne() {
+        place.visits += 1
+    }
+}
+```
+
+This guarantees that your transactions will occur serially (even waiting for the finalized context save) before proceeding to the next one -- thus
+your transactions can be considered atomic.   
+
+Note that this atomic behavior is limited to the top-most transaction.  Transactions-inside-transactions are not executed on the serial queue to
+prevent deadlocks.
+
+```swift
+/* In this odd case, the inside transactAndWait will ignore the serial parameter, since it is already
+   inside a transaction.  The prevents deadlocks waiting on the serial queue. */
+
+Cd.transact(serial: true) {
+    Cd.transactAndWait(serial: true) {
+    }
+}
+```
+
+It is annoying to pass the serial parameter every time you want this behavior, especially if you want in *most of the time*.  If you want your
+transactions to be serial by default, pass ```true``` to the ```serialTX``` parameter in the Cd.init function:
+
+```swift
+try Cd.initWithSQLStore(momdInbundleID: "org.fieldman.CadmiumTests",
+                        momdName:       "CadmiumTestModel",
+                        sqliteFilename: "test.sqlite",
+                        serialTX:       true)
+```
+
+When you pass ```true``` to the init, you can override this per-transaction by passing ```false``` to the ```serial``` parameter:
+
+```swift
+Cd.transact(serial: false) {
+    ...
+}
+```
+
+Not specifying the ```serial``` parameter, or passing ```nil```, will use the default determined during initialization.
+
+Note that you will incur a performance hit with serial transactions in the cases that you attempt to execute lots of concurrent
+transactions on unrelated objects (since these will all execute serially instead of in parallel).
+
 ### Creating and Deleting Objects
 
 Objects can be created and deleted inside transactions.
