@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		35252A361CB8BEAE00444681 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 35252A351CB8BEAE00444681 /* README.md */; };
 		35552AE81C960848004397CD /* Cadmium.h in Headers */ = {isa = PBXBuildFile; fileRef = 35552AE71C960848004397CD /* Cadmium.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		35552AEF1C960848004397CD /* Cadmium.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35552AE41C960848004397CD /* Cadmium.framework */; };
 		35552AF41C960848004397CD /* CadmiumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552AF31C960848004397CD /* CadmiumTests.swift */; };
@@ -236,7 +235,6 @@
 				35552B0B1C9614BF004397CD /* CdConstants.swift in Sources */,
 				35552B071C960E94004397CD /* CdManagedObjectContext.swift in Sources */,
 				35E522A71C977017005EBECE /* CdFetchedResultsController.swift in Sources */,
-				35252A361CB8BEAE00444681 /* README.md in Sources */,
 				35552B091C961013004397CD /* CdFetchRequest.swift in Sources */,
 				35552B031C96096D004397CD /* Cd.swift in Sources */,
 				35552B051C960BD5004397CD /* CdManagedObject.swift in Sources */,
