@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10171" systemVersion="15E65" minimumToolsVersion="Automatic">
-    <entity name="ExampleItem" syncable="YES">
+    <entity name="ExampleItem" representedClassName=".ExampleItem" syncable="YES">
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="numberTaps" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
     </entity>

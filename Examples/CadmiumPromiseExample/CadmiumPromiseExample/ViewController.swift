@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import PromiseKit
 import Cadmium
 
 class ViewController: UITableViewController {
