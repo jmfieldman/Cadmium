@@ -445,6 +445,82 @@ public class Cd {
             }
         }
     }
+    
+    /**
+     Initiate a database transaction asynchronously on a background thread with an
+     object from a different context.  A new CdManagedObjectContext will be created 
+     for the lifetime of the transaction.
+     
+     If the serial setting is true, transactions are executed serially, even if they
+     occur in different contexts.
+     
+     - parameter object:    An object from another context that you would like
+                            to use in this transaction.
+     - parameter serial:    If defined, it will override the serial transaction
+                            setting declared during initialization.  Leave nil
+                            to use the default.
+     - parameter on:        If non-nil, specifies the dispatch queue to run the
+                            serial operation on.  This must be a serial dispatch
+                            queue (not concurrent).  If this argument is non-nil,
+                            the serial argument is assumed true unless specifically
+                            passed as false.
+     - parameter operation:	This function should be used for transactions that
+                            operate in a background thread, and may ultimately
+                            save back to the database using the Cd.commit() call.
+                            The operation is passed a CdManagedObject in the
+                            new context that is derived from the first parameter.
+     
+     The operation block is run asynchronously and will not
+     occur on the main thread.  It will run on the private
+     queue of the write context.
+     
+     It is important to note that no transactions can occur
+     on the main thread.  This will use a background write
+     context even if initially called from the main thread.
+     */
+    public class func transactWith<T: CdManagedObject>(object: T, serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
+        Cd.transact(serial: serial, on: serialQueue) {
+            operation(Cd.useInCurrentContext(object))
+        }
+    }
+
+    /**
+     Initiate a database transaction asynchronously on a background thread with an
+     object from a different context.  A new CdManagedObjectContext will be created
+     for the lifetime of the transaction.
+     
+     If the serial setting is true, transactions are executed serially, even if they
+     occur in different contexts.
+     
+     - parameter objects:   An array of objects from another context that you would like
+                            to use in this transaction.
+     - parameter serial:    If defined, it will override the serial transaction
+                            setting declared during initialization.  Leave nil
+                            to use the default.
+     - parameter on:        If non-nil, specifies the dispatch queue to run the
+                            serial operation on.  This must be a serial dispatch
+                            queue (not concurrent).  If this argument is non-nil,
+                            the serial argument is assumed true unless specifically
+                            passed as false.
+     - parameter operation:	This function should be used for transactions that
+                            operate in a background thread, and may ultimately
+                            save back to the database using the Cd.commit() call.
+                            The operation is passed an array of CdManagedObjects in the
+                            new context that is derived from the first parameter.
+     
+     The operation block is run asynchronously and will not
+     occur on the main thread.  It will run on the private
+     queue of the write context.
+     
+     It is important to note that no transactions can occur
+     on the main thread.  This will use a background write
+     context even if initially called from the main thread.
+     */
+    public class func transactWith<T: CdManagedObject>(objects: [T], serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
+        Cd.transact(serial: serial, on: serialQueue) {
+            operation(Cd.useInCurrentContext(objects))
+        }
+    }
 
     /**
      Initiate a database transaction synchronously on the current thread.  A
@@ -502,6 +578,85 @@ public class Cd {
             operationBlock()
         }
     }
+    
+    
+    /**
+     Initiate a database transaction synchronously on the current thread.  A
+     new CdManagedObjectContext will be created for the lifetime of the transaction.
+     
+     This function cannot be called from the main thread, to prevent potential
+     deadlocks.  You can execute fetches and read data on the main thread without
+     needing to wrap those operations in a transaction.
+     
+     If the serial setting is true, transactions are executed serially, even if they
+     occur in different contexts.  Recursive transactAndWait calls are not
+     dispatched serially, even if this setting is true (to prevent deadlocks).
+     
+     - parameter object:    An object from another context that you would like
+                            to use in this transaction.
+     - parameter serial:    If defined, it will override the serial transaction
+                            setting declared during initialization.  Leave nil
+                            to use the default.
+     - parameter on:        If non-nil, specifies the dispatch queue to run the
+                            serial operation on.  This must be a serial dispatch
+                            queue (not concurrent).  If this argument is non-nil,
+                            the serial argument is assumed true unless specifically
+                            passed as false.
+     - parameter operation:	This function should be used for transactions that
+                            should occur synchronously against the current background
+                            thread.  Transactions may ultimately save back to the
+                            database using the Cd.commit() call.
+     
+     The operation is synchronous and will block until complete.
+     It will execute on the context's private queue and may or
+     may not execute in a separate thread than the calling
+     thread.
+     */
+    public class func transactAndWaitWith<T: CdManagedObject>(object: T, serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
+        Cd.transactAndWait(serial: serial, on: serialQueue) {
+            operation(Cd.useInCurrentContext(object))
+        }
+    }
+    
+    
+    /**
+     Initiate a database transaction synchronously on the current thread.  A
+     new CdManagedObjectContext will be created for the lifetime of the transaction.
+     
+     This function cannot be called from the main thread, to prevent potential
+     deadlocks.  You can execute fetches and read data on the main thread without
+     needing to wrap those operations in a transaction.
+     
+     If the serial setting is true, transactions are executed serially, even if they
+     occur in different contexts.  Recursive transactAndWait calls are not
+     dispatched serially, even if this setting is true (to prevent deadlocks).
+     
+     - parameter objects:   An array of objects from another context that you would like
+                            to use in this transaction.
+     - parameter serial:    If defined, it will override the serial transaction
+                            setting declared during initialization.  Leave nil
+                            to use the default.
+     - parameter on:        If non-nil, specifies the dispatch queue to run the
+                            serial operation on.  This must be a serial dispatch
+                            queue (not concurrent).  If this argument is non-nil,
+                            the serial argument is assumed true unless specifically
+                            passed as false.
+     - parameter operation:	This function should be used for transactions that
+                            should occur synchronously against the current background
+                            thread.  Transactions may ultimately save back to the
+                            database using the Cd.commit() call.
+     
+     The operation is synchronous and will block until complete.
+     It will execute on the context's private queue and may or
+     may not execute in a separate thread than the calling
+     thread.
+     */
+    public class func transactAndWaitWith<T: CdManagedObject>(objects: [T], serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
+        Cd.transactAndWait(serial: serial, on: serialQueue) {
+            operation(Cd.useInCurrentContext(objects))
+        }
+    }
+    
     
     /**
      This is the private helper method that conducts that actual transaction
@@ -568,9 +723,9 @@ public class Cd {
      context) in your current context.
      
      - parameter object: A CdManagedObject that is suitable to use
-                         in the current context.
+                         in the current context (must have a permanent ID).
      */
-    public class func useInCurrentContext<T: CdManagedObject>(object: T) -> T? {
+    public class func useInCurrentContext<T: CdManagedObject>(object: T) -> T {
         guard let currentContext = NSThread.currentThread().attachedContext() else {
             Cd.raise("You may only call useInCurrentContext from the main thread, or inside a valid transaction.")
         }
@@ -588,7 +743,24 @@ public class Cd {
             return myItem
         }
         
-        return nil
+        Cd.raise("You cannot use an object that cannot exist in the current context.")
+    }
+    
+    /**
+     Allows you to refer to an of foreign CdManagedObjects (from another
+     context) in your current context.
+     
+     - parameter objects:   An array of CdManagedObjects that is suitable to use
+                            in the current context (must have a permanent ID).
+     */
+    public class func useInCurrentContext<T: CdManagedObject>(objects: [T]) -> [T] {
+        var result: [T] = []
+        
+        for original in objects {
+            result.append(Cd.useInCurrentContext(original))
+        }
+        
+        return result
     }
     
     /**

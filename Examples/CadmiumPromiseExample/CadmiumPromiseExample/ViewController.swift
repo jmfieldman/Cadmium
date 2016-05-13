@@ -63,11 +63,11 @@ class ViewController: UITableViewController {
 			try! Cd.commit()
 			
 			dispatch_async(dispatch_get_main_queue()) {
-				if let mainItem = Cd.useInCurrentContext(newItem), name = mainItem.name {
-					print("created item in transaction: \(name)")
-					mainItem.updateHandler = { event in
-						print("event occurred on object \(name): \(event)")
-					}
+				let mainItem = Cd.useInCurrentContext(newItem)
+				let name = mainItem.name
+				print("created item in transaction: \(name)")
+				mainItem.updateHandler = { event in
+					print("event occurred on object \(name): \(event)")
 				}
 			}
 		}
@@ -120,11 +120,7 @@ extension ViewController {
 		An implicit commit occurs when the transaction is complete and changes are
 		written to disk.  The main thread context is notified of this change and
 		the fetch controller will updated automatically in the main thread. */
-		Cd.transact {
-			guard let txItem = Cd.useInCurrentContext(item) else {
-				return
-			}
-			
+		Cd.transactWith(item) { txItem in
 			txItem.numberTaps += 1
 		}
 		
@@ -147,11 +143,7 @@ extension ViewController {
 		}
 		
 		/* Objects can only be deleted in transactions, similar to object modification. */
-		Cd.transact {
-			guard let txItem = Cd.useInCurrentContext(item) else {
-				return
-			}
-			
+		Cd.transactWith(item) { txItem in
 			Cd.delete(txItem)
 		}
 	}
