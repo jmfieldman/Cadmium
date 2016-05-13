@@ -1,0 +1,433 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3596529C1CE6354200EE82A9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3596529B1CE6354200EE82A9 /* AppDelegate.swift */; };
+		3596529E1CE6354200EE82A9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3596529D1CE6354200EE82A9 /* ViewController.swift */; };
+		359652A41CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 359652A21CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld */; };
+		359652A61CE6354200EE82A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 359652A51CE6354200EE82A9 /* Assets.xcassets */; };
+		359652A91CE6354200EE82A9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 359652A71CE6354200EE82A9 /* LaunchScreen.storyboard */; };
+		359652BB1CE6378400EE82A9 /* Cadmium.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 359652B71CE6375800EE82A9 /* Cadmium.framework */; };
+		359652BD1CE6378B00EE82A9 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 359652BC1CE6378B00EE82A9 /* CoreData.framework */; };
+		4DB289FFAB1481038AE45E1C /* Pods_CadmiumPromiseExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7ED8058D0B7C2BE87D96245 /* Pods_CadmiumPromiseExample.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		359652B61CE6375800EE82A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 359652B11CE6375800EE82A9 /* Cadmium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 35552AE41C960848004397CD;
+			remoteInfo = Cadmium;
+		};
+		359652B81CE6375800EE82A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 359652B11CE6375800EE82A9 /* Cadmium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 35552AEE1C960848004397CD;
+			remoteInfo = CadmiumTests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		359652981CE6354200EE82A9 /* CadmiumPromiseExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CadmiumPromiseExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3596529B1CE6354200EE82A9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		3596529D1CE6354200EE82A9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		359652A31CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CadmiumPromiseExample.xcdatamodel; sourceTree = "<group>"; };
+		359652A51CE6354200EE82A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		359652A81CE6354200EE82A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		359652AA1CE6354200EE82A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		359652B11CE6375800EE82A9 /* Cadmium.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Cadmium.xcodeproj; path = ../../Cadmium.xcodeproj; sourceTree = "<group>"; };
+		359652BC1CE6378B00EE82A9 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		3C05BB6AEF7AD013DCB3D977 /* Pods-CadmiumPromiseExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CadmiumPromiseExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-CadmiumPromiseExample/Pods-CadmiumPromiseExample.release.xcconfig"; sourceTree = "<group>"; };
+		C7ED8058D0B7C2BE87D96245 /* Pods_CadmiumPromiseExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CadmiumPromiseExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E607090122334660F5BFE876 /* Pods-CadmiumPromiseExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CadmiumPromiseExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CadmiumPromiseExample/Pods-CadmiumPromiseExample.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		359652951CE6354200EE82A9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				359652BD1CE6378B00EE82A9 /* CoreData.framework in Frameworks */,
+				359652BB1CE6378400EE82A9 /* Cadmium.framework in Frameworks */,
+				4DB289FFAB1481038AE45E1C /* Pods_CadmiumPromiseExample.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A8FEAAB4E277B3D8CBEEF97 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				359652BC1CE6378B00EE82A9 /* CoreData.framework */,
+				C7ED8058D0B7C2BE87D96245 /* Pods_CadmiumPromiseExample.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3596528F1CE6354200EE82A9 = {
+			isa = PBXGroup;
+			children = (
+				359652B11CE6375800EE82A9 /* Cadmium.xcodeproj */,
+				3596529A1CE6354200EE82A9 /* CadmiumPromiseExample */,
+				359652991CE6354200EE82A9 /* Products */,
+				9CD0E5B39153F6234E022A52 /* Pods */,
+				0A8FEAAB4E277B3D8CBEEF97 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		359652991CE6354200EE82A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				359652981CE6354200EE82A9 /* CadmiumPromiseExample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3596529A1CE6354200EE82A9 /* CadmiumPromiseExample */ = {
+			isa = PBXGroup;
+			children = (
+				3596529B1CE6354200EE82A9 /* AppDelegate.swift */,
+				3596529D1CE6354200EE82A9 /* ViewController.swift */,
+				359652A51CE6354200EE82A9 /* Assets.xcassets */,
+				359652A71CE6354200EE82A9 /* LaunchScreen.storyboard */,
+				359652AA1CE6354200EE82A9 /* Info.plist */,
+				359652A21CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld */,
+			);
+			path = CadmiumPromiseExample;
+			sourceTree = "<group>";
+		};
+		359652B21CE6375800EE82A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				359652B71CE6375800EE82A9 /* Cadmium.framework */,
+				359652B91CE6375800EE82A9 /* CadmiumTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9CD0E5B39153F6234E022A52 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E607090122334660F5BFE876 /* Pods-CadmiumPromiseExample.debug.xcconfig */,
+				3C05BB6AEF7AD013DCB3D977 /* Pods-CadmiumPromiseExample.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		359652971CE6354200EE82A9 /* CadmiumPromiseExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 359652AD1CE6354200EE82A9 /* Build configuration list for PBXNativeTarget "CadmiumPromiseExample" */;
+			buildPhases = (
+				66D0F515859FDE94FA52DA71 /* 📦 Check Pods Manifest.lock */,
+				359652941CE6354200EE82A9 /* Sources */,
+				359652951CE6354200EE82A9 /* Frameworks */,
+				359652961CE6354200EE82A9 /* Resources */,
+				D191DD4DF4E07C1BAD9C2C48 /* 📦 Embed Pods Frameworks */,
+				720A7F33C6E8A421B050AB04 /* 📦 Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CadmiumPromiseExample;
+			productName = CadmiumPromiseExample;
+			productReference = 359652981CE6354200EE82A9 /* CadmiumPromiseExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		359652901CE6354200EE82A9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Jason Fieldman";
+				TargetAttributes = {
+					359652971CE6354200EE82A9 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = 359652931CE6354200EE82A9 /* Build configuration list for PBXProject "CadmiumPromiseExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3596528F1CE6354200EE82A9;
+			productRefGroup = 359652991CE6354200EE82A9 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 359652B21CE6375800EE82A9 /* Products */;
+					ProjectRef = 359652B11CE6375800EE82A9 /* Cadmium.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				359652971CE6354200EE82A9 /* CadmiumPromiseExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		359652B71CE6375800EE82A9 /* Cadmium.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Cadmium.framework;
+			remoteRef = 359652B61CE6375800EE82A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		359652B91CE6375800EE82A9 /* CadmiumTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = CadmiumTests.xctest;
+			remoteRef = 359652B81CE6375800EE82A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		359652961CE6354200EE82A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				359652A91CE6354200EE82A9 /* LaunchScreen.storyboard in Resources */,
+				359652A61CE6354200EE82A9 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		66D0F515859FDE94FA52DA71 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		720A7F33C6E8A421B050AB04 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CadmiumPromiseExample/Pods-CadmiumPromiseExample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D191DD4DF4E07C1BAD9C2C48 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CadmiumPromiseExample/Pods-CadmiumPromiseExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		359652941CE6354200EE82A9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3596529E1CE6354200EE82A9 /* ViewController.swift in Sources */,
+				3596529C1CE6354200EE82A9 /* AppDelegate.swift in Sources */,
+				359652A41CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		359652A71CE6354200EE82A9 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				359652A81CE6354200EE82A9 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		359652AB1CE6354200EE82A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		359652AC1CE6354200EE82A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		359652AE1CE6354200EE82A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E607090122334660F5BFE876 /* Pods-CadmiumPromiseExample.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = CadmiumPromiseExample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumPromiseExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		359652AF1CE6354200EE82A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3C05BB6AEF7AD013DCB3D977 /* Pods-CadmiumPromiseExample.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = CadmiumPromiseExample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumPromiseExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		359652931CE6354200EE82A9 /* Build configuration list for PBXProject "CadmiumPromiseExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				359652AB1CE6354200EE82A9 /* Debug */,
+				359652AC1CE6354200EE82A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		359652AD1CE6354200EE82A9 /* Build configuration list for PBXNativeTarget "CadmiumPromiseExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				359652AE1CE6354200EE82A9 /* Debug */,
+				359652AF1CE6354200EE82A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		359652A21CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				359652A31CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodel */,
+			);
+			currentVersion = 359652A31CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodel */;
+			path = CadmiumPromiseExample.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 359652901CE6354200EE82A9 /* Project object */;
+}

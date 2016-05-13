@@ -1,0 +1,8 @@
+use_frameworks!
+
+workspace 'CadmiumPromiseExample'
+project 'CadmiumPromiseExample'
+
+target :'CadmiumPromiseExample' do
+    pod 'PromiseKit'
+end
