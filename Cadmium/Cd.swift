@@ -478,7 +478,7 @@ public class Cd {
      on the main thread.  This will use a background write
      context even if initially called from the main thread.
      */
-    public class func transactWith<T: CdManagedObject>(object: T, serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
+    public class func transactWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
         Cd.transact(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(object))
         }
@@ -516,7 +516,7 @@ public class Cd {
      on the main thread.  This will use a background write
      context even if initially called from the main thread.
      */
-    public class func transactWith<T: CdManagedObject>(objects: [T], serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
+    public class func transactWith<T: CdManagedObject>(objects: [T], serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
         Cd.transact(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(objects))
         }
@@ -612,7 +612,7 @@ public class Cd {
      may not execute in a separate thread than the calling
      thread.
      */
-    public class func transactAndWaitWith<T: CdManagedObject>(object: T, serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
+    public class func transactAndWaitWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
         Cd.transactAndWait(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(object))
         }
@@ -651,7 +651,7 @@ public class Cd {
      may not execute in a separate thread than the calling
      thread.
      */
-    public class func transactAndWaitWith<T: CdManagedObject>(objects: [T], serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
+    public class func transactAndWaitWith<T: CdManagedObject>(objects: [T], serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
         Cd.transactAndWait(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(objects))
         }

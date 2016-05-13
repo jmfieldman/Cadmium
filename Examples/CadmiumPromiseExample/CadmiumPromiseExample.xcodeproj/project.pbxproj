@@ -16,6 +16,7 @@
 		359652BD1CE6378B00EE82A9 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 359652BC1CE6378B00EE82A9 /* CoreData.framework */; };
 		359652C11CE6384400EE82A9 /* ExampleItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359652BF1CE6384300EE82A9 /* ExampleItem+CoreDataProperties.swift */; };
 		359652C21CE6384400EE82A9 /* ExampleItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359652C01CE6384300EE82A9 /* ExampleItem.swift */; };
+		359652C51CE6472500EE82A9 /* Cadmium+PromiseKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359652C41CE6472500EE82A9 /* Cadmium+PromiseKit.swift */; };
 		4DB289FFAB1481038AE45E1C /* Pods_CadmiumPromiseExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7ED8058D0B7C2BE87D96245 /* Pods_CadmiumPromiseExample.framework */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +49,7 @@
 		359652BC1CE6378B00EE82A9 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		359652BF1CE6384300EE82A9 /* ExampleItem+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ExampleItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		359652C01CE6384300EE82A9 /* ExampleItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExampleItem.swift; sourceTree = "<group>"; };
+		359652C41CE6472500EE82A9 /* Cadmium+PromiseKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Cadmium+PromiseKit.swift"; sourceTree = "<group>"; };
 		3C05BB6AEF7AD013DCB3D977 /* Pods-CadmiumPromiseExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CadmiumPromiseExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-CadmiumPromiseExample/Pods-CadmiumPromiseExample.release.xcconfig"; sourceTree = "<group>"; };
 		C7ED8058D0B7C2BE87D96245 /* Pods_CadmiumPromiseExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CadmiumPromiseExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E607090122334660F5BFE876 /* Pods-CadmiumPromiseExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CadmiumPromiseExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CadmiumPromiseExample/Pods-CadmiumPromiseExample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 		3596529A1CE6354200EE82A9 /* CadmiumPromiseExample */ = {
 			isa = PBXGroup;
 			children = (
+				359652C31CE6471200EE82A9 /* PromiseKit */,
 				359652BF1CE6384300EE82A9 /* ExampleItem+CoreDataProperties.swift */,
 				359652C01CE6384300EE82A9 /* ExampleItem.swift */,
 				3596529B1CE6354200EE82A9 /* AppDelegate.swift */,
@@ -117,6 +120,15 @@
 				359652B91CE6375800EE82A9 /* CadmiumTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		359652C31CE6471200EE82A9 /* PromiseKit */ = {
+			isa = PBXGroup;
+			children = (
+				359652C41CE6472500EE82A9 /* Cadmium+PromiseKit.swift */,
+			);
+			name = PromiseKit;
+			path = ../../../Extensions/PromiseKit;
 			sourceTree = "<group>";
 		};
 		9CD0E5B39153F6234E022A52 /* Pods */ = {
@@ -275,6 +287,7 @@
 				359652C21CE6384400EE82A9 /* ExampleItem.swift in Sources */,
 				3596529E1CE6354200EE82A9 /* ViewController.swift in Sources */,
 				359652C11CE6384400EE82A9 /* ExampleItem+CoreDataProperties.swift in Sources */,
+				359652C51CE6472500EE82A9 /* Cadmium+PromiseKit.swift in Sources */,
 				3596529C1CE6354200EE82A9 /* AppDelegate.swift in Sources */,
 				359652A41CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld in Sources */,
 			);

@@ -57,20 +57,16 @@ class ViewController: UITableViewController {
 		You can call Cd.commit() anytime to explicitly save any changes in the transaction
 		up to the call. */
 		Cd.transact {
-			let newItem = try! Cd.create(ExampleItem.self)
+			let newItem: ExampleItem = try! Cd.create(ExampleItem.self)
 			newItem.name = randomString
-			
-			try! Cd.commit()
-			
-			dispatch_async(dispatch_get_main_queue()) {
-				let mainItem = Cd.useInCurrentContext(newItem)
-				let name = mainItem.name
-				print("created item in transaction: \(name)")
-				mainItem.updateHandler = { event in
-					print("event occurred on object \(name): \(event)")
-				}
+			return newItem
+		}.thenOnMainWith { (mainItem: ExampleItem) in
+			print("created item in transaction: \(mainItem.name)")
+			mainItem.updateHandler = { event in
+				print("event occurred on object \(mainItem.name): \(event)")
 			}
 		}
+		
 	}
 	
 	func handleEdit(button: UIBarButtonItem) {
