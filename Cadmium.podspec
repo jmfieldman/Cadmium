@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Cadmium"
-  s.version      = "0.12.2"
+  s.version      = "0.12.3"
   s.summary      = "Core Data framework for Swift that uses concise syntax to ensure best practices and protect you from common Core Data pitfalls"
 
   s.description  = <<-DESC
@@ -18,10 +18,15 @@ Pod::Spec.new do |s|
   #s.osx.deployment_target = "10.10"
   #s.tvos.deployment_target = "9.0"
 
-  s.source = { :git => "https://github.com/jmfieldman/Cadmium.git", :tag => "#{s.version}" }
   s.source_files = "Cadmium/*.swift"
+  s.source = { :git => "https://github.com/jmfieldman/Cadmium.git", :branch => "feature/promisekit" }
 
   s.requires_arc = true
-  s.frameworks = ['CoreData']
+  s.frameworks = 'CoreData'
+
+  s.subspec 'PromiseKit' do |ss|
+    ss.source_files = "Extensions/PromiseKit/*.swift"
+    ss.frameworks = 'PromiseKit'
+  end
 
 end

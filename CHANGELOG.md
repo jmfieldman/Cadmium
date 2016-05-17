@@ -1,5 +1,10 @@
 # Cadmium Changelog
 
+## 0.12.3 -- 5/17/16
+
+* Added helper function to convert an array of objects in the current context.
+* Added the PromiseKit extension (see README section for details).
+
 ## 0.12.2 -- 4/24/16
 
 * Added the ```on``` parameter to transactions to specify your own dispatch queue for batching serial transactions into relevant queues.
