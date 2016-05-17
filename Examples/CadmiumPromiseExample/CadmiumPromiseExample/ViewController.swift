@@ -116,9 +116,12 @@ extension ViewController {
 		An implicit commit occurs when the transaction is complete and changes are
 		written to disk.  The main thread context is notified of this change and
 		the fetch controller will updated automatically in the main thread. */
-		Cd.transactWith(item) { txItem in
+        Cd.transactWith(item) { txItem in
 			txItem.numberTaps += 1
-		}
+            return txItem
+        }.thenTransactWith { (txItem: ExampleItem) in
+            txItem.numberTaps += 1
+        }
 		
 	}
 	
