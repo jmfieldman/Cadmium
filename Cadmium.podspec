@@ -32,6 +32,7 @@ Pod::Spec.new do |s|
   s.subspec 'PromiseKit' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
     ss.frameworks = 'PromiseKit'
+    ss.dependency 'PromiseKit'
   end
 
 end
