@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   #s.osx.deployment_target = "10.10"
   #s.tvos.deployment_target = "9.0"
 
-  s.source = { :git => "https://github.com/jmfieldman/Cadmium.git", :branch => "feature/promisekit" }
+  s.source = { :git => "https://github.com/jmfieldman/Cadmium.git", :tag => "#{s.version}" }
 
   s.requires_arc = true
 
@@ -33,6 +33,12 @@ Pod::Spec.new do |s|
     ss.source_files = "Extensions/PromiseKit/*.swift"
     ss.frameworks = 'PromiseKit'
     ss.dependency 'PromiseKit'
+  end
+
+  s.subspec 'PromiseKit3' do |ss|
+    ss.source_files = "Extensions/PromiseKit/*.swift"
+    ss.frameworks = 'PromiseKit'
+    ss.dependency 'PromiseKit', '~> 3'
   end
 
 end
