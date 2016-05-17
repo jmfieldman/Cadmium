@@ -11,6 +11,10 @@ import PromiseKit
 import Cadmium
 
 
+public enum CdPromiseError : ErrorType {
+    case NotAvailableInCurrentContext(CdManagedObject)
+}
+
 public extension Cd {
 	
     /** Allows you to perform a standard Cadmium transaction as a Promise */
@@ -43,8 +47,13 @@ public extension Cd {
                 var result: U!
                 var error: ErrorType?
                 Cd.transactAndWait(serial: serial, on: serialQueue) {
+                    guard let currentObject = Cd.useInCurrentContext(object) else {
+                        reject(CdPromiseError.NotAvailableInCurrentContext(object))
+                        return
+                    }
+                    
                     do {
-                        result = try operation(Cd.useInCurrentContext(object))
+                        result = try operation(currentObject)
                     } catch let _error {
                         error = _error
                     }
@@ -121,8 +130,13 @@ public extension Promise where T: CdManagedObject {
 			var result: U!
             var error: ErrorType?
             Cd.transactAndWait(serial: serial, on: serialQueue) {
+                guard let currentObject = Cd.useInCurrentContext(value) else {
+                    error = CdPromiseError.NotAvailableInCurrentContext(value)
+                    return
+                }
+                
                 do {
-                    result = try body(Cd.useInCurrentContext(value))
+                    result = try body(currentObject)
                 } catch let _error {
                     error = _error
                 }
@@ -137,7 +151,11 @@ public extension Promise where T: CdManagedObject {
 	public func thenOnMainWith<U>(body: (T) throws -> U) -> Promise<U> {
 		
 		return self.then { (value: T) -> U in
-			return try body(Cd.useInCurrentContext(value))			
+            guard let currentObject = Cd.useInCurrentContext(value) else {
+                throw CdPromiseError.NotAvailableInCurrentContext(value)
+            }
+            
+			return try body(currentObject)
 		}
 		
 	}

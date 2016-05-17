@@ -478,7 +478,7 @@ public class Cd {
      on the main thread.  This will use a background write
      context even if initially called from the main thread.
      */
-    public class func transactWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
+    public class func transactWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T? -> Void) {
         Cd.transact(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(object))
         }
@@ -612,7 +612,7 @@ public class Cd {
      may not execute in a separate thread than the calling
      thread.
      */
-    public class func transactAndWaitWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T -> Void) {
+    public class func transactAndWaitWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T? -> Void) {
         Cd.transactAndWait(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(object))
         }
@@ -725,7 +725,7 @@ public class Cd {
      - parameter object: A CdManagedObject that is suitable to use
                          in the current context (must have a permanent ID).
      */
-    public class func useInCurrentContext<T: CdManagedObject>(object: T) -> T {
+    public class func useInCurrentContext<T: CdManagedObject>(object: T) -> T? {
         guard let currentContext = NSThread.currentThread().attachedContext() else {
             Cd.raise("You may only call useInCurrentContext from the main thread, or inside a valid transaction.")
         }
@@ -743,21 +743,26 @@ public class Cd {
             return myItem
         }
         
-        Cd.raise("You cannot use an object that cannot exist in the current context.")
+        return nil
     }
     
     /**
-     Allows you to refer to an of foreign CdManagedObjects (from another
+     Allows you to refer to an array of foreign CdManagedObjects (from another
      context) in your current context.
      
      - parameter objects:   An array of CdManagedObjects that is suitable to use
                             in the current context (must have a permanent ID).
+     - returns:             An array of objects suitable for use in the current
+                            context.  Any object that could not be transferred is
+                            left out of the return array.
      */
     public class func useInCurrentContext<T: CdManagedObject>(objects: [T]) -> [T] {
         var result: [T] = []
         
         for original in objects {
-            result.append(Cd.useInCurrentContext(original))
+            if let contextObject = Cd.useInCurrentContext(original) {
+                result.append(contextObject)
+            }
         }
         
         return result
