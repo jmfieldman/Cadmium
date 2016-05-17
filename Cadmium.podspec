@@ -18,11 +18,16 @@ Pod::Spec.new do |s|
   #s.osx.deployment_target = "10.10"
   #s.tvos.deployment_target = "9.0"
 
-  s.source_files = "Cadmium/*.swift"
   s.source = { :git => "https://github.com/jmfieldman/Cadmium.git", :branch => "feature/promisekit" }
 
   s.requires_arc = true
-  s.frameworks = 'CoreData'
+
+  s.default_subspec = 'Core'
+
+  s.subspec 'Core' do |ss|
+    ss.source_files = "Cadmium/*.swift"
+    ss.frameworks = 'CoreData'
+  end
 
   s.subspec 'PromiseKit' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
