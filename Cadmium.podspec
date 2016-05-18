@@ -23,24 +23,24 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  # s.default_subspec = 'Core'
-  #
-  # s.subspec 'Core' do |ss|
-  #   ss.source_files = "Cadmium/*.swift"
-  #   ss.frameworks = 'CoreData'
-  # end
+  s.default_subspec = 'Core'
+
+  s.subspec 'Core' do |ss|
+    ss.source_files = "Cadmium/*.swift"
+    ss.frameworks = 'CoreData'
+  end
 
   s.subspec 'PromiseKit' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
-    ss.frameworks = 'PromiseKit'
-    ss.dependency 'Cadmium'
+    ss.weak_framework = 'PromiseKit'
+    ss.dependency 'Cadmium/Core'
     ss.dependency 'PromiseKit'
   end
 
   s.subspec 'PromiseKit3' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
-    ss.frameworks = 'PromiseKit'
-    ss.dependency 'Cadmium'
+    ss.weak_framework = 'PromiseKit'
+    ss.dependency 'Cadmium/Core'
     ss.dependency 'PromiseKit', '~> 3'
   end
 
