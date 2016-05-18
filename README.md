@@ -313,6 +313,23 @@ Cd.transact {
 Note that an object must have been inserted and committed in a transaction before it can be accessed from another context.
 If a transient object has not been inserted yet, it will not be available with this method.
 
+If you are only using one object from another context, consider ```Cd.transactWith``` instead:
+
+```swift
+/* Acquire a read-only employee object somewhere on the main thread */
+guard let employee = try! Cd.objects(Employee.self).fetchOne() else {
+    return
+}
+
+/* Modify it in a transaction */
+Cd.transactWith(employee) { txEmployee in
+    if let txEmployee = txEmployee {
+        txEmployee.salary += 10000
+    }
+}
+```
+
+You can also pass an array into ```Cd.transactWith``` to get an array of objects in the new context.
 
 ### Notifying the Main Thread
 
@@ -400,3 +417,82 @@ Even seasoned veterans are still susceptible to the occasional ```1570: The oper
 Many of the common issues arise because the standard Core Data framework is lenient about allowing code that does the Wrong Thing and only throwing an error on the eventual attempt to save (which may not be proximal to the offending code.)
 
 Cadmium performs aggressive checking on managed object operations to make sure you are coding correctly, and will raise exceptions on the offending lines rather than waiting for a save to occur.
+
+# PromiseKit Extension
+
+You can enable the Cadmium PromiseKit extension by adding
+
+```
+pod 'Cadmium/PromiseKit'
+```
+
+To your ```Podfile```.  This will enable the following functionality:
+
+### Transaction Promises
+
+With the PromiseKit extension, ```Cd.transact``` and ```Cd.transactWith``` are now given promise-return overrides.  In most
+cases the compiler should be able to deduce these as long as you treat the return of the transaction like a promise:
+
+```swift
+Cd.transact {
+    //...
+}.then { _ -> Void in 
+    
+}
+
+Cd.transactWith(obj) { txObj in
+    //...
+}.then { _ -> Void in 
+    
+}
+```
+
+The implementation is such that the transaction changes are committed before the promise is fulfilled, so the
+transaction promise is fully atomic from the perspective of the promise chain.
+
+Note that the compiler may need you to be somewhat explicit about the promise chain.  If you see odd errors, try
+explicitly defining the promise signatures instead of letting the compiler try to infer them (e.g. how the example
+above adds ```_ -> Void in``` instead of leaving it empty).
+
+### Transactions Inside the Chain
+
+If you would like to use a transaction inside the promise chain, some more options are available to you:
+
+```
+firstly {
+    somePromise()
+}.thenTransact(serial: ..., on: ...) { // Optionally use serial: and on: arguments
+    // This block occurs inside a Cadmium transaction
+    // Commit is called before the promise is fulfilled.
+}.then {
+
+}
+
+// Or use the transactWith variant when the previous
+// promise is fulfilled with a CdManagedObject
+
+firstly {
+    return employeeVarFromMainThread // <- CdManagedObject
+}.thenTransactWith(serial: ..., on: ...) { (employee: Employee) -> Void in 
+    // This block occurs inside a Cadmium transaction with a
+    // version of the argument belonging to the current context.
+}.then {
+
+}
+```
+
+There are times when you need to funnel a ```CdManagedObject``` from a transaction
+back to the main thread.  For this, use ```thenOnMainWith```:
+
+```swift
+firstly {
+    return employeeVarFromMainThread
+}.thenTransactWith(serial: ..., on: ...) { (employee: Employee) -> Employee in 
+    employee.salary += 10000
+    return employee
+}.thenOnMainWith { (employee: Employee) -> Void
+    // Here, employee is a read-only CdManagedObject from the main thread context.
+    print("The salary is \(employee.salary)") 
+}
+
+```
