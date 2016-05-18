@@ -362,11 +362,12 @@ Cd.transact {
     /* Synchronously saves newItem to the persistent store */
     try! Cd.commit()
 
-    dispatch_async(dispatch_get_main_queue()) {
-        /* newItem is available for use in the main thread, since it now has a persistent ID */
-        if let mainItem = Cd.useInCurrentContext(newItem), name = mainItem.name {
-            print("created item in transaction: \(name)")
+    Cd.onMainWith(newItem) { mainItem in
+        guard let item = mainItem else {
+            return
         }
+
+        print("created item in transaction: \(item.name)")        
     }
 }
 ```
@@ -458,7 +459,7 @@ above adds ```_ -> Void in``` instead of leaving it empty).
 
 If you would like to use a transaction inside the promise chain, some more options are available to you:
 
-```
+```swift
 firstly {
     somePromise()
 }.thenTransact(serial: ..., on: ...) { // Optionally use serial: and on: arguments
@@ -496,3 +497,8 @@ firstly {
 }
 
 ```
+
+It should be noted that promise block for ```thenTransactWith``` can receive an optional in the pipe, but does not pass an optional as its block argument.
+It is considered a promise error if the fulfillment value to ```thenTransactWith``` is ```nil```,
+or if the internal ```Cd.useInCurrentContext``` returns a ```nil``` value.  In these cases the
+chain will be rejected with ```CdPromiseError.NotAvailableInCurrentContext(value)```.
