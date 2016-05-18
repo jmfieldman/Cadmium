@@ -12,7 +12,7 @@ import Cadmium
 
 
 public enum CdPromiseError : ErrorType {
-    case NotAvailableInCurrentContext(CdManagedObject)
+    case NotAvailableInCurrentContext(CdManagedObject?)
 }
 
 public extension Cd {
@@ -126,12 +126,16 @@ public extension Promise where T: CdManagedObject {
         instance that belongs to the body's context. */
 	public func thenTransactWith<U>(serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, body: (T) throws -> U) -> Promise<U> {
 		
-		return self.thenInBackground { (value: T) -> U in
+		return self.thenInBackground { (value: T?) -> U in
+			guard let _value = value else {
+				throw CdPromiseError.NotAvailableInCurrentContext(value)
+			}
+			
 			var result: U!
             var error: ErrorType?
             Cd.transactAndWait(serial: serial, on: serialQueue) {
-                guard let currentObject = Cd.useInCurrentContext(value) else {
-                    error = CdPromiseError.NotAvailableInCurrentContext(value)
+				guard let currentObject = Cd.useInCurrentContext(_value) else {
+                    error = CdPromiseError.NotAvailableInCurrentContext(_value)
                     return
                 }
                 
