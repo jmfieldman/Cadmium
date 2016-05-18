@@ -19,25 +19,28 @@ Pod::Spec.new do |s|
   #s.tvos.deployment_target = "9.0"
 
   s.source = { :git => "https://github.com/jmfieldman/Cadmium.git", :tag => "#{s.version}" }
+  s.source_files = "Cadmium/*.swift"
 
   s.requires_arc = true
 
-  s.default_subspec = 'Core'
-
-  s.subspec 'Core' do |ss|
-    ss.source_files = "Cadmium/*.swift"
-    ss.frameworks = 'CoreData'
-  end
+  # s.default_subspec = 'Core'
+  #
+  # s.subspec 'Core' do |ss|
+  #   ss.source_files = "Cadmium/*.swift"
+  #   ss.frameworks = 'CoreData'
+  # end
 
   s.subspec 'PromiseKit' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
     ss.frameworks = 'PromiseKit'
+    ss.dependency 'Cadmium'
     ss.dependency 'PromiseKit'
   end
 
   s.subspec 'PromiseKit3' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
     ss.frameworks = 'PromiseKit'
+    ss.dependency 'Cadmium'
     ss.dependency 'PromiseKit', '~> 3'
   end
 
