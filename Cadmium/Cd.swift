@@ -747,6 +747,48 @@ public class Cd {
     }
     
     /**
+     Use a CdManagedObject from a transaction back on the main thread.
+     
+     - parameter object:    The CdManagedObject you would like to use on the main thread.
+     - parameter operation: The operation to perform.  The argument in this operation block
+                            receives a version of the CdManagedObject on the main thread's
+                            read-only context.
+     */
+    public class func onMainWith<T: CdManagedObject>(object: T?, operation: (T? -> Void)) {
+        guard let obj = object else {
+            dispatch_async(dispatch_get_main_queue()) {
+                operation(object)
+            }
+            return
+        }
+        
+        dispatch_async(dispatch_get_main_queue()) {
+            operation(Cd.useInCurrentContext(obj))
+        }
+    }
+    
+    /**
+     Use a CdManagedObject from a transaction back on the main thread.
+     
+     - parameter objects:   An array of CdManagedObjects you would like to use on the main thread.
+     - parameter operation: The operation to perform.  The argument in this operation block
+                            receives an array of CdManagedObjects on the main thread's
+                            read-only context.  If an object could not be acquired on the main
+                            thread it is not included in the array.
+     */
+    public class func onMainWith<T: CdManagedObject>(objects: [T], operation: ([T] -> Void)) {
+        dispatch_async(dispatch_get_main_queue()) {
+            var arr: [T] = []
+            for obj in objects {
+                if let mainObj = Cd.useInCurrentContext(obj) {
+                    arr.append(mainObj)
+                }
+            }
+            operation(arr)
+        }
+    }
+    
+    /**
      Allows you to refer to an array of foreign CdManagedObjects (from another
      context) in your current context.
      
