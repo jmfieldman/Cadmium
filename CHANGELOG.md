@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 0.12.4 -- 5/27/16
+
+* Forcably obtain permanent IDs for inserted objects before saving the master save context.  This was recommended as a fix to a hard-to-debug core data crash. 
+
 ## 0.12.3 -- 5/17/16
 
 * Added helper function to convert an array of objects in the current context.

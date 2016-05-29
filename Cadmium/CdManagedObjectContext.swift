@@ -210,6 +210,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         
         msc.performBlockAndWait {
             if msc.hasChanges {
+                try! msc.obtainPermanentIDsForObjects(Array<NSManagedObject>(msc.insertedObjects))
                 try! msc.save()
             }
         }
