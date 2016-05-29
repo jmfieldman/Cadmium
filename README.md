@@ -105,7 +105,7 @@ Querying starts with ```Cd.objects(..)``` and looks like this:
 do {
     for employee in try Cd.objects(Employee.self)
                           .filter("name = %@", someName)
-                          .sorted("name", ascending: true)
+                          .sorted("salary", ascending: true)
                           // See CdFetchRequest for more functions
                           .fetch() {
         /* Do something */
