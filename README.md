@@ -66,6 +66,14 @@ It also means that you cannot initiate modifications to managed objects on the m
 must exist inside transactions that occur in background threads.  You will need to design your app to support the idea
 of asynchronous write operations, which is what you *should* be doing when it comes to database modification.
 
+### Managed Object Model
+
+The creation and use of the managed object model is very similar to typical Core Data flow.  Create your managed object model as
+usual, and generate the corresponding ```NSManagedObject``` classes.  Then, simply change the hierarchy so that your class
+implementations derive from ```CdManagedObject``` instead of ```NSManagedObject```.
+
+```CdManagedObject``` is a child class of ```NSManagedObject```.
+
 ### Initialization
 
 Set up Cadmium with a single initialization call:
