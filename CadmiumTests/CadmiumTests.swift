@@ -503,7 +503,7 @@ class CadmiumTests: XCTestCase {
     func helperRunParallelInc(maxMillionths: Int, forcedSerial: Bool?, onQueue: dispatch_queue_t? = nil) -> [Int] {
         
         var result: [Int] = []
-        var lock: OSSpinLock = OS_SPINLOCK_INIT
+        var lock = os_unfair_lock()
         
         let queue = dispatch_queue_create("parallel", DISPATCH_QUEUE_CONCURRENT)
         let group = dispatch_group_create()
@@ -523,9 +523,9 @@ class CadmiumTests: XCTestCase {
                             
                             NSThread.sleepForTimeInterval(delayTime)
                             
-                            OSSpinLockLock(&lock)
+                            os_unfair_lock_lock(&lock)
                             result.append(curId)
-                            OSSpinLockUnlock(&lock)
+                            os_unfair_lock_unlock(&lock)
                             
                             obj.id = curId + 1
                         }
@@ -543,7 +543,7 @@ class CadmiumTests: XCTestCase {
     func helperRunParallelIncNormalTransact(maxMillionths: Int, forcedSerial: Bool?, onQueue: dispatch_queue_t? = nil) -> [Int] {
         
         var result: [Int] = []
-        var lock: OSSpinLock = OS_SPINLOCK_INIT
+        var lock = os_unfair_lock()
         
         let queue = dispatch_queue_create("releaseQueue", nil)
         let group = dispatch_group_create()
@@ -563,9 +563,9 @@ class CadmiumTests: XCTestCase {
                         
                         NSThread.sleepForTimeInterval(delayTime)
                         
-                        OSSpinLockLock(&lock)
+                        os_unfair_lock_lock(&lock)
                         result.append(curId)
-                        OSSpinLockUnlock(&lock)
+                        os_unfair_lock_unlock(&lock)
                         
                         obj.id = curId + 1
                         
