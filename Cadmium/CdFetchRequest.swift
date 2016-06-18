@@ -446,7 +446,7 @@ public class CdFetchRequest<T: CdManagedObject> {
             Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
-        return currentContext.countForFetchRequest(nsFetchRequest, error: nil)
+        return try currentContext.countForFetchRequest(nsFetchRequest)
     }
     
     

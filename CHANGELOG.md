@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 0.13.1 -- 6/18/16
+
+* Updates for Swift 2.3
+
 ## 0.12.4 -- 5/27/16
 
 * Forcably obtain permanent IDs for inserted objects before saving the master save context.  This was recommended as a fix to a hard-to-debug core data crash. 

@@ -50,6 +50,16 @@ pod 'Cadmium'
 
 Or you can use a variety of ways to include the ```Cadmium.framework``` file from this project into your own.
 
+### Swift Version Support
+
+Swift 2.2 is supported through the Cadmium 0.12.x version family.  You can set your pod to use this with
+
+```ruby
+pod 'Cadmium', '~> 0.12'
+```
+
+Swift 2.3 is supported starting with the 0.13.x family.
+
 # How to Use
 
 ### Context Architecture

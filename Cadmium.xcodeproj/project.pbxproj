@@ -181,14 +181,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Jason Fieldman";
 				TargetAttributes = {
 					35552AE31C960848004397CD = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0800;
 					};
 					35552AED1C960848004397CD = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -368,6 +370,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -386,6 +389,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.Cadmium;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
@@ -397,6 +401,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CadmiumTests/CadmiumTests-Bridging.h";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -408,6 +413,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CadmiumTests/CadmiumTests-Bridging.h";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
