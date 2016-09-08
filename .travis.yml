@@ -10,5 +10,5 @@ before_install:
 script:
   - set -o pipefail
   - xcodebuild -project Cadmium.xcodeproj -scheme "Cadmium" -sdk "iphonesimulator10.0"
-    -destination "OS=10.0,name=iPhone 6S" ONLY_ACTIVE_ARCH=NO  test | xcpretty -c
+    -destination "OS=10.0,name=iPhone 6S" ONLY_ACTIVE_ARCH=NO build test 
   - pod lib lint --quick
