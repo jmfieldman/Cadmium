@@ -803,12 +803,21 @@ class CadmiumTests: XCTestCase {
         dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
     }
     
+    func cleanName() -> String {
+        let origName = self.name ?? "unknownTestName"
+        let nospace = origName.stringByReplacingOccurrencesOfString(" ", withString: "_")
+        let nobrace1 = nospace.stringByReplacingOccurrencesOfString("[", withString: "")
+        let nobrace2 = nobrace1.stringByReplacingOccurrencesOfString("]", withString: "")
+        let nodash = nobrace2.stringByReplacingOccurrencesOfString("-", withString: "")
+        return nodash
+    }
+    
     func initCd() {
         do {
             
             try Cd.initWithSQLStore(momdInbundleID: "org.fieldman.CadmiumTests",
                                     momdName:       "CadmiumTestModel",
-                                    sqliteFilename: "test.sqlite",
+                                    sqliteFilename: "\(self.cleanName()).sqlite",
                                     options:        [NSSQLitePragmasOption: ["journal_mode": "MEMORY"]])
             
         } catch let error {
@@ -822,7 +831,7 @@ class CadmiumTests: XCTestCase {
         
         do {
             for url in try NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentDirectory, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions(rawValue: 0)) {
-                if url.description.rangeOfString("test.sqlite") != nil {
+                if url.description.rangeOfString("\(self.cleanName()).sqlite") != nil {
                     try NSFileManager.defaultManager().removeItemAtURL(url)
                 }
             }
