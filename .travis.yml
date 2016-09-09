@@ -13,5 +13,5 @@ script:
   - open -b com.apple.iphonesimulator --args -CurrentDeviceUDID $SIMULATOR_ID
   - set -o pipefail
   - xcodebuild -project Cadmium.xcodeproj -scheme "Cadmium" -sdk "iphonesimulator10.0"
-    -destination "OS=10.0,name=iPhone 6S" ONLY_ACTIVE_ARCH=NO test
+    -destination "OS=10.0,name=iPhone 6S" ONLY_ACTIVE_ARCH=NO test | xcpretty -c
   - pod lib lint --quick
