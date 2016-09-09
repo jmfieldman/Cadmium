@@ -808,7 +808,8 @@ class CadmiumTests: XCTestCase {
             
             try Cd.initWithSQLStore(momdInbundleID: "org.fieldman.CadmiumTests",
                                     momdName:       "CadmiumTestModel",
-                                    sqliteFilename: "test.sqlite")
+                                    sqliteFilename: "test.sqlite",
+                                    options:        [NSSQLitePragmasOption: ["journal_mode": "DELETE"]])
             
         } catch let error {
             XCTFail("setup error: \(error)")
