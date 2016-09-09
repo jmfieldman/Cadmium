@@ -809,7 +809,7 @@ class CadmiumTests: XCTestCase {
             try Cd.initWithSQLStore(momdInbundleID: "org.fieldman.CadmiumTests",
                                     momdName:       "CadmiumTestModel",
                                     sqliteFilename: "test.sqlite",
-                                    options:        [NSSQLitePragmasOption: ["journal_mode": "DELETE"]])
+                                    options:        [NSSQLitePragmasOption: ["journal_mode": "MEMORY"]])
             
         } catch let error {
             XCTFail("setup error: \(error)")
