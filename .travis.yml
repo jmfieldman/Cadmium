@@ -10,5 +10,6 @@ before_install:
 script:
   - set -o pipefail
   - xcodebuild -project Cadmium.xcodeproj -scheme "Cadmium" -sdk "iphonesimulator10.0"
-    -destination "OS=10.0,name=iPhone 6S" ONLY_ACTIVE_ARCH=NO build test 
+    -destination "OS=10.0,name=iPhone 6S" ONLY_ACTIVE_ARCH=NO build test
+    CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
   - pod lib lint --quick
