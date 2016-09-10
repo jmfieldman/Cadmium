@@ -59,77 +59,77 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      *  us to block on our recursive lock before executing the context
      *  transaction.
      */
-    internal static let serialTransactionQueue = dispatch_queue_create("Cd.ManagedObjectContext.serialTransactionQueue", nil)
+    internal static let serialTransactionQueue = DispatchQueue(label: "Cd.ManagedObjectContext.serialTransactionQueue", attributes: [])
     
     /**
      Initialize the master save context and the main thread context.
      
      - parameter coordinator: The persistent store coordinator for the save context.
      */
-    internal class func initializeMasterContexts(coordinator coordinator: NSPersistentStoreCoordinator?) {
-        _masterSaveContext = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+    internal static func initializeMasterContexts(coordinator: NSPersistentStoreCoordinator?) {
+        _masterSaveContext = CdManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         _masterSaveContext?.undoManager = nil
         _masterSaveContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         _masterSaveContext?.persistentStoreCoordinator = coordinator
         
-        _mainThreadContext = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+        _mainThreadContext = CdManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         _mainThreadContext?.undoManager = nil
-        _mainThreadContext?.parentContext = _masterSaveContext
+        _mainThreadContext?.parent = _masterSaveContext
         
-        let notificationQueue = NSOperationQueue()
+        let notificationQueue = OperationQueue()
         
         /* Attach update handler to main thread context */
-        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextDidSaveNotification, object: _masterSaveContext, queue: notificationQueue) { (notification: NSNotification) -> Void in
-            dispatch_async(dispatch_get_main_queue()) {
-                NSThread.currentThread().setInsideMainThreadChangeNotification(true)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.NSManagedObjectContextDidSave, object: _masterSaveContext, queue: notificationQueue) { (notification: Notification) -> Void in
+            DispatchQueue.main.async {
+                Thread.current.setInsideMainThreadChangeNotification(true)
                 
                 /* Fault-in update objects before mergeChangesFromContextDidSaveNotification
                    This allows monitoring FRC to see newly inserted objects, rather than them
                    being treated like invisible faults.
                    http://www.mlsite.net/blog/?p=518 */
-                if let updates = notification.userInfo?["updated"] as? Set<NSManagedObject> {
+                if let updates = (notification as NSNotification).userInfo?["updated"] as? Set<NSManagedObject> {
                     for update in updates {
-                        _mainThreadContext?.objectWithID(update.objectID).willAccessValueForKey(nil)
+                        _mainThreadContext?.object(with: update.objectID).willAccessValue(forKey: nil)
                     }
                 }
                 
-                _mainThreadContext?.mergeChangesFromContextDidSaveNotification(notification)
-                NSThread.currentThread().setInsideMainThreadChangeNotification(false)
+                _mainThreadContext?.mergeChanges(fromContextDidSave: notification)
+                Thread.current.setInsideMainThreadChangeNotification(false)
             }
         }
         
         /* Attach update handler to main thread context */
-        NSNotificationCenter.defaultCenter().addObserverForName(NSManagedObjectContextObjectsDidChangeNotification, object: _mainThreadContext, queue: nil) { (notification: NSNotification) -> Void in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: _mainThreadContext, queue: nil) { (notification: Notification) -> Void in
             guard shouldCallUpdateHandlers else { return }
             
-            dispatch_async(dispatch_get_main_queue()) {
-                if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<CdManagedObject> {
+            DispatchQueue.main.async {
+                if let refreshedObjects = (notification as NSNotification).userInfo?[NSRefreshedObjectsKey] as? Set<CdManagedObject> {
                     for object in refreshedObjects {
-                        object.updateHandler?(.Refreshed)
+                        object.updateHandler?(.refreshed)
                     }
                 }
                 
-                if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<CdManagedObject> {
+                if let updatedObjects = (notification as NSNotification).userInfo?[NSUpdatedObjectsKey] as? Set<CdManagedObject> {
                     for object in updatedObjects {
-                        object.updateHandler?(.Updated)
+                        object.updateHandler?(.updated)
                     }
                 }
                 
-                if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<CdManagedObject> {
+                if let deletedObjects = (notification as NSNotification).userInfo?[NSDeletedObjectsKey] as? Set<CdManagedObject> {
                     for object in deletedObjects {
-                        object.updateHandler?(.Deleted)
+                        object.updateHandler?(.deleted)
                     }
                 }
             }
         }
         
         /* Attach handler for one-time iCloud setup */
-        NSNotificationCenter.defaultCenter().addObserverForName(NSPersistentStoreCoordinatorStoresWillChangeNotification, object: coordinator, queue: notificationQueue) { (notification: NSNotification) -> Void in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.NSPersistentStoreCoordinatorStoresWillChange, object: coordinator, queue: notificationQueue) { (notification: Notification) -> Void in
             guard let msc = _masterSaveContext else {
                 return
             }
             
-            msc.performBlock {
+            msc.perform {
                 if (msc.hasChanges) {
                     try! msc.save()
                 } else {
@@ -149,7 +149,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      
      - returns: The main thread context
      */
-    @inline(__always) internal class func mainThreadContext() -> CdManagedObjectContext {
+    @inline(__always) internal static func mainThreadContext() -> CdManagedObjectContext {
         if let mtc = _mainThreadContext {
             return mtc
         }
@@ -163,9 +163,9 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      
      - returns: The new background write context.
      */
-    @inline(__always) internal class func newBackgroundWriteContext() -> CdManagedObjectContext {
-        let newContext           = CdManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
-        newContext.parentContext = _masterSaveContext
+    @inline(__always) internal static func newBackgroundWriteContext() -> CdManagedObjectContext {
+        let newContext           = CdManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        newContext.parent = _masterSaveContext
         newContext.undoManager   = nil
         return newContext
     }
@@ -177,8 +177,8 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      
      - returns: The proper CdManagedObjectContext for the calling thread (if it exists)
      */
-    @inline(__always) internal class func forThreadContext() -> CdManagedObjectContext? {
-        let currentThread = NSThread.currentThread()
+    @inline(__always) internal static func forThreadContext() -> CdManagedObjectContext? {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             return mainThreadContext()
         }
@@ -193,14 +193,14 @@ public class CdManagedObjectContext : NSManagedObjectContext {
     /**
      Saves the master write context if necessary.
      */
-    @inline(__always) internal class func saveMasterWriteContext() {
+    @inline(__always) internal static func saveMasterWriteContext() {
         guard let msc = _masterSaveContext else {
             return
         }
         
-        msc.performBlockAndWait {
+        msc.performAndWait {
             if msc.hasChanges {
-                try! msc.obtainPermanentIDsForObjects(Array<NSManagedObject>(msc.insertedObjects))
+                try! msc.obtainPermanentIDs(for: Array<NSManagedObject>(msc.insertedObjects))
                 try! msc.save()
             }
         }
@@ -209,7 +209,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
 
 
 
-internal extension NSThread {
+internal extension Thread {
     
     /**
      Get the currently attached CdManagedObjectContext to the thread.
@@ -228,7 +228,7 @@ internal extension NSThread {
      
      - parameter context: The context to attach, or nil to remove.
      */
-    @inline(__always) internal func attachContext(context: CdManagedObjectContext?) {
+    @inline(__always) internal func attachContext(_ context: CdManagedObjectContext?) {
         if self.isMainThread {
             Cd.raise("You cannot explicitly attach a context from the main thread.")
         }
@@ -252,7 +252,7 @@ internal extension NSThread {
      
      - parameter status: Whether or not the implicit commit should be aborted.
      */
-    @inline(__always) internal func setNoImplicitCommit(status: Bool?) {
+    @inline(__always) internal func setNoImplicitCommit(_ status: Bool?) {
         self.threadDictionary[kCdThreadPropertyNoImplicitSave] = status
     }
     
@@ -273,7 +273,7 @@ internal extension NSThread {
      
      - parameter status: true if so, false if not.
      */
-    internal func setInsideMainThreadChangeNotification(inside: Bool) {
+    internal func setInsideMainThreadChangeNotification(_ inside: Bool) {
         self.threadDictionary[kCdThreadPropertyMainSaveNotif] = inside
     }
     
@@ -292,7 +292,7 @@ internal extension NSThread {
      - parameter status: true if so, false if not.
      - returns:          The previous value
      */
-    internal func setInsideTransaction(inside: Bool) -> Bool {
+    @discardableResult internal func setInsideTransaction(_ inside: Bool) -> Bool {
         let result = (self.threadDictionary[kCdThreadPropertyInsideTrans] as? Bool) ?? false
         self.threadDictionary[kCdThreadPropertyInsideTrans] = inside
         return result

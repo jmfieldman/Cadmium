@@ -28,7 +28,7 @@ import CoreData
 
 class CadmiumTests: XCTestCase {
     
-    let bgQueue       = dispatch_queue_create("CadmiumTests.backgroundQueue", nil)
+    let bgQueue       = DispatchQueue(label: "CadmiumTests.backgroundQueue", attributes: [])
     
     override func setUp() {
         super.setUp()
@@ -89,10 +89,10 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     do {
@@ -105,7 +105,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).filter("id = 1").fetch()
             XCTAssertEqual(objs.count, 1, "Query string equals")
@@ -122,10 +122,10 @@ class CadmiumTests: XCTestCase {
     func testBasicCreate() {
         
         do {
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     let obj = try! Cd.create(TestItem.self)
@@ -135,7 +135,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 6, "Query string equals")
@@ -154,10 +154,10 @@ class CadmiumTests: XCTestCase {
             
             var obj: TestItem!
             
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     obj = try! Cd.create(TestItem.self)
@@ -167,7 +167,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             var objs = try Cd.objects(TestItem.self).filter("name = \"F\"").fetch()
             XCTAssertEqual(objs.count, 1, "Query string equals")
@@ -178,7 +178,7 @@ class CadmiumTests: XCTestCase {
             XCTAssertEqual(objs.count, 0, "Query string equals")
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     let obj2: TestItem = Cd.useInCurrentContext(obj)!
@@ -188,7 +188,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 6, "Query string equals")
@@ -208,10 +208,10 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     for obj in try! Cd.create(TestItem.self, count: 10) {
@@ -221,7 +221,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 15, "Query string equals")
@@ -252,9 +252,9 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     var i = 1
@@ -272,7 +272,7 @@ class CadmiumTests: XCTestCase {
                     }
                 }
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let exception1 = catchException {
                 _ = try? Cd.objects(TestItem.self).groupBy("name").fetchDictionaryArray()
@@ -283,8 +283,8 @@ class CadmiumTests: XCTestCase {
             }
             
             let dicArray = try Cd.objects(TestItem.self)
-                            .includeExpression("sum", resultType: .Integer64AttributeType, withFormat: "@sum.id")
-                            .includeExpression("count", resultType: .Integer64AttributeType, withFormat: "name.@count")
+                            .includeExpression("sum", resultType: .integer64AttributeType, withFormat: "@sum.id")
+                            .includeExpression("count", resultType: .integer64AttributeType, withFormat: "name.@count")
                             .onlyProperties(["name", "sum", "count"])
                             .groupBy("name")
                             .fetchDictionaryArray()
@@ -319,10 +319,10 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     Cd.delete(try! Cd.objects(TestItem.self).fetchOne()!)
@@ -330,7 +330,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 4, "Query string equals")
@@ -345,10 +345,10 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     Cd.delete(try! Cd.objects(TestItem.self).fetch())
@@ -356,7 +356,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 0, "Query string equals")
@@ -371,14 +371,14 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            let dispatchGroup = dispatch_group_create()
+            let dispatchGroup = DispatchGroup()
             
             let obj = try! Cd.create(TestItem.self, transient: true)
             obj.name = "asdf"
             obj.id   = 1000
             
             
-            dispatch_group_async(dispatchGroup, bgQueue) {
+            bgQueue.async(group: dispatchGroup) {
                 
                 Cd.transactAndWait {
                     Cd.insert(obj)
@@ -386,7 +386,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 6, "Query string equals")
@@ -423,10 +423,10 @@ class CadmiumTests: XCTestCase {
     
     func testForbidModificationInOtherTx() {
         
-        let dispatchGroup = dispatch_group_create()
+        let dispatchGroup = DispatchGroup()
         
         
-        dispatch_group_async(dispatchGroup, bgQueue) {
+        bgQueue.async(group: dispatchGroup) {
         
             var obj: TestItem!
             
@@ -447,15 +447,15 @@ class CadmiumTests: XCTestCase {
             
         }
         
-        dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+        dispatchGroup.wait(timeout: DispatchTime.distantFuture)
     }
     
     func testForbidReusingTransient() {
         
-        let dispatchGroup = dispatch_group_create()
+        let dispatchGroup = DispatchGroup()
         
         
-        dispatch_group_async(dispatchGroup, bgQueue) {
+        bgQueue.async(group: dispatchGroup) {
             
             var obj: TestItem!
             
@@ -475,7 +475,7 @@ class CadmiumTests: XCTestCase {
             
         }
         
-        dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+        dispatchGroup.wait(timeout: DispatchTime.distantFuture)
     }
     
     func testForbidCreateMain() {
@@ -500,28 +500,28 @@ class CadmiumTests: XCTestCase {
         
     }
     
-    func helperRunParallelInc(maxMillionths: Int, forcedSerial: Bool?, onQueue: dispatch_queue_t? = nil) -> [Int] {
+    func helperRunParallelInc(_ maxMillionths: Int, forcedSerial: Bool?, onQueue: DispatchQueue? = nil) -> [Int] {
         
         var result: [Int] = []
         var lock = os_unfair_lock()
         
-        let queue = dispatch_queue_create("parallel", DISPATCH_QUEUE_CONCURRENT)
-        let group = dispatch_group_create()
+        let queue = DispatchQueue(label: "parallel", attributes: DispatchQueue.Attributes.concurrent)
+        let group = DispatchGroup()
         
         for _ in 0 ..< 25 {
             
             for _ in 0 ..< 40 {
-                dispatch_group_async(group, queue) {
+                queue.async(group: group) {
                     
                     Cd.transactAndWait(serial: forcedSerial, on: onQueue) {
                         if let obj = try! Cd.objects(TestItem.self).filter("name = %@", "A").fetchOne() {
                             
                             let delayTime = Double(arc4random_uniform(UInt32(maxMillionths))) / 1000000.0
-                            NSThread.sleepForTimeInterval(delayTime)
+                            Thread.sleep(forTimeInterval: delayTime)
                             
                             let curId = obj.id
                             
-                            NSThread.sleepForTimeInterval(delayTime)
+                            Thread.sleep(forTimeInterval: delayTime)
                             
                             os_unfair_lock_lock(&lock)
                             result.append(curId)
@@ -534,34 +534,34 @@ class CadmiumTests: XCTestCase {
                 }
             }
             
-            dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
+            group.wait(timeout: DispatchTime.distantFuture)
         }
         
         return result
     }
     
-    func helperRunParallelIncNormalTransact(maxMillionths: Int, forcedSerial: Bool?, onQueue: dispatch_queue_t? = nil) -> [Int] {
+    func helperRunParallelIncNormalTransact(_ maxMillionths: Int, forcedSerial: Bool?, onQueue: DispatchQueue? = nil) -> [Int] {
         
         var result: [Int] = []
         var lock = os_unfair_lock()
         
-        let queue = dispatch_queue_create("releaseQueue", nil)
-        let group = dispatch_group_create()
+        let queue = DispatchQueue(label: "releaseQueue", attributes: [])
+        let group = DispatchGroup()
         
         for _ in 0 ..< 25 {
             
             for _ in 0 ..< 40 {
-                dispatch_group_enter(group)
+                group.enter()
                     
                 Cd.transact(serial: forcedSerial, on: onQueue) {
                     if let obj = try! Cd.objects(TestItem.self).filter("name = %@", "A").fetchOne() {
                         
                         let delayTime = Double(arc4random_uniform(UInt32(maxMillionths))) / 1000000.0
-                        NSThread.sleepForTimeInterval(delayTime)
+                        Thread.sleep(forTimeInterval: delayTime)
                         
                         let curId = obj.id
                         
-                        NSThread.sleepForTimeInterval(delayTime)
+                        Thread.sleep(forTimeInterval: delayTime)
                         
                         os_unfair_lock_lock(&lock)
                         result.append(curId)
@@ -569,14 +569,14 @@ class CadmiumTests: XCTestCase {
                         
                         obj.id = curId + 1
                         
-                        dispatch_async(queue) {
-                            dispatch_group_leave(group)
+                        queue.async {
+                            group.leave()
                         }
                     }
                 }
             }
             
-            dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
+            group.wait(timeout: DispatchTime.distantFuture)
         }
         
         return result
@@ -697,7 +697,7 @@ class CadmiumTests: XCTestCase {
     
     func testParallelSerialNoCrashUsingQueuesSer() {
         
-        let myQueue = dispatch_queue_create("test", nil)
+        let myQueue = DispatchQueue(label: "test", attributes: [])
         
         let res = helperRunParallelIncNormalTransact(10, forcedSerial: nil, onQueue: myQueue)
         
@@ -716,7 +716,7 @@ class CadmiumTests: XCTestCase {
     
     func testParallelSerialNoCrashUsingQueuesPar() {
         
-        let myQueue = dispatch_queue_create("test", DISPATCH_QUEUE_CONCURRENT)
+        let myQueue = DispatchQueue(label: "test", attributes: DispatchQueue.Attributes.concurrent)
         
         let res = helperRunParallelIncNormalTransact(10, forcedSerial: nil, onQueue: myQueue)
         
@@ -738,9 +738,9 @@ class CadmiumTests: XCTestCase {
         Cd.defaultSerialTransactions = true
         
         
-        let group = dispatch_group_create()
+        let group = DispatchGroup()
 
-        dispatch_group_enter(group)
+        group.enter()
         
         Cd.transact(serial: true) {
             if let obj = try! Cd.objects(TestItem.self).filter("name = %@", "A").fetchOne() {
@@ -756,10 +756,10 @@ class CadmiumTests: XCTestCase {
                     }
                 }
             }
-            dispatch_group_leave(group)
+            group.leave()
         }
         
-        dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
+        group.wait(timeout: DispatchTime.distantFuture)
         
         XCTAssertEqual(true, true, "Hang Test")
         
@@ -772,10 +772,10 @@ class CadmiumTests: XCTestCase {
     
     func initData() {
         
-        let dispatchGroup = dispatch_group_create()
+        let dispatchGroup = DispatchGroup()
         
         
-        dispatch_group_async(dispatchGroup, bgQueue) {
+        bgQueue.async(group: dispatchGroup) {
             
             Cd.transactAndWait {
                 do {
@@ -800,15 +800,15 @@ class CadmiumTests: XCTestCase {
             
         }
         
-        dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER)
+        dispatchGroup.wait(timeout: DispatchTime.distantFuture)
     }
     
     func cleanName() -> String {
         let origName = self.name ?? "unknownTestName"
-        let nospace = origName.stringByReplacingOccurrencesOfString(" ", withString: "_")
-        let nobrace1 = nospace.stringByReplacingOccurrencesOfString("[", withString: "")
-        let nobrace2 = nobrace1.stringByReplacingOccurrencesOfString("]", withString: "")
-        let nodash = nobrace2.stringByReplacingOccurrencesOfString("-", withString: "")
+        let nospace = origName.replacingOccurrences(of: " ", with: "_")
+        let nobrace1 = nospace.replacingOccurrences(of: "[", with: "")
+        let nobrace2 = nobrace1.replacingOccurrences(of: "]", with: "")
+        let nodash = nobrace2.replacingOccurrences(of: "-", with: "")
         return nodash
     }
     
@@ -826,13 +826,13 @@ class CadmiumTests: XCTestCase {
     }
     
     func cleanCd() {
-        let documentDirectories = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+        let documentDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentDirectory   = documentDirectories[documentDirectories.count - 1]
         
         do {
-            for url in try NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentDirectory, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions(rawValue: 0)) {
-                if url.description.rangeOfString("\(self.cleanName()).sqlite") != nil {
-                    try NSFileManager.defaultManager().removeItemAtURL(url)
+            for url in try FileManager.default.contentsOfDirectory(at: documentDirectory, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions(rawValue: 0)) {
+                if url.description.range(of: "\(self.cleanName()).sqlite") != nil {
+                    try FileManager.default.removeItem(at: url)
                 }
             }
         } catch {}

@@ -35,7 +35,7 @@ import CoreData
  - Deleted:   The receiver object was deleted.
  */
 public enum CdManagedObjectUpdateEvent {
-    case Refreshed, Updated, Deleted
+    case refreshed, updated, deleted
 }
 
 /**
@@ -46,11 +46,11 @@ public enum CdManagedObjectUpdateEvent {
  *  The implementation of this class installs access and write hooks that
  *  verify you are modifying your managed objects in the proper context.
  */
-public class CdManagedObject : NSManagedObject {
+open class CdManagedObject : NSManagedObject {
     
     // MARK: - Public Access dictionary
     
-    /** This userInfo dictionary is available to store persistent data along with
+    /** This userInfo dictionary is available to store transient data along with
         your managed object */
     public var userInfo: [String: Any] = [:]
     
@@ -63,7 +63,7 @@ public class CdManagedObject : NSManagedObject {
         multiple handlers can use the userInfo dictionary to extend dispatching
         behavior (e.g. use the userInfo dictionary to store reactive-style signal
         handlers.) */
-    public var updateHandler: (CdManagedObjectUpdateEvent -> Void)? = nil {
+    public var updateHandler: ((CdManagedObjectUpdateEvent) -> Void)? = nil {
         didSet {
             if self.managedObjectContext != CdManagedObjectContext._mainThreadContext {
                 Cd.raise("You may attach an updateHandler to an object from the main thread context.")
@@ -80,19 +80,19 @@ public class CdManagedObject : NSManagedObject {
      
      - parameter key: The key whose value is being accessed.
      */
-    public override func willAccessValueForKey(key: String?) {
+    open override func willAccessValue(forKey key: String?) {
         guard let myManagedObjectContext = self.managedObjectContext else {
-            super.willAccessValueForKey(key)
+            super.willAccessValue(forKey: key)
             return
         }
         
         if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
-            super.willAccessValueForKey(key)
+            super.willAccessValue(forKey: key)
             return
         }
         
-        let currentThread = NSThread.currentThread()
-        guard let currentContext = currentThread.attachedContext() where currentContext === myManagedObjectContext else {
+        let currentThread = Thread.current
+        guard let currentContext = currentThread.attachedContext() , currentContext === myManagedObjectContext else {
             if myManagedObjectContext === CdManagedObjectContext.mainThreadContext() {
                 Cd.raise("You are accessing a managed object from the main thread from a background thread.")
             } else if currentThread.attachedContext() === nil {
@@ -104,7 +104,7 @@ public class CdManagedObject : NSManagedObject {
             }
         }
         
-        super.willAccessValueForKey(key)
+        super.willAccessValue(forKey: key)
     }
     
     /**
@@ -113,23 +113,23 @@ public class CdManagedObject : NSManagedObject {
      
      - parameter key: The key whose value is being changed.
      */
-    public override func willChangeValueForKey(key: String) {
+    open override func willChangeValue(forKey key: String) {
         guard let myManagedObjectContext = self.managedObjectContext else {
-            super.willChangeValueForKey(key)
+            super.willChangeValue(forKey: key)
             return
         }
         
-        let currentThread = NSThread.currentThread()
+        let currentThread = Thread.current
         if currentThread.isMainThread && !currentThread.insideMainThreadChangeNotification() {
             Cd.raise("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
         }
         
         if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
-            super.willChangeValueForKey(key)
+            super.willChangeValue(forKey: key)
             return
         }
         
-        guard let currentContext = currentThread.attachedContext() where currentContext === myManagedObjectContext else {
+        guard let currentContext = currentThread.attachedContext() , currentContext === myManagedObjectContext else {
             if currentThread.attachedContext() == nil {
                 Cd.raise("You are modifying a managed object from a thread that does not have a managed object context.")
             } else {
@@ -137,7 +137,7 @@ public class CdManagedObject : NSManagedObject {
             }
         }
         
-        super.willChangeValueForKey(key)
+        super.willChangeValue(forKey: key)
     }
     
     /**
@@ -148,23 +148,23 @@ public class CdManagedObject : NSManagedObject {
      - parameter withSetMutation: The kind of mutation being applied.
      - parameter usingObjects: The objects being related.
      */
-    public override func willChangeValueForKey(inKey: String, withSetMutation inMutationKind: NSKeyValueSetMutationKind, usingObjects inObjects: Set<NSObject>) {
+    open override func willChangeValue(forKey inKey: String, withSetMutation inMutationKind: NSKeyValueSetMutationKind, using inObjects: Set<AnyHashable>) {
         guard let myManagedObjectContext = self.managedObjectContext else {
-            super.willChangeValueForKey(inKey, withSetMutation: inMutationKind, usingObjects: inObjects)
+            super.willChangeValue(forKey: inKey, withSetMutation: inMutationKind, using: inObjects)
             return
         }
         
-        let currentThread = NSThread.currentThread()
+        let currentThread = Thread.current
         if currentThread.isMainThread && !currentThread.insideMainThreadChangeNotification() {
             Cd.raise("You cannot modify a managed object on the main thread.  Only from inside a transaction.")
         }
         
         if myManagedObjectContext === CdManagedObjectContext._masterSaveContext {
-            super.willChangeValueForKey(inKey, withSetMutation: inMutationKind, usingObjects: inObjects)
+            super.willChangeValue(forKey: inKey, withSetMutation: inMutationKind, using: inObjects)
             return
         }
         
-        guard let currentContext = currentThread.attachedContext() where currentContext === myManagedObjectContext else {
+        guard let currentContext = currentThread.attachedContext() , currentContext === myManagedObjectContext else {
             if currentThread.attachedContext() == nil {
                 Cd.raise("You are modifying a managed object from a thread that does not have a managed object context.")
             } else {
@@ -173,11 +173,11 @@ public class CdManagedObject : NSManagedObject {
         }
         
         for object in inObjects {
-            guard let managedObject = object as? CdManagedObject where managedObject.managedObjectContext === myManagedObjectContext else {
+            guard let managedObject = object as? CdManagedObject , managedObject.managedObjectContext === myManagedObjectContext else {
                 Cd.raise("You are attempting to create a relationship between objects from different contexts.")
             }
         }
         
-        super.willChangeValueForKey(inKey, withSetMutation: inMutationKind, usingObjects: inObjects)
+        super.willChangeValue(forKey: inKey, withSetMutation: inMutationKind, using: inObjects)
     }
 }

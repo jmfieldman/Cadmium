@@ -30,7 +30,7 @@ internal let kCdThreadPropertyNoImplicitSave: String = "kCdThreadPropertyNoImpli
 internal let kCdThreadPropertyMainSaveNotif:  String = "kCdThreadPropertyMainSaveNotif"
 internal let kCdThreadPropertyInsideTrans:    String = "kCdThreadPropertyInsideTrans"
 
-public enum CdInitFailure : ErrorType {
-    case InvalidBundle
-    case InvalidManagedObjectModel
+public enum CdInitFailure : Error {
+    case invalidBundle
+    case invalidManagedObjectModel
 }

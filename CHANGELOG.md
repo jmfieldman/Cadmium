@@ -1,5 +1,10 @@
 # Cadmium Changelog
 
+## 1.0 
+
+* Updates for Swift 3.0
+* Fetching dictionaries has changed
+
 ## 0.13.1 -- 6/18/16
 
 * Updates for Swift 2.3
