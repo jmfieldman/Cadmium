@@ -30,18 +30,22 @@ Pod::Spec.new do |s|
     ss.frameworks = 'CoreData'
   end
 
+  # -------------------------------------------------------------------------
+  # 0.13.1 targets swift 2.3, so all versions of promisekit must point to 3.5
+  # -------------------------------------------------------------------------
+
   s.subspec 'PromiseKit' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
     ss.weak_framework = 'PromiseKit'
     ss.dependency 'Cadmium/Core'
-    ss.dependency 'PromiseKit'
+    ss.dependency 'PromiseKit', '~> 3.5'
   end
 
   s.subspec 'PromiseKit3' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
     ss.weak_framework = 'PromiseKit'
     ss.dependency 'Cadmium/Core'
-    ss.dependency 'PromiseKit', '~> 3'
+    ss.dependency 'PromiseKit', '~> 3.5'
   end
 
 end
