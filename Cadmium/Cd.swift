@@ -457,14 +457,7 @@ public class Cd {
     */
     public static func transact(serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (Void) -> Void) {
         let useSerial = (serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)
-        
-        if let serialQueue = serialQueue {
-            print(CdManagedObjectContext.serialTransactionQueue)
-            print(serialQueue)
-            serialQueue.targ
-            serialQueue.setTarget(queue: CdManagedObjectContext.serialTransactionQueue)
-        }
-        
+                
         /*  These blocks are different.  One calls performBlock as normal (useSerial = false).
             The other calls performBlockAndWait inside of an async serial queue (useSerial = true)
          */

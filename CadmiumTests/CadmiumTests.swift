@@ -289,7 +289,7 @@ class CadmiumTests: XCTestCase {
                             .groupBy("name")
                             .fetch()
             
-            print("\(dicArray)")
+            //print("\(dicArray)")
             
             XCTAssertEqual(dicArray.count, 7, "Result size")
             
@@ -540,7 +540,7 @@ class CadmiumTests: XCTestCase {
         return result
     }
     
-    func helperRunParallelIncNormalTransact(_ maxMillionths: Int, forcedSerial: Bool?, onQueue: DispatchQueue? = nil) -> [Int] {
+    func helperRunParallelIncNormalTransact(_ maxMillionths: Int, forcedSerial: Bool?, simul: Int = 40, onQueue: DispatchQueue? = nil) -> [Int] {
         
         var result: [Int] = []
         var lock = os_unfair_lock()
@@ -550,7 +550,7 @@ class CadmiumTests: XCTestCase {
         
         for _ in 0 ..< 25 {
             
-            for _ in 0 ..< 25 {
+            for _ in 0 ..< simul {
                 group.enter()
                     
                 Cd.transact(serial: forcedSerial, on: onQueue) {
@@ -718,7 +718,7 @@ class CadmiumTests: XCTestCase {
         
         let myQueue = DispatchQueue(label: "test", attributes: DispatchQueue.Attributes.concurrent)
         
-        let res = helperRunParallelIncNormalTransact(10, forcedSerial: nil, onQueue: myQueue)
+        let res = helperRunParallelIncNormalTransact(10, forcedSerial: nil, simul: 16, onQueue: myQueue)
         
         /* Pretty much impossible that this would create a perfectly linear list */
         var dupfound = false
@@ -728,8 +728,8 @@ class CadmiumTests: XCTestCase {
             }
         }
         
-        XCTAssertEqual(res.count, 1000, "Did not run 1000 times")
-        XCTAssertEqual(dupfound, false, "Tasks did not run serially")
+        XCTAssertEqual(res.count, 25*16, "Did not run 1000 times")
+        XCTAssertEqual(dupfound, true, "Tasks ran serially")
         
     }
     
