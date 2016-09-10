@@ -4,5 +4,5 @@ workspace 'CadmiumPromiseExample'
 project 'CadmiumPromiseExample'
 
 target :'CadmiumPromiseExample' do
-    pod 'PromiseKit'
+    pod "PromiseKit", "~> 4.0"
 end

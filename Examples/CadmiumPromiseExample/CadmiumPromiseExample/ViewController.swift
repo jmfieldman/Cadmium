@@ -13,7 +13,7 @@ import Cadmium
 
 class ViewController: UITableViewController {
     
-    var fetchedResultsController: CdFetchedResultsController? = nil
+    var fetchedResultsController: CdFetchedResultsController<ExampleItem>? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +25,7 @@ class ViewController: UITableViewController {
         
         /* Create a fetched results controller that will list all of our example items  (sorted by name) */
         fetchedResultsController = CdFetchedResultsController(
-            fetchRequest: Cd.objects(ExampleItem.self).sorted("name").nsFetchRequest as! NSFetchRequest<_>,
+            fetchRequest: Cd.objects(ExampleItem.self).sorted("name").nsFetchRequest,
             sectionNameKeyPath: nil,
             cacheName: nil)
         
@@ -100,7 +100,7 @@ extension ViewController {
         }
         
         cell.textLabel?.text = item.name
-        cell.detailTextLabel?.text = "number of taps: \(item.numberTaps)"
+        cell.detailTextLabel?.text = "number of taps: \(item.numberTaps) [/2 since incrementing twice]"
         return cell
     }
     

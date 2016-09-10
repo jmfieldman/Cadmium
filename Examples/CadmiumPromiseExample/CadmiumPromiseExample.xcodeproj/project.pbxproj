@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3585AB841D84CC420063299C /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 3585AB831D84CC420063299C /* Podfile */; };
 		3596529C1CE6354200EE82A9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3596529B1CE6354200EE82A9 /* AppDelegate.swift */; };
 		3596529E1CE6354200EE82A9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3596529D1CE6354200EE82A9 /* ViewController.swift */; };
 		359652A41CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 359652A21CE6354200EE82A9 /* CadmiumPromiseExample.xcdatamodeld */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3585AB831D84CC420063299C /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; };
 		359652981CE6354200EE82A9 /* CadmiumPromiseExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CadmiumPromiseExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3596529B1CE6354200EE82A9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3596529D1CE6354200EE82A9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 		3596529A1CE6354200EE82A9 /* CadmiumPromiseExample */ = {
 			isa = PBXGroup;
 			children = (
+				3585AB831D84CC420063299C /* Podfile */,
 				359652C31CE6471200EE82A9 /* PromiseKit */,
 				359652BF1CE6384300EE82A9 /* ExampleItem+CoreDataProperties.swift */,
 				359652C01CE6384300EE82A9 /* ExampleItem.swift */,
@@ -148,12 +151,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 359652AD1CE6354200EE82A9 /* Build configuration list for PBXNativeTarget "CadmiumPromiseExample" */;
 			buildPhases = (
-				66D0F515859FDE94FA52DA71 /* 📦 Check Pods Manifest.lock */,
+				66D0F515859FDE94FA52DA71 /* [CP] Check Pods Manifest.lock */,
 				359652941CE6354200EE82A9 /* Sources */,
 				359652951CE6354200EE82A9 /* Frameworks */,
 				359652961CE6354200EE82A9 /* Resources */,
-				D191DD4DF4E07C1BAD9C2C48 /* 📦 Embed Pods Frameworks */,
-				720A7F33C6E8A421B050AB04 /* 📦 Copy Pods Resources */,
+				D191DD4DF4E07C1BAD9C2C48 /* [CP] Embed Pods Frameworks */,
+				720A7F33C6E8A421B050AB04 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -171,7 +174,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Jason Fieldman";
 				TargetAttributes = {
 					359652971CE6354200EE82A9 = {
@@ -226,6 +229,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3585AB841D84CC420063299C /* Podfile in Resources */,
 				359652A91CE6354200EE82A9 /* LaunchScreen.storyboard in Resources */,
 				359652A61CE6354200EE82A9 /* Assets.xcassets in Resources */,
 			);
@@ -234,29 +238,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		66D0F515859FDE94FA52DA71 /* 📦 Check Pods Manifest.lock */ = {
+		66D0F515859FDE94FA52DA71 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		720A7F33C6E8A421B050AB04 /* 📦 Copy Pods Resources */ = {
+		720A7F33C6E8A421B050AB04 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -264,14 +268,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CadmiumPromiseExample/Pods-CadmiumPromiseExample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D191DD4DF4E07C1BAD9C2C48 /* 📦 Embed Pods Frameworks */ = {
+		D191DD4DF4E07C1BAD9C2C48 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,8 +327,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -368,8 +374,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -388,6 +396,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -396,6 +405,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E607090122334660F5BFE876 /* Pods-CadmiumPromiseExample.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = CadmiumPromiseExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -409,6 +419,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3C05BB6AEF7AD013DCB3D977 /* Pods-CadmiumPromiseExample.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = CadmiumPromiseExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

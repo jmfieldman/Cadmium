@@ -8,6 +8,7 @@
 
 import Foundation
 import PromiseKit
+import Cadmium
 
 
 public enum CdPromiseError : Error {
@@ -17,11 +18,11 @@ public enum CdPromiseError : Error {
 public extension Cd {
     
     /** Allows you to perform a standard Cadmium transaction as a Promise */
-    public class func transact<U>(serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: @escaping (Void) throws -> U) -> Promise<U> {
+    @discardableResult public class func transact<U>(_ serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (Void) throws -> U) -> Promise<U> {
         return Promise { fulfill, reject in
-            dispatch_async(dispatch_get_global_queue(0, 0)) {
+            DispatchQueue.global(qos: .default).async {
                 var result: U!
-                var error: ErrorType?
+                var error: Error?
                 Cd.transactAndWait(serial: serial, on: serialQueue) {
                     do {
                         result = try operation()
@@ -40,14 +41,14 @@ public extension Cd {
     
     /** Allows you to perform a standard Cadmium transaction as a Promise.
         Converts the object to an instance in the operation's context. */
-    public class func transactWith<T: CdManagedObject, U>(_ object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: @escaping (T) throws -> U) -> Promise<U> {
+    @discardableResult public class func transactWith<T: CdManagedObject, U>(_ object: T, serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (T) throws -> U) -> Promise<U> {
         return Promise { fulfill, reject in
-            dispatch_async(dispatch_get_global_queue(0, 0)) {
+            DispatchQueue.global(qos: .default).async {
                 var result: U!
-                var error: ErrorType?
+                var error: Error?
                 Cd.transactAndWait(serial: serial, on: serialQueue) {
                     guard let currentObject = Cd.useInCurrentContext(object) else {
-                        reject(CdPromiseError.NotAvailableInCurrentContext(object))
+                        reject(CdPromiseError.notAvailableInCurrentContext(object))
                         return
                     }
                     
@@ -68,11 +69,11 @@ public extension Cd {
     
     /** Allows you to perform a standard Cadmium transaction as a Promise.
         Converts the object array to the operation's context. */
-    public class func transactWith<T: CdManagedObject, U>(_ objects: [T], serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: @escaping ([T]) throws -> U) -> Promise<U> {
+    @discardableResult public class func transactWith<T: CdManagedObject, U>(_ objects: [T], serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping ([T]) throws -> U) -> Promise<U> {
         return Promise { fulfill, reject in
-            dispatch_async(dispatch_get_global_queue(0, 0)) {
+            DispatchQueue.global(qos: .default).async {
                 var result: U!
-                var error: ErrorType?
+                var error: Error?
                 Cd.transactAndWait(serial: serial, on: serialQueue) {
                     do {
                         result = try operation(Cd.useInCurrentContext(objects))
@@ -96,11 +97,11 @@ public extension Promise {
     
     /** Allows you to chain a Cadmium transaction into the promise chain with the immediate 'then' style. 
         The argument to the promise operation is treated as a normal non-managed-object instance. */
-    public func thenTransact<U>(serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, body: (T) throws -> U) -> Promise<U> {
+    @discardableResult public func thenTransact<U>(_ serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, body: @escaping (T) throws -> U) -> Promise<U> {
         
-        return self.thenInBackground { (value: T) -> U in
+        return self.then(on: .global(qos: .default)) { (value: T) -> U in
             var result: U!
-            var error: ErrorType?
+            var error: Error?
             Cd.transactAndWait(serial: serial, on: serialQueue) {
                 do {
                     result = try body(value)
@@ -123,18 +124,18 @@ public extension Promise where T: CdManagedObject {
     /** Allows you to chain a Cadmium transaction into the promise chain with the immediate 'then' style.
         Using this operation when the generic is a CdManagedObject converts the token object to a new
         instance that belongs to the body's context. */
-    public func thenTransactWith<U>(serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, body: (T) throws -> U) -> Promise<U> {
+    @discardableResult public func thenTransactWith<U>(_ serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, body: @escaping (T) throws -> U) -> Promise<U> {
         
-        return self.thenInBackground { (value: T?) -> U in
+        return self.then(on: .global(qos: .default)) { (value: T?) -> U in
             guard let _value = value else {
-                throw CdPromiseError.NotAvailableInCurrentContext(value)
+                throw CdPromiseError.notAvailableInCurrentContext(value)
             }
             
             var result: U!
-            var error: ErrorType?
+            var error: Error?
             Cd.transactAndWait(serial: serial, on: serialQueue) {
                 guard let currentObject = Cd.useInCurrentContext(_value) else {
-                    error = CdPromiseError.NotAvailableInCurrentContext(_value)
+                    error = CdPromiseError.notAvailableInCurrentContext(_value)
                     return
                 }
                 
@@ -151,11 +152,11 @@ public extension Promise where T: CdManagedObject {
     }
     
     /** Use this to send a managed object from a promise chain into the main thread context. */
-    public func thenOnMainWith<U>(_ body: (T) throws -> U) -> Promise<U> {
+    @discardableResult public func thenOnMainWith<U>(_ body: @escaping (T) throws -> U) -> Promise<U> {
         
         return self.then { (value: T) -> U in
             guard let currentObject = Cd.useInCurrentContext(value) else {
-                throw CdPromiseError.NotAvailableInCurrentContext(value)
+                throw CdPromiseError.notAvailableInCurrentContext(value)
             }
             
             return try body(currentObject)
