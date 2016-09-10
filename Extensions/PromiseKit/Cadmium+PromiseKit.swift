@@ -8,7 +8,6 @@
 
 import Foundation
 import PromiseKit
-import Cadmium
 
 
 public enum CdPromiseError : Error {
