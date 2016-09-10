@@ -180,6 +180,45 @@ public class Cd {
         return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CdManagedObjectContext.mainThreadContext(), sectionNameKeyPath: sectionNameKeyPath, cacheName: cacheName)
     }
     
+    /*
+     *  -------------------- Object Query Swift 3 Support ----------------------
+     */
+    
+    /**
+     This instantiates a CdFetchRequest object, which is used to created chained
+     object queries.
+     
+     Be aware that the fetch will execute against the context of the calling thread.
+     If run from the main thread, the fetch is on the main thread context.  If called
+     from inside a transaction, the fetch is run against the context of the
+     transaction.
+     
+     - parameter objectClass: The managed object type to query.  Must inherit from
+                              CdManagedObject
+     
+     - returns: The CdFetchRequest object ready to be configured and then fetched.
+     */
+    @inline(__always) public static func objectQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<T> {
+        return CdFetchRequest<T>()
+    }
+    
+    /**
+     This instantiates a CdFetchRequest object, which is used to created chained
+     object queries.
+     
+     Be aware that the fetch will execute against the context of the calling thread.
+     If run from the main thread, the fetch is on the main thread context.  If called
+     from inside a transaction, the fetch is run against the context of the
+     transaction.
+     
+     - parameter objectClass: The managed object type to query.  Must inherit from
+     CdManagedObject
+     
+     - returns: The CdFetchRequest object ready to be configured and then fetched.
+     */
+    @inline(__always) public static func dictionaryQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<NSDictionary> {
+        return CdFetchRequest<NSDictionary>(entityName: "\(T.self)")
+    }
     
     /*
      *  -------------------- Object Lifecycle ----------------------
@@ -420,6 +459,9 @@ public class Cd {
         let useSerial = (serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)
         
         if let serialQueue = serialQueue {
+            print(CdManagedObjectContext.serialTransactionQueue)
+            print(serialQueue)
+            serialQueue.targ
             serialQueue.setTarget(queue: CdManagedObjectContext.serialTransactionQueue)
         }
         

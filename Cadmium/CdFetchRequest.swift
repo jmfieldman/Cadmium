@@ -61,6 +61,10 @@ public class CdFetchRequest<T: NSFetchRequestResult> {
         nsFetchRequest = NSFetchRequest(entityName: "\(T.self)")
     }
     
+    internal init(entityName: String) {
+        nsFetchRequest = NSFetchRequest(entityName: entityName)
+    }
+    
     /*
      *  -------------------------- Filtering ------------------------------
      */

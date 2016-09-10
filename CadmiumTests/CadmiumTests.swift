@@ -105,7 +105,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).filter("id = 1").fetch()
             XCTAssertEqual(objs.count, 1, "Query string equals")
@@ -135,7 +135,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 6, "Query string equals")
@@ -167,7 +167,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             var objs = try Cd.objects(TestItem.self).filter("name = \"F\"").fetch()
             XCTAssertEqual(objs.count, 1, "Query string equals")
@@ -188,7 +188,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 6, "Query string equals")
@@ -221,7 +221,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 15, "Query string equals")
@@ -237,7 +237,7 @@ class CadmiumTests: XCTestCase {
         
         do {
             
-            let dic = try Cd.objects(TestItem.self).fetchDictionaryArray()
+            let dic = try Cd.dictionaryQuery(for: TestItem.self).fetch()
             XCTAssertEqual(dic.count, 5, "Query size")
             
             
@@ -272,22 +272,22 @@ class CadmiumTests: XCTestCase {
                     }
                 }
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let exception1 = catchException {
-                _ = try? Cd.objects(TestItem.self).groupBy("name").fetchDictionaryArray()
+                _ = try? Cd.dictionaryQuery(for: TestItem.self).groupBy("name").fetch()
             }
             
             if exception1 == nil {
                 XCTFail("should have failed because of grouping without property naming")
             }
             
-            let dicArray = try Cd.objects(TestItem.self)
+            let dicArray = try Cd.dictionaryQuery(for: TestItem.self)
                             .includeExpression("sum", resultType: .integer64AttributeType, withFormat: "@sum.id")
                             .includeExpression("count", resultType: .integer64AttributeType, withFormat: "name.@count")
                             .onlyProperties(["name", "sum", "count"])
                             .groupBy("name")
-                            .fetchDictionaryArray()
+                            .fetch()
             
             print("\(dicArray)")
             
@@ -330,7 +330,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 4, "Query string equals")
@@ -356,7 +356,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 0, "Query string equals")
@@ -386,7 +386,7 @@ class CadmiumTests: XCTestCase {
                 
                 
             }
-            dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+            let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
             
             let objs = try Cd.objects(TestItem.self).fetch()
             XCTAssertEqual(objs.count, 6, "Query string equals")
@@ -447,7 +447,7 @@ class CadmiumTests: XCTestCase {
             
         }
         
-        dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+        let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
     }
     
     func testForbidReusingTransient() {
@@ -475,7 +475,7 @@ class CadmiumTests: XCTestCase {
             
         }
         
-        dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+        let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
     }
     
     func testForbidCreateMain() {
@@ -534,7 +534,7 @@ class CadmiumTests: XCTestCase {
                 }
             }
             
-            group.wait(timeout: DispatchTime.distantFuture)
+            let _ = group.wait(timeout: DispatchTime.distantFuture)
         }
         
         return result
@@ -550,7 +550,7 @@ class CadmiumTests: XCTestCase {
         
         for _ in 0 ..< 25 {
             
-            for _ in 0 ..< 40 {
+            for _ in 0 ..< 25 {
                 group.enter()
                     
                 Cd.transact(serial: forcedSerial, on: onQueue) {
@@ -576,7 +576,7 @@ class CadmiumTests: XCTestCase {
                 }
             }
             
-            group.wait(timeout: DispatchTime.distantFuture)
+            let _ = group.wait(timeout: DispatchTime.distantFuture)
         }
         
         return result
@@ -759,7 +759,7 @@ class CadmiumTests: XCTestCase {
             group.leave()
         }
         
-        group.wait(timeout: DispatchTime.distantFuture)
+        let _ = group.wait(timeout: DispatchTime.distantFuture)
         
         XCTAssertEqual(true, true, "Hang Test")
         
@@ -800,7 +800,7 @@ class CadmiumTests: XCTestCase {
             
         }
         
-        dispatchGroup.wait(timeout: DispatchTime.distantFuture)
+        let _ = dispatchGroup.wait(timeout: DispatchTime.distantFuture)
     }
     
     func cleanName() -> String {
