@@ -25,7 +25,7 @@
 import Foundation
 import CoreData
 
-public class CdFetchedResultsController : NSFetchedResultsController<CdManagedObject> {
+public class CdFetchedResultsController<T: CdManagedObject> : NSFetchedResultsController<CdManagedObject> {
     
     /**
      The CdFetchedResultsController wraps the NSFetchedResultsController init
@@ -46,9 +46,9 @@ public class CdFetchedResultsController : NSFetchedResultsController<CdManagedOb
      - returns: The instantiated controller.  Assign a delegate manually or
                 use the automateDelegation method.  Use performFetch to initiate.
      */
-    public init(fetchRequest: NSFetchRequest<CdManagedObject>, sectionNameKeyPath: String?, cacheName: String?) {
+    public init(fetchRequest: NSFetchRequest<T>, sectionNameKeyPath: String?, cacheName: String?) {
         super.init(
-            fetchRequest:           fetchRequest,
+            fetchRequest:           fetchRequest as! NSFetchRequest<CdManagedObject>,
             managedObjectContext:   CdManagedObjectContext.mainThreadContext(),
             sectionNameKeyPath:     sectionNameKeyPath,
             cacheName:              cacheName)
