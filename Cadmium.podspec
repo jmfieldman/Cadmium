@@ -28,24 +28,27 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |ss|
     ss.source_files = "Cadmium/*.swift"
     ss.frameworks = 'CoreData'
+    ss.xcconfig = { 'SWIFT_VERSION' => '2.3' }
   end
 
   # -------------------------------------------------------------------------
   # 0.13.1 targets swift 2.3, so all versions of promisekit must point to 3.5
   # -------------------------------------------------------------------------
 
-  s.subspec 'PromiseKit' do |ss|
-    ss.source_files = "Extensions/PromiseKit/*.swift"
-    ss.weak_framework = 'PromiseKit'
-    ss.dependency 'Cadmium/Core'
-    ss.dependency 'PromiseKit', '~> 3.5'
-  end
+  # AS OF 0.13.1 PROMISEKIT DOES NOT BUILD AGAINST SWIFT 2.3 -- INCLUDE MANUALLY
 
-  s.subspec 'PromiseKit3' do |ss|
-    ss.source_files = "Extensions/PromiseKit/*.swift"
-    ss.weak_framework = 'PromiseKit'
-    ss.dependency 'Cadmium/Core'
-    ss.dependency 'PromiseKit', '~> 3.5'
-  end
+  #s.subspec 'PromiseKit' do |ss|
+  #  ss.source_files = "Extensions/PromiseKit/*.swift"
+  #  ss.weak_framework = 'PromiseKit'
+  #  ss.dependency 'Cadmium/Core'
+  #  ss.dependency 'PromiseKit', '~> 3.5'
+  #end
+
+  #s.subspec 'PromiseKit3' do |ss|
+  #  ss.source_files = "Extensions/PromiseKit/*.swift"
+  #  ss.weak_framework = 'PromiseKit'
+  #  ss.dependency 'Cadmium/Core'
+  #  ss.dependency 'PromiseKit', '~> 3.5'
+  #end
 
 end
