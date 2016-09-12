@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
 
   s.name         = "Cadmium"
-  s.version      = "0.13.1"
-  s.summary      = "Core Data framework for Swift that uses concise syntax to ensure best practices and protect you from common Core Data pitfalls"
+  s.version      = "1.0.0"
+  s.summary      = "Core Data framework for Swift that uses concise syntax to hide context complexity and ensure best practices"
 
   s.description  = <<-DESC
-                   Core Data framework for Swift that uses concise syntax to ensure best practices and protect you from common Core Data pitfalls.
+                   Core Data framework for Swift that uses concise syntax to hide context complexity, ensure best practices, and protect you from common Core Data pitfalls.
                    DESC
 
   s.homepage     = "https://github.com/jmfieldman/Cadmium"
@@ -28,24 +28,14 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |ss|
     ss.source_files = "Cadmium/*.swift"
     ss.frameworks = 'CoreData'
+    ss.xcconfig = { 'SWIFT_VERSION' => '3.0' }
   end
-
-  # -------------------------------------------------------------------------
-  # 0.13.1 targets swift 2.3, so all versions of promisekit must point to 3.5
-  # -------------------------------------------------------------------------
 
   s.subspec 'PromiseKit' do |ss|
     ss.source_files = "Extensions/PromiseKit/*.swift"
     ss.weak_framework = 'PromiseKit'
     ss.dependency 'Cadmium/Core'
-    ss.dependency 'PromiseKit', '~> 3.5'
-  end
-
-  s.subspec 'PromiseKit3' do |ss|
-    ss.source_files = "Extensions/PromiseKit/*.swift"
-    ss.weak_framework = 'PromiseKit'
-    ss.dependency 'Cadmium/Core'
-    ss.dependency 'PromiseKit', '~> 3.5'
+    ss.dependency 'PromiseKit'
   end
 
 end
