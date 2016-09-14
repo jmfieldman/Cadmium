@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 0.13.2 -- 9/13/16
+
+* Added PromiseKit back into podspec
+
 ## 0.13.1 -- 6/18/16
 
 * Updates for Swift 2.3
