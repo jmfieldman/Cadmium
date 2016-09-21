@@ -29,12 +29,12 @@ import CoreData
  *  The CdFetchRequest class enables chained query statements and ensures fetches
  *  occur in the proper context.
  */
-public class CdFetchRequest<T: CdManagedObject> {
+public class CdFetchRequest<T: NSFetchRequestResult> {
     
     /**
      *  This is the internal NSFetchRequest we are wrapping.
      */
-    public let nsFetchRequest: NSFetchRequest
+    public let nsFetchRequest: NSFetchRequest<T>
     
     /**
      *  Contains the expressions declared during method chaining (indexed by name)
@@ -61,6 +61,10 @@ public class CdFetchRequest<T: CdManagedObject> {
         nsFetchRequest = NSFetchRequest(entityName: "\(T.self)")
     }
     
+    internal init(entityName: String) {
+        nsFetchRequest = NSFetchRequest(entityName: entityName)
+    }
+    
     /*
      *  -------------------------- Filtering ------------------------------
      */
@@ -73,7 +77,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func filter(predicate: NSPredicate) -> CdFetchRequest<T> {
+    @inline(__always) public func filter(_ predicate: NSPredicate) -> CdFetchRequest<T> {
         if let currentPredicate = nsFetchRequest.predicate {
             nsFetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [currentPredicate, predicate])
         } else {
@@ -90,7 +94,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func filter(predicateString: String, _ predicateArgs: AnyObject...) -> CdFetchRequest<T> {
+    @inline(__always) public func filter(_ predicateString: String, _ predicateArgs: Any...) -> CdFetchRequest<T> {
         let newPredicate = NSPredicate(format: predicateString, argumentArray: predicateArgs)
         return filter(newPredicate)
     }
@@ -102,7 +106,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func and(predicate: NSPredicate) -> CdFetchRequest<T> {
+    @inline(__always) public func and(_ predicate: NSPredicate) -> CdFetchRequest<T> {
         return filter(predicate)
     }
     
@@ -114,7 +118,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func and(predicateString: String, _ predicateArgs: AnyObject...) -> CdFetchRequest<T> {
+    @inline(__always) public func and(_ predicateString: String, _ predicateArgs: AnyObject...) -> CdFetchRequest<T> {
         let newPredicate = NSPredicate(format: predicateString, argumentArray: predicateArgs)
         return and(newPredicate)
     }
@@ -127,7 +131,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func or(predicate: NSPredicate) -> CdFetchRequest<T> {
+    @inline(__always) public func or(_ predicate: NSPredicate) -> CdFetchRequest<T> {
         if let currentPredicate = nsFetchRequest.predicate {
             nsFetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [currentPredicate, predicate])
         } else {
@@ -144,7 +148,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func or(predicateString: String, _ predicateArgs: AnyObject...) -> CdFetchRequest<T> {
+    @inline(__always) public func or(_ predicateString: String, _ predicateArgs: AnyObject...) -> CdFetchRequest<T> {
         let newPredicate = NSPredicate(format: predicateString, argumentArray: predicateArgs)
         return or(newPredicate)
     }
@@ -162,7 +166,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func sorted(property: String, ascending: Bool = true) -> CdFetchRequest<T> {
+    @inline(__always) public func sorted(_ property: String, ascending: Bool = true) -> CdFetchRequest<T> {
         let descriptor = NSSortDescriptor(key: property, ascending: ascending)
         return sorted(descriptor)
     }
@@ -174,7 +178,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func sorted(descriptor: NSSortDescriptor) -> CdFetchRequest<T> {
+    @inline(__always) public func sorted(_ descriptor: NSSortDescriptor) -> CdFetchRequest<T> {
         if nsFetchRequest.sortDescriptors == nil {
             nsFetchRequest.sortDescriptors = [descriptor]
         } else {
@@ -201,7 +205,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    public func includeExpression(named: String, resultType: NSAttributeType, withFormat: String, _ formatArgs: AnyObject...) -> CdFetchRequest<T> {
+    public func includeExpression(_ named: String, resultType: NSAttributeType, withFormat: String, _ formatArgs: AnyObject...) -> CdFetchRequest<T> {
         let expression                      = NSExpression(format: withFormat, formatArgs)
         
         let expressionDesc                  = NSExpressionDescription()
@@ -226,8 +230,8 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func onlyProperties(properties: [String]) -> CdFetchRequest<T> {
-        self.includedProperties.unionInPlace(properties)
+    @inline(__always) public func onlyProperties(_ properties: [String]) -> CdFetchRequest<T> {
+        self.includedProperties.formUnion(properties)
         return self
     }
     
@@ -239,8 +243,8 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func groupBy(properties: [String]) -> CdFetchRequest<T> {
-        self.includedGroupings.appendContentsOf(properties)
+    @inline(__always) public func groupBy(_ properties: [String]) -> CdFetchRequest<T> {
+        self.includedGroupings.append(contentsOf: properties)
         return self
     }
     
@@ -252,7 +256,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func groupBy(property: String) -> CdFetchRequest<T> {
+    @inline(__always) public func groupBy(_ property: String) -> CdFetchRequest<T> {
         return groupBy([property])
     }
     
@@ -264,7 +268,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func limit(limit: Int) -> CdFetchRequest<T> {
+    @inline(__always) public func limit(_ limit: Int) -> CdFetchRequest<T> {
         nsFetchRequest.fetchLimit = limit
         return self
     }
@@ -277,7 +281,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func offset(offset: Int) -> CdFetchRequest<T> {
+    @inline(__always) public func offset(_ offset: Int) -> CdFetchRequest<T> {
         nsFetchRequest.fetchOffset = offset
         return self
     }
@@ -290,7 +294,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func batchSize(batchSize: Int) -> CdFetchRequest<T> {
+    @inline(__always) public func batchSize(_ batchSize: Int) -> CdFetchRequest<T> {
         nsFetchRequest.fetchBatchSize = batchSize
         return self
     }
@@ -304,7 +308,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func distinct(distinct: Bool = true) -> CdFetchRequest<T> {
+    @inline(__always) public func distinct(_ distinct: Bool = true) -> CdFetchRequest<T> {
         nsFetchRequest.returnsDistinctResults = distinct
         return self
     }
@@ -317,7 +321,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func prefetch(relationships: [String]) -> CdFetchRequest<T> {
+    @inline(__always) public func prefetch(_ relationships: [String]) -> CdFetchRequest<T> {
         nsFetchRequest.relationshipKeyPathsForPrefetching = relationships
         return self
     }
@@ -340,75 +344,52 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The fetch results
      */
     public func fetch() throws -> [T] {
-        guard let currentContext = NSThread.currentThread().attachedContext() else {
+        guard let currentContext = Thread.current.attachedContext() else {
             Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
-        if includedProperties.count > 0 {
-            nsFetchRequest.propertiesToFetch = [String](includedProperties)
-        }
-        
-        if includedExpressions.count > 0 {
-            Cd.raise("You cannot call fetch() if you have included custom expressions.  Use fetchDictionaryArray()")
-        }
-        
-        if includedGroupings.count > 0 {
-            Cd.raise("You cannot call fetch() if you have included custom groupings.  Use fetchDictionaryArray()")
-        }
-        
-        if let results = try currentContext.executeFetchRequest(nsFetchRequest) as? [T] {
-            return results
-        }
-        
-        return []
-    }
-    
-    /**
-     Executes the fetch on the current context.  If run from the main thread, it
-     executes on the main thread context.  If run from a transaction it will
-     execute on the transaction thread.
-     
-     You cannot execute this on a non-transaction background thread since there
-     will not be an attached context.
-     
-     - throws:  If the underlying NSFetchRequest throws an error, this returns
-                it up the stack.
-     
-     - returns: The fetch results as a dictionary.
-     */
-    public func fetchDictionaryArray() throws -> [[String: AnyObject]] {
-        guard let currentContext = NSThread.currentThread().attachedContext() else {
-            Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
-        }
-        
-        nsFetchRequest.resultType = .DictionaryResultType
-        
-        if includedProperties.count > 0 {
-            var actualProperties: [AnyObject] = []
-            for propertyName in includedProperties {
-                if let expression = includedExpressions[propertyName] {
-                    actualProperties.append(expression)
-                } else {
-                    actualProperties.append(propertyName)
+        if T.self is NSDictionary.Type {
+            // -------- Dictionary fetches --------------
+            
+            nsFetchRequest.resultType = .dictionaryResultType
+            
+            if includedProperties.count > 0 {
+                var actualProperties: [AnyObject] = []
+                for propertyName in includedProperties {
+                    if let expression = includedExpressions[propertyName] {
+                        actualProperties.append(expression)
+                    } else {
+                        actualProperties.append(propertyName as AnyObject)
+                    }
                 }
+                nsFetchRequest.propertiesToFetch = actualProperties
             }
-            nsFetchRequest.propertiesToFetch = actualProperties
-        }
-        
-        if includedGroupings.count > 0 {
-            for groupName in includedGroupings {
-                if !includedProperties.contains(groupName) {
-                    Cd.raise("You cannot group by a property name unless you've included it in onlyProperties()")
+            
+            if includedGroupings.count > 0 {
+                for groupName in includedGroupings {
+                    if !includedProperties.contains(groupName) {
+                        Cd.raise("You cannot group by a property name unless you've included it in onlyProperties()")
+                    }
                 }
+                nsFetchRequest.propertiesToGroupBy = includedGroupings
             }
-            nsFetchRequest.propertiesToGroupBy = includedGroupings
+        } else {
+            // ------ For non-dictionary fetches -------------
+            
+            if includedProperties.count > 0 {
+                nsFetchRequest.propertiesToFetch = [String](includedProperties)
+            }
+            
+            if includedExpressions.count > 0 {
+                Cd.raise("You cannot call fetch() if you have included custom expressions.  Use fetchDictionaryArray()")
+            }
+            
+            if includedGroupings.count > 0 {
+                Cd.raise("You cannot call fetch() if you have included custom groupings.  Use fetchDictionaryArray()")
+            }
         }
         
-        if let results = try currentContext.executeFetchRequest(nsFetchRequest) as? [[String: AnyObject]] {
-            return results
-        }
-        
-        return []
+        return try currentContext.fetch(nsFetchRequest)
     }
     
     
@@ -442,13 +423,19 @@ public class CdFetchRequest<T: CdManagedObject> {
      - returns: The number of items that match the fetch parameters, or NSNotFound if an error occurred.
      */
     @inline(__always) public func count() throws -> Int {
-        guard let currentContext = NSThread.currentThread().attachedContext() else {
+        guard let currentContext = Thread.current.attachedContext() else {
             Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
         
-        return try currentContext.countForFetchRequest(nsFetchRequest)
+        return try currentContext.count(for: nsFetchRequest)
     }
     
+    
+    
+}
+
+
+public extension CdFetchRequest where T: CdManagedObject {
     
     /**
      Deletes any objects that match the receivers query.  Performs the delete in the current context
@@ -457,7 +444,7 @@ public class CdFetchRequest<T: CdManagedObject> {
      - throws: The error thrown during the fetch request.
      */
     public func delete() throws {
-        if let currentContext = NSThread.currentThread().attachedContext() where currentContext !== CdManagedObjectContext._mainThreadContext {
+        if let currentContext = Thread.current.attachedContext() , currentContext !== CdManagedObjectContext._mainThreadContext {
             Cd.delete(try self.fetch())
             return
         }

@@ -50,15 +50,15 @@ public class Cd {
      - parameter serialTX:  If Cadmium should use serial transactions
                             by default.  See README for more information.
     */
-    public class func initWithSQLStore(momdURL momdURL: NSURL, sqliteURL: NSURL, options: [NSObject : AnyObject]? = nil, serialTX: Bool = false) throws {
-        guard let mom = NSManagedObjectModel(contentsOfURL: momdURL) else {
-            throw CdInitFailure.InvalidManagedObjectModel
+    public static func initWithSQLStore(momdURL: URL, sqliteURL: URL, options: [AnyHashable: Any]? = nil, serialTX: Bool = false) throws {
+        guard let mom = NSManagedObjectModel(contentsOf: momdURL) else {
+            throw CdInitFailure.invalidManagedObjectModel
         }
         
         defaultSerialTransactions = serialTX
         
         let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
-        try psc.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqliteURL, options: options)
+        try psc.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: sqliteURL, options: options)
         
         CdManagedObjectContext.initializeMasterContexts(coordinator: psc)
     }
@@ -84,33 +84,33 @@ public class Cd {
      
      - throws: Various errors in case something goes wrong!
      */
-    public class func initWithSQLStore(momdInbundleID bundleID: String?, momdName: String, sqliteFilename: String, options: [NSObject : AnyObject]? = nil, serialTX: Bool = false) throws {
-        var bundle: NSBundle!
+    public static func initWithSQLStore(momdInbundleID bundleID: String?, momdName: String, sqliteFilename: String, options: [AnyHashable: Any]? = nil, serialTX: Bool = false) throws {
+        var bundle: Bundle!
         
         if bundleID == nil {
-            bundle = NSBundle.mainBundle()
+            bundle = Bundle.main
         } else {
-            guard let idBundle = NSBundle(identifier: bundleID!) else {
-                throw CdInitFailure.InvalidBundle
+            guard let idBundle = Bundle(identifier: bundleID!) else {
+                throw CdInitFailure.invalidBundle
             }
             bundle = idBundle
         }
         
-        var actualMomdName: NSString = momdName
+        var actualMomdName: NSString = momdName as NSString
         if actualMomdName.pathExtension == "momd" {
-            actualMomdName = actualMomdName.stringByDeletingPathExtension
+            actualMomdName = actualMomdName.deletingPathExtension as NSString
         }
         
-        guard let momdURL = bundle.URLForResource(actualMomdName as String, withExtension: "momd") else {
-            throw CdInitFailure.InvalidManagedObjectModel
+        guard let momdURL = bundle.url(forResource: actualMomdName as String, withExtension: "momd") else {
+            throw CdInitFailure.invalidManagedObjectModel
         }
         
-        let documentDirectories = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+        let documentDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentDirectory   = documentDirectories[documentDirectories.count - 1]
-        let sqliteURL           = documentDirectory.URLByAppendingPathComponent(sqliteFilename)
+        let sqliteURL           = documentDirectory.appendingPathComponent(sqliteFilename)
         
-        try NSFileManager.defaultManager().createDirectoryAtURL(documentDirectory, withIntermediateDirectories: true, attributes: nil)
-        try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL!, options: options, serialTX: serialTX)
+        try FileManager.default.createDirectory(at: documentDirectory, withIntermediateDirectories: true, attributes: nil)
+        try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL, options: options, serialTX: serialTX)
     }
     
     /*
@@ -131,7 +131,7 @@ public class Cd {
      
      - returns: The CdFetchRequest object ready to be configured and then fetched.
     */
-    @inline(__always) public class func objects<T: CdManagedObject>(objectClass: T.Type) -> CdFetchRequest<T> {
+    @inline(__always) public static func objects<T: CdManagedObject>(_ objectClass: T.Type) -> CdFetchRequest<T> {
         return CdFetchRequest<T>()
     }
 
@@ -146,7 +146,7 @@ public class Cd {
      
      - returns: The object that was found, or nil
      */
-    public class func objectWithID<T: CdManagedObject>(objectClass: T.Type, idValue: AnyObject, key: String = "id") throws -> T? {
+    public static func objectWithID<T: CdManagedObject>(_ objectClass: T.Type, idValue: AnyObject, key: String = "id") throws -> T? {
         return try Cd.objects(objectClass).filter("\(key) == %@", idValue).fetchOne()
     }
     
@@ -161,7 +161,7 @@ public class Cd {
      
      - returns: The objects that were found
      */
-    public class func objectsWithIDs<T: CdManagedObject>(objectClass: T.Type, idValues: [AnyObject], key: String = "id") throws -> [T] {
+    public static func objectsWithIDs<T: CdManagedObject>(_ objectClass: T.Type, idValues: [AnyObject], key: String = "id") throws -> [T] {
         return try Cd.objects(objectClass).filter("\(key) IN %@", idValues).fetch()
     }
     
@@ -176,10 +176,49 @@ public class Cd {
      
      - returns: The initialized NSFetchedResultsController
      */
-    public class func newFetchedResultsController(fetchRequest: NSFetchRequest, sectionNameKeyPath: String?, cacheName: String?) -> NSFetchedResultsController {
+    public static func newFetchedResultsController<T: CdManagedObject>(_ fetchRequest: NSFetchRequest<T>, sectionNameKeyPath: String?, cacheName: String?) -> NSFetchedResultsController<T> {
         return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CdManagedObjectContext.mainThreadContext(), sectionNameKeyPath: sectionNameKeyPath, cacheName: cacheName)
     }
     
+    /*
+     *  -------------------- Object Query Swift 3 Support ----------------------
+     */
+    
+    /**
+     This instantiates a CdFetchRequest object, which is used to created chained
+     object queries.
+     
+     Be aware that the fetch will execute against the context of the calling thread.
+     If run from the main thread, the fetch is on the main thread context.  If called
+     from inside a transaction, the fetch is run against the context of the
+     transaction.
+     
+     - parameter objectClass: The managed object type to query.  Must inherit from
+                              CdManagedObject
+     
+     - returns: The CdFetchRequest object ready to be configured and then fetched.
+     */
+    @inline(__always) public static func objectQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<T> {
+        return CdFetchRequest<T>()
+    }
+    
+    /**
+     This instantiates a CdFetchRequest object, which is used to created chained
+     object queries.
+     
+     Be aware that the fetch will execute against the context of the calling thread.
+     If run from the main thread, the fetch is on the main thread context.  If called
+     from inside a transaction, the fetch is run against the context of the
+     transaction.
+     
+     - parameter objectClass: The managed object type to query.  Must inherit from
+     CdManagedObject
+     
+     - returns: The CdFetchRequest object ready to be configured and then fetched.
+     */
+    @inline(__always) public static func dictionaryQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<NSDictionary> {
+        return CdFetchRequest<NSDictionary>(entityName: "\(T.self)")
+    }
     
     /*
      *  -------------------- Object Lifecycle ----------------------
@@ -195,16 +234,16 @@ public class Cd {
      
      - returns: The created object.
      */
-    public class func create<T: CdManagedObject>(entityType: T.Type, transient: Bool = false) throws -> T {
-        guard let entDesc = NSEntityDescription.entityForName("\(entityType)", inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
+    public static func create<T: CdManagedObject>(_ entityType: T.Type, transient: Bool = false) throws -> T {
+        guard let entDesc = NSEntityDescription.entity(forEntityName: "\(entityType)", in: CdManagedObjectContext.mainThreadContext()) else {
             Cd.raise("Could not create entity description for \(entityType)")
         }
         
         if transient {
-            return CdManagedObject(entity: entDesc, insertIntoManagedObjectContext:  nil) as! T
+            return CdManagedObject(entity: entDesc, insertInto:  nil) as! T
         }
         
-        let currentThread = NSThread.currentThread()
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("You cannot create a non-transient object in the main thread.")
         }
@@ -213,8 +252,8 @@ public class Cd {
             Cd.raise("You may only create a new managed object from inside a valid transaction.")
         }
         
-        let object = CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
-        try currentContext.obtainPermanentIDsForObjects([object])
+        let object = CdManagedObject(entity: entDesc, insertInto: currentContext) as! T
+        try currentContext.obtainPermanentIDs(for: [object])
         return object
     }
     
@@ -229,24 +268,24 @@ public class Cd {
      
      - returns: The created object.
      */
-    public class func create<T: CdManagedObject>(entityType: T.Type, count: Int, transient: Bool = false) throws -> [T] {
+    public static func create<T: CdManagedObject>(_ entityType: T.Type, count: Int, transient: Bool = false) throws -> [T] {
         guard count > 0 else {
             return []
         }
         
-        guard let entDesc = NSEntityDescription.entityForName("\(entityType)", inManagedObjectContext: CdManagedObjectContext.mainThreadContext()) else {
+        guard let entDesc = NSEntityDescription.entity(forEntityName: "\(entityType)", in: CdManagedObjectContext.mainThreadContext()) else {
             Cd.raise("Could not create entity description for \(entityType)")
         }
         
         if transient {
             var result: [T] = []
             for _ in 0 ..< count {
-                result.append(CdManagedObject(entity: entDesc, insertIntoManagedObjectContext:  nil) as! T)
+                result.append(CdManagedObject(entity: entDesc, insertInto:  nil) as! T)
             }
             return result
         }
         
-        let currentThread = NSThread.currentThread()
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("You cannot create non-transient objects in the main thread.")
         }
@@ -257,8 +296,8 @@ public class Cd {
         
         var result: [T] = []
         for _ in 0 ..< count {
-            let object = CdManagedObject(entity: entDesc, insertIntoManagedObjectContext: currentContext) as! T
-            try currentContext.obtainPermanentIDsForObjects([object])
+            let object = CdManagedObject(entity: entDesc, insertInto: currentContext) as! T
+            try currentContext.obtainPermanentIDs(for: [object])
             result.append(object)
         }
         return result
@@ -270,8 +309,8 @@ public class Cd {
      
      - parameter object: The object to insert into the current context.
      */
-    public class func insert(object: CdManagedObject) {
-        let currentThread = NSThread.currentThread()
+    public static func insert(_ object: CdManagedObject) {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("You cannot insert an object from the main thread.")
         }
@@ -289,10 +328,10 @@ public class Cd {
         }
         
         let keys: [String] = object.entity.attributesByName.keys.map {$0}
-        let properties = object.dictionaryWithValuesForKeys(keys)
-        currentContext.insertObject(object)
-        currentContext.refreshObject(object, mergeChanges: true)
-        object.setValuesForKeysWithDictionary(properties)
+        let properties = object.dictionaryWithValues(forKeys: keys)
+        currentContext.insert(object)
+        currentContext.refresh(object, mergeChanges: true)
+        object.setValuesForKeys(properties)
     }
     
     /**
@@ -301,8 +340,8 @@ public class Cd {
      
      - parameter objects: The objects to insert into the current context.
      */
-    public class func insert(objects: [CdManagedObject]) {
-        let currentThread = NSThread.currentThread()
+    public static func insert(_ objects: [CdManagedObject]) {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("You cannot insert an object from the main thread.")
         }
@@ -321,10 +360,10 @@ public class Cd {
             }
             
             let keys: [String] = object.entity.attributesByName.keys.map {$0}
-            let properties = object.dictionaryWithValuesForKeys(keys)
-            currentContext.insertObject(object)
-            currentContext.refreshObject(object, mergeChanges: true)
-            object.setValuesForKeysWithDictionary(properties)
+            let properties = object.dictionaryWithValues(forKeys: keys)
+            currentContext.insert(object)
+            currentContext.refresh(object, mergeChanges: true)
+            object.setValuesForKeys(properties)
         }
     }
     
@@ -334,8 +373,8 @@ public class Cd {
      
      - parameter object: The object to delete from the current context.
      */
-    public class func delete(object: CdManagedObject) {
-        let currentThread = NSThread.currentThread()
+    public static func delete(_ object: CdManagedObject) {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("You cannot delete an object from the main thread.")
         }
@@ -352,7 +391,7 @@ public class Cd {
             Cd.raise("You cannot delete an object that is not in a context.")
         }
         
-        currentContext.deleteObject(object)
+        currentContext.delete(object)
     }
     
     /**
@@ -361,8 +400,8 @@ public class Cd {
      
      - parameter objects: The objects to delete from the current context.
      */
-    public class func delete(objects: [CdManagedObject]) {
-        let currentThread = NSThread.currentThread()
+    public static func delete(_ objects: [CdManagedObject]) {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("You cannot delete an object from the main thread.")
         }
@@ -380,7 +419,7 @@ public class Cd {
                 Cd.raise("You cannot delete an object that is not in a context.")
             }
             
-            currentContext.deleteObject(object)
+            currentContext.delete(object)
         }
     }
     
@@ -416,32 +455,28 @@ public class Cd {
                             on the main thread.  This will use a background write
                             context even if initially called from the main thread.
     */
-    public class func transact(serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: Void -> Void) {
+    public static func transact(serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (Void) -> Void) {
         let useSerial = (serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)
-        
-        if let serialQueue = serialQueue {
-            dispatch_set_target_queue(serialQueue, CdManagedObjectContext.serialTransactionQueue)
-        }
-        
+                
         /*  These blocks are different.  One calls performBlock as normal (useSerial = false).
             The other calls performBlockAndWait inside of an async serial queue (useSerial = true)
          */
         
         if useSerial {
-            dispatch_async(serialQueue ?? CdManagedObjectContext.serialTransactionQueue) {
+            (serialQueue ?? CdManagedObjectContext.serialTransactionQueue).async {
                 let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
-                newWriteContext.performBlockAndWait() {
-                    let prevInside = NSThread.currentThread().setInsideTransaction(true)
+                newWriteContext.performAndWait() {
+                    let prevInside = Thread.current.setInsideTransaction(true)
                     self.transactOperation(newWriteContext, operation: operation)
-                    NSThread.currentThread().setInsideTransaction(prevInside)
+                    Thread.current.setInsideTransaction(prevInside)
                 }
             }
         } else {
             let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
-            newWriteContext.performBlock {
-                let prevInside = NSThread.currentThread().setInsideTransaction(true)
+            newWriteContext.perform {
+                let prevInside = Thread.current.setInsideTransaction(true)
                 self.transactOperation(newWriteContext, operation: operation)
-                NSThread.currentThread().setInsideTransaction(prevInside)
+                Thread.current.setInsideTransaction(prevInside)
             }
         }
     }
@@ -478,7 +513,7 @@ public class Cd {
      on the main thread.  This will use a background write
      context even if initially called from the main thread.
      */
-    public class func transactWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T? -> Void) {
+    public static func transactWith<T: CdManagedObject>(_ object: T, serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (T?) -> Void) {
         Cd.transact(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(object))
         }
@@ -516,7 +551,7 @@ public class Cd {
      on the main thread.  This will use a background write
      context even if initially called from the main thread.
      */
-    public class func transactWith<T: CdManagedObject>(objects: [T], serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
+    public static func transactWith<T: CdManagedObject>(_ objects: [T], serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping ([T]) -> Void) {
         Cd.transact(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(objects))
         }
@@ -552,28 +587,28 @@ public class Cd {
                             may not execute in a separate thread than the calling
                             thread.
     */
-    public class func transactAndWait(serial serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: Void -> Void) {
-        if NSThread.currentThread().isMainThread {
+    public static func transactAndWait(serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (Void) -> Void) {
+        if Thread.current.isMainThread {
             Cd.raise("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
         }
         
-        let useSerial = ((serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)) && !NSThread.currentThread().insideTransaction()
+        let useSerial = ((serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)) && !Thread.current.insideTransaction()
         
         if let serialQueue = serialQueue {
-            dispatch_set_target_queue(serialQueue, CdManagedObjectContext.serialTransactionQueue)
+            serialQueue.setTarget(queue: CdManagedObjectContext.serialTransactionQueue)
         }
         
         let operationBlock = {
             let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
-            newWriteContext.performBlockAndWait {
-                let prevInside = NSThread.currentThread().setInsideTransaction(true)
+            newWriteContext.performAndWait {
+                let prevInside = Thread.current.setInsideTransaction(true)
                 self.transactOperation(newWriteContext, operation: operation)
-                NSThread.currentThread().setInsideTransaction(prevInside)
+                Thread.current.setInsideTransaction(prevInside)
             }
         }
         
         if useSerial {
-            dispatch_sync(serialQueue ?? CdManagedObjectContext.serialTransactionQueue, operationBlock)
+            (serialQueue ?? CdManagedObjectContext.serialTransactionQueue).sync(execute: operationBlock)
         } else {
             operationBlock()
         }
@@ -612,7 +647,7 @@ public class Cd {
      may not execute in a separate thread than the calling
      thread.
      */
-    public class func transactAndWaitWith<T: CdManagedObject>(object: T, serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: T? -> Void) {
+    public static func transactAndWaitWith<T: CdManagedObject>(_ object: T, serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (T?) -> Void) {
         Cd.transactAndWait(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(object))
         }
@@ -651,7 +686,7 @@ public class Cd {
      may not execute in a separate thread than the calling
      thread.
      */
-    public class func transactAndWaitWith<T: CdManagedObject>(objects: [T], serial: Bool? = nil, on serialQueue: dispatch_queue_t? = nil, operation: [T] -> Void) {
+    public static func transactAndWaitWith<T: CdManagedObject>(_ objects: [T], serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping ([T]) -> Void) {
         Cd.transactAndWait(serial: serial, on: serialQueue) {
             operation(Cd.useInCurrentContext(objects))
         }
@@ -665,8 +700,8 @@ public class Cd {
      - parameter fromContext: The managed object context we are transacting inside.
      - parameter operation:   The operation to perform.
      */
-    private class func transactOperation(fromContext: CdManagedObjectContext, @noescape operation: Void -> Void) {
-        let currentThread    = NSThread.currentThread()
+    fileprivate static func transactOperation(_ fromContext: CdManagedObjectContext, operation: (Void) -> Void) {
+        let currentThread    = Thread.current
         let existingContext  = currentThread.attachedContext()
         let existingNoCommit = currentThread.noImplicitCommit()
         
@@ -685,8 +720,8 @@ public class Cd {
      Call this function from inside of a transaction to cancel the implicit
      commit that will occur after the transaction closure completes.
      */
-    public class func cancelImplicitCommit() {
-        let currentThread = NSThread.currentThread()
+    public static func cancelImplicitCommit() {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("The main thread does have a transaction context that can be committed.")
         }
@@ -705,8 +740,8 @@ public class Cd {
      
      - returns: The CdManagedObjectContext for the current transaction.
      */
-    public class func transactionContext() -> CdManagedObjectContext {
-        let currentThread = NSThread.currentThread()
+    public static func transactionContext() -> CdManagedObjectContext {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("The main thread cannot have a transaction context.")
         }
@@ -725,21 +760,21 @@ public class Cd {
      - parameter object: A CdManagedObject that is suitable to use
                          in the current context (must have a permanent ID).
      */
-    public class func useInCurrentContext<T: CdManagedObject>(object: T) -> T? {
-        guard let currentContext = NSThread.currentThread().attachedContext() else {
+    public static func useInCurrentContext<T: CdManagedObject>(_ object: T) -> T? {
+        guard let currentContext = Thread.current.attachedContext() else {
             Cd.raise("You may only call useInCurrentContext from the main thread, or inside a valid transaction.")
         }
         
-        if let originalContext = object.managedObjectContext where originalContext.hasChanges && originalContext != CdManagedObjectContext._mainThreadContext {
+        if let originalContext = object.managedObjectContext , originalContext.hasChanges && originalContext != CdManagedObjectContext._mainThreadContext {
             Cd.raise("You cannot transfer an object from a context that has outstanding changes.  Make sure you call Cd.commit() from your transaction first.")
         }
         
-        if object.objectID.temporaryID {
+        if object.objectID.isTemporaryID {
             Cd.raise("You cannot transfer an object without a permanent object ID.  This object may be transient or unsaved in its current context.")
         }
         
-        if let myItem = (try? currentContext.existingObjectWithID(object.objectID)) as? T {
-            currentContext.refreshObject(myItem, mergeChanges: false)
+        if let myItem = (try? currentContext.existingObject(with: object.objectID)) as? T {
+            currentContext.refresh(myItem, mergeChanges: false)
             return myItem
         }
         
@@ -754,15 +789,15 @@ public class Cd {
                             receives a version of the CdManagedObject on the main thread's
                             read-only context.
      */
-    public class func onMainWith<T: CdManagedObject>(object: T?, operation: (T? -> Void)) {
+    public static func onMainWith<T: CdManagedObject>(_ object: T?, operation: @escaping ((T?) -> Void)) {
         guard let obj = object else {
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 operation(object)
             }
             return
         }
         
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             operation(Cd.useInCurrentContext(obj))
         }
     }
@@ -776,8 +811,8 @@ public class Cd {
                             read-only context.  If an object could not be acquired on the main
                             thread it is not included in the array.
      */
-    public class func onMainWith<T: CdManagedObject>(objects: [T], operation: ([T] -> Void)) {
-        dispatch_async(dispatch_get_main_queue()) {
+    public static func onMainWith<T: CdManagedObject>(_ objects: [T], operation: @escaping (([T]) -> Void)) {
+        DispatchQueue.main.async {
             var arr: [T] = []
             for obj in objects {
                 if let mainObj = Cd.useInCurrentContext(obj) {
@@ -798,7 +833,7 @@ public class Cd {
                             context.  Any object that could not be transferred is
                             left out of the return array.
      */
-    public class func useInCurrentContext<T: CdManagedObject>(objects: [T]) -> [T] {
+    public static func useInCurrentContext<T: CdManagedObject>(_ objects: [T]) -> [T] {
         var result: [T] = []
         
         for original in objects {
@@ -814,8 +849,8 @@ public class Cd {
      Commit any changes made inside of an active transaction.  Must be called from
      inside Cd.transact or Cd.transactAndWait.
     */
-    public class func commit() throws {
-        let currentThread = NSThread.currentThread()
+    public static func commit() throws {
+        let currentThread = Thread.current
         if currentThread.isMainThread {
             Cd.raise("You can only commit changes inside of a transaction (the main thread is read-only).")
         }
@@ -838,8 +873,8 @@ public class Cd {
      *  -------------------- Error Handling ----------------------
      */
     
-    @noreturn internal class func raise(reason: String) {
-        NSException(name: "Cadmium Exception", reason: reason, userInfo: nil).raise()
+    internal static func raise(_ reason: String) -> Never  {
+        NSException(name: NSExceptionName(rawValue: "Cadmium Exception"), reason: reason, userInfo: nil).raise()
         fatalError("These usage exception cannot be caught")
     }
    

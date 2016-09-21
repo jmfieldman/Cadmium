@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3550262F1D922A790017BAA5 /* .swift-version in Resources */ = {isa = PBXBuildFile; fileRef = 3550262E1D922A790017BAA5 /* .swift-version */; };
 		35552AE81C960848004397CD /* Cadmium.h in Headers */ = {isa = PBXBuildFile; fileRef = 35552AE71C960848004397CD /* Cadmium.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		35552AEF1C960848004397CD /* Cadmium.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35552AE41C960848004397CD /* Cadmium.framework */; };
 		35552AF41C960848004397CD /* CadmiumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35552AF31C960848004397CD /* CadmiumTests.swift */; };
@@ -35,6 +36,7 @@
 		35252A351CB8BEAE00444681 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		3546DE7A1CB1750700F14FFB /* Cadmium.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cadmium.podspec; sourceTree = SOURCE_ROOT; };
 		3546DE7C1CB1752400F14FFB /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
+		3550262E1D922A790017BAA5 /* .swift-version */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".swift-version"; sourceTree = SOURCE_ROOT; };
 		35552AE41C960848004397CD /* Cadmium.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cadmium.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		35552AE71C960848004397CD /* Cadmium.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cadmium.h; sourceTree = "<group>"; };
 		35552AE91C960848004397CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 		35552AE61C960848004397CD /* Cadmium */ = {
 			isa = PBXGroup;
 			children = (
+				3550262E1D922A790017BAA5 /* .swift-version */,
 				35252A351CB8BEAE00444681 /* README.md */,
 				3546DE7C1CB1752400F14FFB /* CHANGELOG.md */,
 				3546DE7A1CB1750700F14FFB /* Cadmium.podspec */,
@@ -217,6 +220,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3550262F1D922A790017BAA5 /* .swift-version in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,7 +311,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -348,7 +351,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -372,7 +374,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -391,7 +393,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.Cadmium;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -403,7 +405,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CadmiumTests/CadmiumTests-Bridging.h";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -415,7 +417,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldman.CadmiumTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CadmiumTests/CadmiumTests-Bridging.h";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

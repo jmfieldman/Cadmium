@@ -257,7 +257,7 @@ Cd.transact(serial: false) {
 
 Not specifying the ```serial``` parameter, or passing ```nil```, will use the default determined during initialization.
 
-Most use cases will be fine setting the default serial usage to true and leaving it at that. You will incur a performance hit with
+Most use cases will be fine setting the default serial usage to true and leaving it at that. You will incur a performance hit with 
 serial transactions in the cases that you attempt to execute lots of concurrent
 or long-running transactions on unrelated objects (since these will all execute serially instead of in parallel).
 
@@ -364,7 +364,7 @@ Cd.transact {
     Cd.commit()
 
     /* only called after the commit saves up to the persistent store */
-    DispatchQueue.main.async {
+    dispatch_async(dispatch_get_main_queue()) {
         notifyOthers()
     }    
 }
@@ -413,7 +413,7 @@ An example might look like:
 
 ```swift
 /* ... from the example above, transferring a new item to the main thread: */
-DispatchQueue.main.async {
+dispatch_async(dispatch_get_main_queue()) {
     if let mainItem = Cd.useInCurrentContext(newItem), name = mainItem.name {
         print("created item in transaction: \(name)")
         mainItem.updateHandler = { event in
@@ -456,14 +456,14 @@ cases the compiler should be able to deduce these as long as you treat the retur
 ```swift
 Cd.transact {
     //...
-}.then { _ -> Void in
-
+}.then { _ -> Void in 
+    
 }
 
 Cd.transactWith(obj) { txObj in
     //...
-}.then { _ -> Void in
-
+}.then { _ -> Void in 
+    
 }
 ```
 
@@ -493,7 +493,7 @@ firstly {
 
 firstly {
     return employeeVarFromMainThread // <- CdManagedObject
-}.thenTransactWith(serial: ..., on: ...) { (employee: Employee) -> Void in
+}.thenTransactWith(serial: ..., on: ...) { (employee: Employee) -> Void in 
     // This block occurs inside a Cadmium transaction with a
     // version of the argument belonging to the current context.
 }.then {
@@ -507,12 +507,12 @@ back to the main thread.  For this, use ```thenOnMainWith```:
 ```swift
 firstly {
     return employeeVarFromMainThread
-}.thenTransactWith(serial: ..., on: ...) { (employee: Employee) -> Employee in
+}.thenTransactWith(serial: ..., on: ...) { (employee: Employee) -> Employee in 
     employee.salary += 10000
     return employee
 }.thenOnMainWith { (employee: Employee) -> Void
     // Here, employee is a read-only CdManagedObject from the main thread context.
-    print("The salary is \(employee.salary)")
+    print("The salary is \(employee.salary)") 
 }
 
 ```
