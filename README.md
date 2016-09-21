@@ -52,13 +52,18 @@ Or you can use a variety of ways to include the ```Cadmium.framework``` file fro
 
 ### Swift Version Support
 
-Swift 2.2 is supported through the Cadmium 0.12.x version family.  You can set your pod to use this with
+> Swift 3.0: Use Cadmium 1.0
+> Swift 2.3: Use Cadmium 0.13.x
+> Swift 2.2: Use Cadmium 0.12.x
+
+Cocoapods:
 
 ```ruby
-pod 'Cadmium', '~> 0.12'
+pod 'Cadmium', '~> 1.0'  # Swift 3.0
+pod 'Cadmium', '~> 0.13' # Swift 2.3
+pod 'Cadmium', '~> 0.12' # Swift 2.2
 ```
 
-Swift 2.3 is supported starting with the 0.13.x family.
 
 # How to Use
 
