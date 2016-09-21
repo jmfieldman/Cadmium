@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |ss|
     ss.source_files = "Cadmium/*.swift"
     ss.frameworks = 'CoreData'
-    ss.xcconfig = { 'SWIFT_VERSION' => '3.0' }
+    #ss.xcconfig = { 'SWIFT_VERSION' => '3.0' }
   end
 
   s.subspec 'PromiseKit' do |ss|
