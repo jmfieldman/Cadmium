@@ -53,7 +53,9 @@ Or you can use a variety of ways to include the ```Cadmium.framework``` file fro
 ### Swift Version Support
 
 > Swift 3.0: Use Cadmium 1.0
+
 > Swift 2.3: Use Cadmium 0.13.x
+
 > Swift 2.2: Use Cadmium 0.12.x
 
 Cocoapods:
