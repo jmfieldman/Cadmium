@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 1.0.1
+
+* Added podspec support for OSX 10.12 and tvOS 10
+
 ## 1.0 
 
 * Updates for Swift 3.0
