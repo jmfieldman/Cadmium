@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Cadmium"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "Core Data framework for Swift that uses concise syntax to hide context complexity and ensure best practices"
 
   s.description  = <<-DESC
@@ -15,8 +15,8 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = "9.0"
   s.watchos.deployment_target = "2.0"
-  #s.osx.deployment_target = "10.10"
-  #s.tvos.deployment_target = "9.0"
+  s.osx.deployment_target = "10.12"
+  s.tvos.deployment_target = "10.0"
 
   s.source = { :git => "https://github.com/jmfieldman/Cadmium.git", :tag => "#{s.version}" }
   s.source_files = "Cadmium/*.swift"
