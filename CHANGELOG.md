@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 1.0.2
+
+* Added support for NSInMemoryStoreType by passing in a nil SQLite file URL
+
 ## 1.0.1
 
 * Added podspec support for OSX 10.12 and tvOS 10

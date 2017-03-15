@@ -66,7 +66,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
      
      - parameter coordinator: The persistent store coordinator for the save context.
      */
-    internal static func initializeMasterContexts(coordinator: NSPersistentStoreCoordinator?) {
+    internal static func initializeMasterContexts(coordinator: NSPersistentStoreCoordinator) {
         _masterSaveContext = CdManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         _masterSaveContext?.undoManager = nil
         _masterSaveContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy

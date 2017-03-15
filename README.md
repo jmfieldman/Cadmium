@@ -112,6 +112,8 @@ If your object model is in a framework (not your main bundle), you'll have to pa
 
 The ```options```  argument flows through to the options passed in addPersistentStoreWithType: on the NSPersistentStoreCoordinator.
 
+You can pass nil to the sqliteFilename parameter to create an NSInMemoryStoreType database.
+
 ### Querying
 
 Cadmium offers a chained query mechanism.  This can be used to query objects from the main thread (for read-only purposes), or from inside a transaction.
