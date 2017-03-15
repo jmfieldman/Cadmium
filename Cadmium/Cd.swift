@@ -47,10 +47,11 @@ public class Cd {
     
      - parameter momdURL:   The full URL to the managed object model.
      - parameter sqliteURL: The full URL to the sqlite store.
+                            If nil, Cadmium will use an in-memory store.
      - parameter serialTX:  If Cadmium should use serial transactions
                             by default.  See README for more information.
     */
-    public static func initWithSQLStore(momdURL: URL, sqliteURL: URL, options: [AnyHashable: Any]? = nil, serialTX: Bool = false) throws {
+    public static func initWithSQLStore(momdURL: URL, sqliteURL: URL?, options: [AnyHashable: Any]? = nil, serialTX: Bool = false) throws {
         guard let mom = NSManagedObjectModel(contentsOf: momdURL) else {
             throw CdInitFailure.invalidManagedObjectModel
         }
@@ -58,7 +59,8 @@ public class Cd {
         defaultSerialTransactions = serialTX
         
         let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
-        try psc.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: sqliteURL, options: options)
+        let storeType = (sqliteURL == nil) ? NSInMemoryStoreType : NSSQLiteStoreType
+        try psc.addPersistentStore(ofType: storeType, configurationName: nil, at: sqliteURL, options: options)
         
         CdManagedObjectContext.initializeMasterContexts(coordinator: psc)
     }
@@ -79,12 +81,13 @@ public class Cd {
      - parameter sqliteFilename: The name of the SQLite file you are storing data
                                  in.  The initializer will append this filename
                                  to the user's document directory.
+                                 If nil, Cadmium will use an in-memory store.
      - parameter serialTX:       If Cadmium should use serial transactions
                                  by default.  See README for more information.
      
      - throws: Various errors in case something goes wrong!
      */
-    public static func initWithSQLStore(momdInbundleID bundleID: String?, momdName: String, sqliteFilename: String, options: [AnyHashable: Any]? = nil, serialTX: Bool = false) throws {
+    public static func initWithSQLStore(momdInbundleID bundleID: String?, momdName: String, sqliteFilename: String?, options: [AnyHashable: Any]? = nil, serialTX: Bool = false) throws {
         var bundle: Bundle!
         
         if bundleID == nil {
@@ -105,11 +108,16 @@ public class Cd {
             throw CdInitFailure.invalidManagedObjectModel
         }
         
-        let documentDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentDirectory   = documentDirectories[documentDirectories.count - 1]
-        let sqliteURL           = documentDirectory.appendingPathComponent(sqliteFilename)
+        var sqliteURL: URL? = nil
+        if let filename = sqliteFilename {
+            let documentDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+            let documentDirectory   = documentDirectories[documentDirectories.count - 1]
+            sqliteURL               = documentDirectory.appendingPathComponent(filename)
+            
+            try FileManager.default.createDirectory(at: documentDirectory, withIntermediateDirectories: true, attributes: nil)
+        }
         
-        try FileManager.default.createDirectory(at: documentDirectory, withIntermediateDirectories: true, attributes: nil)
+        
         try Cd.initWithSQLStore(momdURL: momdURL, sqliteURL: sqliteURL, options: options, serialTX: serialTX)
     }
     
