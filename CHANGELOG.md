@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 1.0.3
+
+* Fixed issue with internal setTarget call that was invalid in Swift 3
+
 ## 1.0.2
 
 * Added support for NSInMemoryStoreType by passing in a nil SQLite file URL
