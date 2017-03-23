@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Cadmium"
-  s.version      = "1.0.2"
+  s.version      = "1.0.3"
   s.summary      = "Core Data framework for Swift that uses concise syntax to hide context complexity and ensure best practices"
 
   s.description  = <<-DESC

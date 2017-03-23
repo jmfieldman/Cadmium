@@ -602,10 +602,6 @@ public class Cd {
         
         let useSerial = ((serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)) && !Thread.current.insideTransaction()
         
-        if let serialQueue = serialQueue {
-            serialQueue.setTarget(queue: CdManagedObjectContext.serialTransactionQueue)
-        }
-        
         let operationBlock = {
             let newWriteContext = CdManagedObjectContext.newBackgroundWriteContext()
             newWriteContext.performAndWait {
