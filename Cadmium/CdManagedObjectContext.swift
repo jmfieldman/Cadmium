@@ -72,7 +72,7 @@ public class CdManagedObjectContext : NSManagedObjectContext {
         _masterSaveContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         _masterSaveContext?.persistentStoreCoordinator = coordinator
         
-        _mainThreadContext = CdManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        _mainThreadContext = CdManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         _mainThreadContext?.undoManager = nil
         _mainThreadContext?.parent = _masterSaveContext
         

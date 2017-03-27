@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 1.0.4
+
+* Fixed issue where main thread context was not registered as .mainQueueConcurrencyType
+
 ## 1.0.3
 
 * Fixed issue with internal setTarget call that was invalid in Swift 3
