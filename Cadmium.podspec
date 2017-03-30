@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Cadmium"
-  s.version      = "1.0.4"
+  s.version      = "1.1.0"
   s.summary      = "Core Data framework for Swift that uses concise syntax to hide context complexity and ensure best practices"
 
   s.description  = <<-DESC
@@ -28,7 +28,6 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |ss|
     ss.source_files = "Cadmium/*.swift"
     ss.frameworks = 'CoreData'
-    #ss.xcconfig = { 'SWIFT_VERSION' => '3.0' }
   end
 
   s.subspec 'PromiseKit' do |ss|

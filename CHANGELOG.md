@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 1.1.0 -- 3/30/17
+
+* Updates for Xcode 8.3/Swift 3.1 compatability
+
 ## 1.0.4
 
 * Fixed issue where main thread context was not registered as .mainQueueConcurrencyType

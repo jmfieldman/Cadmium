@@ -38,6 +38,7 @@ class CadmiumTests: XCTestCase {
     }
     
     override func tearDown() {
+        CdManagedObjectContext._mainThreadContext = nil // super dirty..
         super.tearDown()
     }
     
@@ -813,6 +814,17 @@ class CadmiumTests: XCTestCase {
     }
     
     func initCd() {
+        let documentDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory   = documentDirectories[documentDirectories.count - 1]
+        
+        do {
+            for url in try FileManager.default.contentsOfDirectory(at: documentDirectory, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions(rawValue: 0)) {
+                if url.description.range(of: "\(self.cleanName()).sqlite") != nil {
+                    try FileManager.default.removeItem(at: url)
+                }
+            }
+        } catch {}
+        
         do {
             
             try Cd.initWithSQLStore(momdInbundleID: "org.fieldman.CadmiumTests",
@@ -826,15 +838,15 @@ class CadmiumTests: XCTestCase {
     }
     
     func cleanCd() {
-        let documentDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentDirectory   = documentDirectories[documentDirectories.count - 1]
-        
-        do {
-            for url in try FileManager.default.contentsOfDirectory(at: documentDirectory, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions(rawValue: 0)) {
-                if url.description.range(of: "\(self.cleanName()).sqlite") != nil {
-                    try FileManager.default.removeItem(at: url)
-                }
-            }
-        } catch {}
+//        let documentDirectories = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+//        let documentDirectory   = documentDirectories[documentDirectories.count - 1]
+//        
+//        do {
+//            for url in try FileManager.default.contentsOfDirectory(at: documentDirectory, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions(rawValue: 0)) {
+//                if url.description.range(of: "\(self.cleanName()).sqlite") != nil {
+//                    try FileManager.default.removeItem(at: url)
+//                }
+//            }
+//        } catch {}
     }
 }
