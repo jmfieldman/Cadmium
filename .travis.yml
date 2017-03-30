@@ -6,7 +6,7 @@ branches:
 env:
   - LC_CTYPE=en_US.UTF-8 LANG=en_US.UTF-8
 before_install:
-  - SIMULATOR_ID=$(xcrun instruments -s | grep -o "iPhone 6 (9.1) \[.*\]" | grep -o "\[.*\]" | sed "s/^\[\(.*\)\]$/\1/")
+  - SIMULATOR_ID=$(xcrun instruments -s | grep -o "iPhone 6 (10.0) \[.*\]" | grep -o "\[.*\]" | sed "s/^\[\(.*\)\]$/\1/")
   - gem install xcpretty -N
 script:
   - echo $SIMULATOR_ID
