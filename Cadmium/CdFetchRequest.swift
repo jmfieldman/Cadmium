@@ -230,7 +230,7 @@ public class CdFetchRequest<T: NSFetchRequestResult> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func onlyProperties(_ properties: [String]) -> CdFetchRequest<T> {
+    public func onlyProperties(_ properties: [String]) -> CdFetchRequest<T> {
         self.includedProperties.formUnion(properties)
         return self
     }
@@ -243,7 +243,7 @@ public class CdFetchRequest<T: NSFetchRequestResult> {
      
      - returns: The updated fetch request.
      */
-    @inline(__always) public func groupBy(_ properties: [String]) -> CdFetchRequest<T> {
+    public func groupBy(_ properties: [String]) -> CdFetchRequest<T> {
         self.includedGroupings.append(contentsOf: properties)
         return self
     }

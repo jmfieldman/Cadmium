@@ -61,6 +61,7 @@ Or you can use a variety of ways to include the ```Cadmium.framework``` file fro
 Cocoapods:
 
 ```ruby
+pod 'Cadmium', '~> 1.1'  # Swift 3.1 
 pod 'Cadmium', '~> 1.0'  # Swift 3.0
 pod 'Cadmium', '~> 0.13' # Swift 2.3
 pod 'Cadmium', '~> 0.12' # Swift 2.2
