@@ -139,7 +139,7 @@ public class Cd {
      
      - returns: The CdFetchRequest object ready to be configured and then fetched.
     */
-    @inline(__always) public static func objects<T: CdManagedObject>(_ objectClass: T.Type) -> CdFetchRequest<T> {
+    public static func objects<T: CdManagedObject>(_ objectClass: T.Type) -> CdFetchRequest<T> {
         return CdFetchRequest<T>()
     }
 
@@ -206,7 +206,7 @@ public class Cd {
      
      - returns: The CdFetchRequest object ready to be configured and then fetched.
      */
-    @inline(__always) public static func objectQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<T> {
+    public static func objectQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<T> {
         return CdFetchRequest<T>()
     }
     
@@ -224,7 +224,7 @@ public class Cd {
      
      - returns: The CdFetchRequest object ready to be configured and then fetched.
      */
-    @inline(__always) public static func dictionaryQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<NSDictionary> {
+    public static func dictionaryQuery<T: CdManagedObject>(for: T.Type) -> CdFetchRequest<NSDictionary> {
         return CdFetchRequest<NSDictionary>(entityName: "\(T.self)")
     }
     

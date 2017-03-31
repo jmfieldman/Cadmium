@@ -216,7 +216,7 @@ internal extension Thread {
      
      - returns: The currently attached context, or nil if none.
      */
-    @inline(__always) internal func attachedContext() -> CdManagedObjectContext? {
+    internal func attachedContext() -> CdManagedObjectContext? {
         if self.isMainThread {
             return CdManagedObjectContext._mainThreadContext
         }

@@ -422,7 +422,7 @@ public class CdFetchRequest<T: NSFetchRequestResult> {
      
      - returns: The number of items that match the fetch parameters, or NSNotFound if an error occurred.
      */
-    @inline(__always) public func count() throws -> Int {
+    public func count() throws -> Int {
         guard let currentContext = Thread.current.attachedContext() else {
             Cd.raise("You cannot fetch data from a non-transactional background thread.  You may only query from the main thread or from inside a transaction.")
         }
