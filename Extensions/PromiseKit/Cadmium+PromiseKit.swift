@@ -17,7 +17,7 @@ public enum CdPromiseError : Error {
 public extension Cd {
     
     /** Allows you to perform a standard Cadmium transaction as a Promise */
-    @discardableResult public class func transact<U>(_ serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (Void) throws -> U) -> Promise<U> {
+    @discardableResult public class func transact<U>(_ serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping () throws -> U) -> Promise<U> {
         return Promise { fulfill, reject in
             DispatchQueue.global(qos: .default).async {
                 var result: U!
