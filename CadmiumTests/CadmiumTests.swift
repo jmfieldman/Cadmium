@@ -805,7 +805,7 @@ class CadmiumTests: XCTestCase {
     }
     
     func cleanName() -> String {
-        let origName = self.name ?? "unknownTestName"
+        let origName = self.name
         let nospace = origName.replacingOccurrences(of: " ", with: "_")
         let nobrace1 = nospace.replacingOccurrences(of: "[", with: "")
         let nobrace2 = nobrace1.replacingOccurrences(of: "]", with: "")

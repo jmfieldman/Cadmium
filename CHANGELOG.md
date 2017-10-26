@@ -1,5 +1,9 @@
 # Cadmium Changelog
 
+## 1.2.0 -- 10/26/17
+
+* Swift 4.0 support
+
 ## 1.1.0 -- 3/30/17
 
 * Updates for Xcode 8.3/Swift 3.1 compatability
