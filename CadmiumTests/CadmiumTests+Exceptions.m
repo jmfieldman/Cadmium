@@ -25,7 +25,7 @@
 #import <Foundation/Foundation.h>
 
 
-NSException *catchException(void(^tryBlock)()) {
+NSException *catchException(void(^tryBlock)(void)) {
     NSException *_exception = nil;
     @try {
         tryBlock();

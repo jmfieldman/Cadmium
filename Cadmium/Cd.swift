@@ -463,7 +463,7 @@ public class Cd {
                             on the main thread.  This will use a background write
                             context even if initially called from the main thread.
     */
-    public static func transact(serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (Void) -> Void) {
+    public static func transact(serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping () -> Void) {
         let useSerial = (serial ?? Cd.defaultSerialTransactions) || (serial != false && serialQueue != nil)
                 
         /*  These blocks are different.  One calls performBlock as normal (useSerial = false).
@@ -595,7 +595,7 @@ public class Cd {
                             may not execute in a separate thread than the calling
                             thread.
     */
-    public static func transactAndWait(serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping (Void) -> Void) {
+    public static func transactAndWait(serial: Bool? = nil, on serialQueue: DispatchQueue? = nil, operation: @escaping () -> Void) {
         if Thread.current.isMainThread {
             Cd.raise("You cannot perform transactAndWait on the main thread.  Use transact, or spin off a new background thread to call transactAndWait")
         }
@@ -704,7 +704,7 @@ public class Cd {
      - parameter fromContext: The managed object context we are transacting inside.
      - parameter operation:   The operation to perform.
      */
-    fileprivate static func transactOperation(_ fromContext: CdManagedObjectContext, operation: (Void) -> Void) {
+    fileprivate static func transactOperation(_ fromContext: CdManagedObjectContext, operation: () -> Void) {
         let currentThread    = Thread.current
         let existingContext  = currentThread.attachedContext()
         let existingNoCommit = currentThread.noImplicitCommit()
